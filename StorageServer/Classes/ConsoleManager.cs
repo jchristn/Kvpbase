@@ -21,6 +21,7 @@ namespace Kvpbase
         private Topology CurrentTopology { get; set; }
         private Node CurrentNode { get; set; }
         private UserManager Users { get; set; }
+        private UrlLockManager LockManager { get; set; }
         private EncryptionModule Encryption { get; set; }
         private Events Logging { get; set; }
         private MaintenanceManager Maintenance { get; set; }
@@ -35,6 +36,7 @@ namespace Kvpbase
             Topology topology, 
             Node node, 
             UserManager users, 
+            UrlLockManager locks,
             EncryptionModule encryption, 
             Events logging)
         {
@@ -42,6 +44,7 @@ namespace Kvpbase
             if (maintenance == null) throw new ArgumentNullException(nameof(maintenance));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
             if (users == null) throw new ArgumentNullException(nameof(users));
+            if (locks == null) throw new ArgumentNullException(nameof(locks));
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (encryption == null) throw new ArgumentNullException(nameof(encryption));
 
@@ -50,6 +53,7 @@ namespace Kvpbase
             CurrentTopology = topology;
             CurrentNode = node;
             Users = users;
+            LockManager = locks;
             Logging = logging;
             Maintenance = maintenance;
             Encryption = encryption;
@@ -101,6 +105,14 @@ namespace Kvpbase
                         FindObject(CurrentTopology);
                         break;
 
+                    case "list_topology":
+                        ListTopology();
+                        break;
+
+                    case "list_active_urls":
+                        ListActiveUrls();
+                        break;
+
                     case "maint_enable":
                         Maintenance.Set();
                         Console.WriteLine("Maintenance mode enabled");
@@ -146,6 +158,8 @@ namespace Kvpbase
             Console.WriteLine("  quit / q                  exit the application");
             Console.WriteLine("  server                    list endpoint addresses for this node");
             Console.WriteLine("  find_obj                  locate an object by primary GUID and object name");
+            Console.WriteLine("  list_topology             list nodes in the topology");
+            Console.WriteLine("  list_active_urls          list URLs that are locked due to current connections");
             Console.WriteLine("  maint_enable              enable read broadcast and maintenance mode");
             Console.WriteLine("  maint_disable             disable read broadcast and maintenance mode");
             Console.WriteLine("  maint_status              display maintenance mode status");
@@ -257,6 +271,57 @@ namespace Kvpbase
             if (resp.StatusCode != 200) return false;
             
             return true;
+        }
+
+        private void ListTopology()
+        {
+            if (CurrentTopology == null || CurrentTopology.Nodes == null || CurrentTopology.Nodes.Count < 1)
+            {
+                Console.WriteLine("Topology contains no nodes");
+            }
+            else
+            {
+                Console.WriteLine("Nodes in topology:");
+                foreach (Node curr in CurrentTopology.Nodes)
+                {
+                    Console.WriteLine(curr.ToString());
+                }
+
+                Console.WriteLine("");
+                if (CurrentTopology.Replicas == null || CurrentTopology.Replicas.Count < 1)
+                {
+                    Console.WriteLine("No replicas defined in topology");
+                }
+                else
+                {
+                    Console.WriteLine("Replica nodes:");
+                    foreach (Node curr in CurrentTopology.Replicas)
+                    {
+                        Console.WriteLine(curr.ToString());
+                    }
+                }
+            }
+
+            Console.WriteLine("");
+        }
+
+        private void ListActiveUrls()
+        {
+            Dictionary<string, Tuple<int?, string, string, DateTime>> urls = LockManager.GetLockedUrls();
+            if (urls == null || urls.Count < 1)
+            {
+                Console.WriteLine("No locked URLs");
+            }
+            else
+            {
+                Console.WriteLine("Locked URLs: " + urls.Count);
+                foreach (KeyValuePair<string, Tuple<int?, string, string, DateTime>> curr in urls)
+                {
+                    // UserMasterId, SourceIp, verb, established
+                    Console.WriteLine("  " + curr.Key + " user " + curr.Value.Item1 + " " + curr.Value.Item2 + " " + curr.Value.Item3);
+                }
+                Console.WriteLine("");
+            }
         }
 
         private void DataValidation()

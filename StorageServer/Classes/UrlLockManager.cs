@@ -9,9 +9,13 @@ namespace Kvpbase
 {
     public class UrlLockManager
     {
+        #region Public-Members
+
+        #endregion
+
         #region Private-Members
 
-        public ConcurrentDictionary<string, Tuple<int?, string, string, DateTime>> ActiveObjects; // UserMasterId, SourceIp, verb, established
+        private ConcurrentDictionary<string, Tuple<int?, string, string, DateTime>> ActiveObjects; // UserMasterId, SourceIp, verb, established
         
         #endregion
 
@@ -25,6 +29,13 @@ namespace Kvpbase
         #endregion
 
         #region Public-Methods
+
+        public Dictionary<string, Tuple<int?, string, string, DateTime>> GetLockedUrls()
+        {
+            Dictionary<string, Tuple<int?, string, string, DateTime>> ret;
+            ret = ActiveObjects.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            return ret;
+        }
 
         public bool LockUrl(RequestMetadata md)
         {

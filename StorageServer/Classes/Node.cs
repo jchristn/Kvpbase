@@ -38,7 +38,7 @@ namespace Kvpbase
         public override string ToString()
         {
             string ret = "";
-            ret += "  Node ID " + NodeId + " Name " + Name + " Endpoint " + DnsHostname + ":" + Port + " SSL " + Ssl + Environment.NewLine;
+            ret += "  Node ID " + NodeId + " Name " + Name + " Endpoint " + DnsHostname + ":" + Port + " SSL " + Ssl;
             return ret;
         }
 

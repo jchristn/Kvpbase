@@ -131,6 +131,7 @@ namespace Kvpbase
                     CurrentTopology,
                     CurrentNode,
                     Users,
+                    LockManager,
                     EncryptionManager,
                     Logging);
             }
