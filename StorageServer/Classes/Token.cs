@@ -23,9 +23,10 @@ namespace Kvpbase
 
         }
 
-        public static string FromUser(UserMaster curr, Settings settings, EncryptionModule encryptionManager)
+        public static string FromUser(UserMaster curr, Settings settings, EncryptionModule encryption)
         {
             if (curr == null) throw new ArgumentNullException(nameof(curr));
+            if (encryption == null) throw new ArgumentNullException(nameof(encryption));
 
             Token ret = new Token();
             ret.UserMasterId = curr.UserMasterId;
@@ -36,7 +37,7 @@ namespace Kvpbase
             ret.Expiration = DateTime.Now.AddSeconds(settings.Server.TokenExpirationSec);
 
             string json = Common.SerializeJson(ret);
-            return encryptionManager.LocalEncrypt(json);
+            return encryption.LocalEncrypt(json);
         }
 
         #endregion

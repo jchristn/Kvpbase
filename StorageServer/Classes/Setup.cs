@@ -276,6 +276,14 @@ namespace Kvpbase
 
             #endregion
 
+            #region Debug
+
+            currSettings.Debug = new Settings.SettingsDebug();
+            currSettings.Debug.DebugCompression = 0;
+            currSettings.Debug.DebugEncryption = 0;
+
+            #endregion
+
             #region Mailgun
 
             currSettings.Mailgun = new Settings.SettingsMailgun();

@@ -1615,7 +1615,7 @@ namespace Kvpbase
 
                     #endregion
 
-                    return new HttpResponse(md.CurrentHttpRequest, true, 200, null, "application/json", null, true);
+                    return new HttpResponse(md.CurrentHttpRequest, true, 200, null, "text/plain", md.CurrentObj.PrimaryUrlWithoutQs, true);
 
                     #endregion
                 }

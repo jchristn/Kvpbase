@@ -196,6 +196,11 @@ namespace Kvpbase
                 md.CurrentHttpRequest = req;
                 md.CurrentNode = CurrentNode;
 
+                if (Common.IsTrue(CurrentSettings.Syslog.LogHttpRequests))
+                {
+                    Logging.Log(LoggingModule.Severity.Debug, "RequestReceived: " + Environment.NewLine + md.CurrentHttpRequest.ToString());
+                }
+
                 #endregion
 
                 #region Options-Handler
@@ -394,7 +399,7 @@ namespace Kvpbase
 
                         if (WatsonCommon.UrlEqual(md.CurrentHttpRequest.RawUrlWithoutQuery, "/token", false))
                         {
-                            return new HttpResponse(req, false, 401, null, "text/plain", Token.FromUser(md.CurrentUserMaster, CurrentSettings, EncryptionManager), true);
+                            return new HttpResponse(req, true, 200, null, "text/plain", Token.FromUser(md.CurrentUserMaster, CurrentSettings, EncryptionManager), true);
                         }
 
                         if (WatsonCommon.UrlEqual(md.CurrentHttpRequest.RawUrlWithoutQuery, "/replicas", false))

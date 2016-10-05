@@ -353,13 +353,22 @@ namespace Kvpbase
                 subdirectories = Common.GetSubdirectoryList(directory, false);
                 files = Common.GetFileList(environment, directory, prependFilename);
 
+                if (files != null && files.Count > 0)
+                {
+                    foreach (String currFile in files)
+                    {
+                        FileInfo fi = new FileInfo(currFile);
+                        bytes += fi.Length;
+                    }
+                }
+
                 List<string> queueSubdirectories = new List<string>();
                 List<string> queueFiles = new List<string>();
                 long queueBytes = 0;
 
                 if (recursive)
                 {
-                    if (subdirectories == null) return true;
+                    if (subdirectories == null || subdirectories.Count < 1) return true;
                     depth += 2;
 
                     foreach (string curr in subdirectories)

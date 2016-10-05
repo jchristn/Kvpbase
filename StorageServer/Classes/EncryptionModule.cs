@@ -36,7 +36,7 @@ namespace Kvpbase
                 throw new ArgumentException("Settings.Encryption.Mode should either be local or server");
             }
             
-            CurrentSettings = CurrentSettings;
+            CurrentSettings = currentSettings;
             EventHandler = logging;
         }
 

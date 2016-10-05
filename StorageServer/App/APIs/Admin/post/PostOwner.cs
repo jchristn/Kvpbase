@@ -82,7 +82,7 @@ namespace Kvpbase
             #region Respond
 
             Logging.Log(LoggingModule.Severity.Debug, "PostOwner GUID is mapped to " + url);
-            return new HttpResponse(md.CurrentHttpRequest, true, 200, null, "application/json", url, true);
+            return new HttpResponse(md.CurrentHttpRequest, true, 200, null, "text/plain", url, true);
 
             #endregion
         }

@@ -10,6 +10,15 @@ namespace Kvpbase
     {
         static HttpResponse AdminApiHandler(RequestMetadata md)
         {
+            #region Enumerate
+
+            Logging.Log(LoggingModule.Severity.Debug, 
+                "AdminApiHandler admin API requested by " + 
+                md.CurrentHttpRequest.SourceIp + ":" + md.CurrentHttpRequest.SourcePort + " " + 
+                md.CurrentHttpRequest.Method + " " + md.CurrentHttpRequest.RawUrlWithoutQuery);
+
+            #endregion
+
             #region Variables
 
             string reqMetadataVal = "";
@@ -85,7 +94,7 @@ namespace Kvpbase
                     {
                         return GetLogin(md);
                     }
-                    
+
                     break;
 
                 #endregion
@@ -190,12 +199,13 @@ namespace Kvpbase
                 #endregion
 
                 default:
-                    Logging.Log(LoggingModule.Severity.Warn, "AdminApiandler unknown http method: " + md.CurrentHttpRequest.Method);
+                    Logging.Log(LoggingModule.Severity.Warn, "AdminApiHandler unknown http method: " + md.CurrentHttpRequest.Method);
                     return new HttpResponse(md.CurrentHttpRequest, false, 400, null, "application/json",
                         new ErrorResponse(2, 400, "Unsupported HTTP method.", null).ToJson(),
                         true);
             }
 
+            Logging.Log(LoggingModule.Severity.Warn, "AdminApiHandler unknown endpoint URL: " + md.CurrentHttpRequest.RawUrlWithoutQuery);
             return new HttpResponse(md.CurrentHttpRequest, false, 400, null, "application/json", 
                 new ErrorResponse(2, 400, "Unknown endpoint.", null), true);
 
