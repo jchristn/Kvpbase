@@ -848,10 +848,9 @@ namespace Kvpbase
 
             // see https://kb.acronis.com/content/39790
 
-            if (String.IsNullOrEmpty(data)) return true;
-            if (data.EndsWith(" ")) return true;
-            if (data.EndsWith(".")) return true;
-            if (data.Contains("..")) return true;
+            if (String.IsNullOrEmpty(data)) return false;
+            if (data.Equals(".")) return true;
+            if (data.Equals("..")) return true;
 
             if (
                 (String.Compare(data.ToLower(), "com1") == 0) ||

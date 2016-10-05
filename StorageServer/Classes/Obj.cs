@@ -1067,8 +1067,14 @@ namespace Kvpbase
         public static bool UnsafeFsChars(Obj currObj)
         {
             if (currObj == null) return true;
-            if (Common.ContainsUnsafeCharacters(currObj.ContainerPath)) return true;
-            if (Common.ContainsUnsafeCharacters(currObj.Key)) return true;
+            if (currObj.ContainerPath != null && currObj.ContainerPath.Count > 0)
+            {
+                if (Common.ContainsUnsafeCharacters(currObj.ContainerPath)) return true;
+            }
+            if (!String.IsNullOrEmpty(currObj.Key))
+            {
+                if (Common.ContainsUnsafeCharacters(currObj.Key)) return true;
+            }
             return false;
         }
 
