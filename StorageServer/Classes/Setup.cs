@@ -52,7 +52,7 @@ namespace Kvpbase
             //          1         2         3         4         5         6         7
             // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
             Console.WriteLine("Thank you for using kvpbase!  We'll put together a basic system configuration");
-            Console.WriteLine("so you can be up and running quickly.  You'll want to modify the system.json");
+            Console.WriteLine("so you can be up and running quickly.  You'll want to modify the System.json");
             Console.WriteLine("file after to ensure a more secure operating environment.");
             Console.WriteLine("");
             Console.WriteLine("Press ENTER to get started.");
@@ -92,10 +92,10 @@ namespace Kvpbase
             #region Files
 
             currSettings.Files = new Settings.SettingsFiles();
-            currSettings.Files.ApiKey = "." + separator + "api_key.config";
-            currSettings.Files.Permission = "." + separator + "ApiKeyPermission.config";
-            currSettings.Files.Topology = "." + separator + "topology.config";
-            currSettings.Files.UserMaster = "." + separator + "user_master.config";
+            currSettings.Files.ApiKey = "." + separator + "ApiKey.json";
+            currSettings.Files.Permission = "." + separator + "ApiKeyPermission.json";
+            currSettings.Files.Topology = "." + separator + "Topology.json";
+            currSettings.Files.UserMaster = "." + separator + "UserMaster.json";
 
             #endregion
 
@@ -287,25 +287,25 @@ namespace Kvpbase
             #region System-Config
 
             if (
-                Common.FileExists("system.json")
+                Common.FileExists("System.json")
                 )
             {
                 Console.WriteLine("System configuration file already exists.");
                 if (Common.InputBoolean("Do you wish to overwrite this file", true))
                 {
-                    Common.DeleteFile("system.json");
-                    if (!Common.WriteFile("system.json", Common.SerializeJson(currSettings), false))
+                    Common.DeleteFile("System.json");
+                    if (!Common.WriteFile("System.json", Common.SerializeJson(currSettings), false))
                     {
-                        Common.ExitApplication("setup", "Unable to write system.json", -1);
+                        Common.ExitApplication("setup", "Unable to write System.json", -1);
                         return;
                     }
                 }
             }
             else
             {
-                if (!Common.WriteFile("system.json", Common.SerializeJson(currSettings), false))
+                if (!Common.WriteFile("System.json", Common.SerializeJson(currSettings), false))
                 {
-                    Common.ExitApplication("setup", "Unable to write system.json", -1);
+                    Common.ExitApplication("setup", "Unable to write System.json", -1);
                     return;
                 }
             }
@@ -574,7 +574,7 @@ namespace Kvpbase
                         Console.WriteLine("  Windows: '+' indicates accessibility on any IP or hostname");
 
                     Console.WriteLine("");
-                    Console.WriteLine("Be sure to install an SSL certificate and modify your topology.config file to");
+                    Console.WriteLine("Be sure to install an SSL certificate and modify your Topology.json file to");
                     Console.WriteLine("use SSL to maximize security and set the correct hostname.");
                     Console.WriteLine("");
 
@@ -646,7 +646,7 @@ namespace Kvpbase
                     Console.WriteLine("  Windows: '+' indicates accessibility on any IP or hostname");
 
                 Console.WriteLine("");
-                Console.WriteLine("Be sure to install an SSL certificate and modify your topology.config file to");
+                Console.WriteLine("Be sure to install an SSL certificate and modify your Topology.json file to");
                 Console.WriteLine("use SSL to maximize security and set the correct hostname.");
                 Console.WriteLine("");
 

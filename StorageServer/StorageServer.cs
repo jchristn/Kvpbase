@@ -33,7 +33,7 @@ namespace Kvpbase
                 if (String.Compare(args[0], "setup") == 0) initialSetup = true;
             }
 
-            if (!Common.FileExists("system.json")) initialSetup = true;
+            if (!Common.FileExists("System.json")) initialSetup = true;
             if (initialSetup)
             {
                 Setup setup = new Setup();
@@ -43,7 +43,7 @@ namespace Kvpbase
 
             #region Initialize-Settings
 
-            CurrentSettings = Settings.FromFile("system.json");
+            CurrentSettings = Settings.FromFile("System.json");
 
             #endregion
 
@@ -112,7 +112,10 @@ namespace Kvpbase
             #region Start-Server
 
             Server watson = new Server(CurrentNode.DnsHostname, CurrentNode.Port, Common.IsTrue(CurrentNode.Ssl), RequestReceived, true);
-            
+            watson.DebugRestRequests = false;
+            watson.DebugRestResponses = false;
+            watson.ConsoleLogging = false;
+
             #endregion
 
             #region Console

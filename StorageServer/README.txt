@@ -21,6 +21,6 @@ More complete Mono installation documentation can be found at
 http://www.mono-project.com/docs/getting-started/install/linux/
 
 Prior to using the system and after installation, we recommend that you modify 
-the system.json file to change the admin API key, set the port number, and 
+the System.json file to change the admin API key, set the port number, and 
 enable SSL.
 

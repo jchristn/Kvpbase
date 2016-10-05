@@ -172,8 +172,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml" />
-    <Reference Include="Watson, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Watson.1.0.7\lib\Watson.dll</HintPath>
+    <Reference Include="Watson, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Watson.1.0.8\lib\Watson.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
