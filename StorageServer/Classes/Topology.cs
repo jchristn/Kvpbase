@@ -64,6 +64,41 @@ namespace Kvpbase
 
         #region Public-Methods
 
+        public bool PopulateReplicas(Node currentNode)
+        {
+            if (currentNode == null) throw new ArgumentNullException(nameof(currentNode));
+
+            Replicas = new List<Node>();
+            if (currentNode.Neighbors != null && currentNode.Neighbors.Count > 0)
+            {
+                Console.WriteLine("Topology has " + currentNode.Neighbors.Count + " defined");
+                foreach (int currReplicaNodeId in currentNode.Neighbors)
+                {
+                    Console.WriteLine("  Evaluating node ID " + currReplicaNodeId);
+
+                    foreach (Node curr in Nodes)
+                    {
+                        if (currReplicaNodeId == curr.NodeId)
+                        {
+                            Console.WriteLine("  Added node ID " + currReplicaNodeId + " as a replica");
+                            Replicas.Add(curr);
+                        }
+                        else
+                        {
+                            Console.WriteLine("  Skipping node ID " + curr.NodeId + ", not a neighbor");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Topology has no neighbors defined");
+            }
+
+            Console.WriteLine("Topology validated without error (populated " + Replicas.Count + " replicas)");
+            return true;
+        }
+
         public bool ValidateTopology(out Node currentNode)
         {
             currentNode = null;
@@ -123,27 +158,7 @@ namespace Kvpbase
             }
 
             #endregion
-
-            #region Set-Replicas
-
-            Replicas = new List<Node>();
-            if (currentNode.Neighbors != null && currentNode.Neighbors.Count > 0)
-            {
-                foreach (int currReplicaNodeId in currentNode.Neighbors)
-                {
-                    foreach (Node curr in Nodes)
-                    {
-                        if (currReplicaNodeId == curr.NodeId)
-                        {
-                            Replicas.Add(curr);
-                        }
-                    }
-                }
-            }
-
-            #endregion
-
-            Console.WriteLine("Topology validated without error");
+            
             return true;
         }
 

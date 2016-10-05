@@ -85,6 +85,9 @@ namespace Kvpbase
                 return;
             }
 
+            CurrentTopology.PopulateReplicas(CurrentNode);
+            Console.WriteLine("Populated " + CurrentTopology.Replicas.Count + " replica nodes in topology");            
+
             #endregion
 
             #region Check-for-HTTP-Listener

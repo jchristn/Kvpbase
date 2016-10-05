@@ -890,15 +890,15 @@ namespace Kvpbase
 
                     #region Check-if-Target-Container-Exists
 
-                    string disk_path_target_container = MoveRequest.BuildDiskPath(req, false, false, Users, CurrentSettings, Logging);
-                    if (String.IsNullOrEmpty(disk_path_target_container))
+                    string diskPathTargetContainer = MoveRequest.BuildDiskPath(req, false, false, Users, CurrentSettings, Logging);
+                    if (String.IsNullOrEmpty(diskPathTargetContainer))
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectMove unable to build disk path for target container");
                         return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                             new ErrorResponse(4, 500, "Unable to build disk path from target.", null).ToJson(), true);
                     }
 
-                    if (!Common.DirectoryExists(disk_path_target_container))
+                    if (!Common.DirectoryExists(diskPathTargetContainer))
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectMove target container does not exist: " + diskPathOriginal);
                         return new HttpResponse(md.CurrentHttpRequest, false, 404, null, "application/json",
@@ -1382,7 +1382,7 @@ namespace Kvpbase
                     currObjInfo = ObjInfo.FromFile(md.CurrentObj.DiskPath);
                     if (currObjInfo == null)
                     {
-                        // EventHandler.Log(LoggingModule.Severity.Warn, "ObjectRead null file info returned for " + md.currObj.disk_path);
+                        // EventHandler.Log(LoggingModule.Severity.Warn, "ObjectRead null file info returned for " + md.currObj.disk path);
                         return new HttpResponse(md.CurrentHttpRequest, false, 404, null, "application/json",
                             new ErrorResponse(5, 404, "Object does not exist.", null).ToJson(), true);
                     }
@@ -2729,7 +2729,7 @@ namespace Kvpbase
                         currObjInfo = ObjInfo.FromFile(md.CurrentObj.DiskPath);
                         if (currObjInfo == null)
                         {
-                            // EventHandler.Log(LoggingModule.Severity.Warn, "ObjectWrite null file info returned for " + md.currObj.disk_path);
+                            // EventHandler.Log(LoggingModule.Severity.Warn, "ObjectWrite null file info returned for " + md.currObj.disk path);
                             return new HttpResponse(md.CurrentHttpRequest, false, 404, null, "application/json",
                                 new ErrorResponse(5, 404, "Object does not exist.", null).ToJson(), true);
                         }

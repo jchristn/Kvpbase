@@ -80,7 +80,7 @@ namespace Kvpbase
                 ret.IsObject = 1;
             }
 
-            ret.ReplicationMode = md.CurrentHttpRequest.RetrieveHeaderValue("replication_mode");
+            ret.ReplicationMode = md.CurrentHttpRequest.RetrieveHeaderValue("replication mode");
             if (String.IsNullOrEmpty(ret.ReplicationMode)) ret.ReplicationMode = settings.Replication.ReplicationMode;
 
             switch (ret.ReplicationMode)
@@ -95,7 +95,7 @@ namespace Kvpbase
                     break;
 
                 default:
-                    logging.Log(LoggingModule.Severity.Warn, "BuildObj invalid replication_mode set in querystring: " + ret.ReplicationMode);
+                    logging.Log(LoggingModule.Severity.Warn, "BuildObj invalid replication mode set in querystring: " + ret.ReplicationMode);
                     return null;
             }
 
@@ -514,6 +514,32 @@ namespace Kvpbase
 
         #region Public-Methods
 
+        public override string ToString()
+        {
+            string ret = "";
+
+            ret += "Key " + Key + " User GUID " + UserGuid + Environment.NewLine;
+            ret += "  Primary Node: " + PrimaryNode.ToString();
+            ret += "  Primary URL with Query    : " + PrimaryUrlWithQs + Environment.NewLine;
+            ret += "  Primary URL without Query : " + PrimaryUrlWithoutQs + Environment.NewLine;
+
+            if (Replicas != null)
+            {
+                ret += "  Replicas   : " + Environment.NewLine;
+                foreach (Node curr in Replicas) ret += "  " + curr.ToString();
+            }
+            else
+            {
+                ret += "  Replicas: none" + Environment.NewLine;
+            }
+
+            if (IsCompressed != null)   ret += "  Compressed : " + IsCompressed + Environment.NewLine;
+            if (IsEncrypted != null) ret += "  Encrypted  : " + IsEncrypted + Environment.NewLine;
+            if (IsEncoded != null) ret += "  Encoded    : " + IsEncoded + Environment.NewLine;
+            ret += "  Disk Path  : " + DiskPath + Environment.NewLine;
+            return ret;
+        }
+
         #endregion
 
         #region Public-Static-Methods
@@ -689,7 +715,7 @@ namespace Kvpbase
             {
                 if (Common.IsTrue(obj.IsEncrypted)) url += "&encrypt=true";
                 if (Common.IsTrue(obj.IsCompressed)) url += "&compress=true";
-                if (!String.IsNullOrEmpty(obj.ReplicationMode)) url += "&replication_mode=" + obj.ReplicationMode;
+                if (!String.IsNullOrEmpty(obj.ReplicationMode)) url += "&replication mode=" + obj.ReplicationMode;
             }
 
             #endregion

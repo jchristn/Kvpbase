@@ -35,13 +35,20 @@ namespace Kvpbase
 
         #region Public-Methods
 
+        public override string ToString()
+        {
+            string ret = "";
+            ret += "  Node ID " + NodeId + " Name " + Name + " Endpoint " + DnsHostname + ":" + Port + " SSL " + Ssl + Environment.NewLine;
+            return ret;
+        }
+
         public bool IsNeighbor(int nodeId)
         {
             if (Neighbors == null) return false;
 
             foreach (int currId in Neighbors)
             {
-                if (currId == NodeId) return true;
+                if (currId == nodeId) return true;
             }
 
             return false;
