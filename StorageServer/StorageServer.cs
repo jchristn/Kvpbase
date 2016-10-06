@@ -199,7 +199,7 @@ namespace Kvpbase
 
                 if (Common.IsTrue(CurrentSettings.Syslog.LogHttpRequests))
                 {
-                    Logging.Log(LoggingModule.Severity.Debug, "RequestReceived: " + Environment.NewLine + md.CurrentHttpRequest.ToString());
+                    Logging.Log(LoggingModule.Severity.Debug, "RequestReceived request received: " + Environment.NewLine + md.CurrentHttpRequest.ToString());
                 }
 
                 #endregion
@@ -474,12 +474,19 @@ namespace Kvpbase
                         new ErrorResponse(4, 500, "Unable to build object from request.", null).ToJson(),
                         true);
                 }
-                
+
                 #endregion
 
                 #region Call-User-API
-                
-                return UserApiHandler(md);
+
+                HttpResponse resp = UserApiHandler(md);
+
+                if (Common.IsTrue(CurrentSettings.Syslog.LogHttpRequests))
+                {
+                    Logging.Log(LoggingModule.Severity.Debug, "RequestReceived sending response: " + Environment.NewLine + resp.ToString());
+                }
+
+                return resp;
 
                 #endregion
             }

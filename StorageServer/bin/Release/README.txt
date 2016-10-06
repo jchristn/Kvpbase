@@ -10,10 +10,10 @@ Windows users, proceed to step 3.
 
 2) Run the Mono Ahead of Time compiler:
 $ su
-# mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server storage-server.exe
+# mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server StorageServer.exe
 
-3) Run kvpbase as root/administrator.
-- Windows : c:\kvpbase> storage-server.exe
+3) Run kvpbase as root/administrator (we open an HTTP listener).
+- Windows : c:\kvpbase> StorageServer.exe
 - Linux   : $ sudo mono --server StorageServer.exe
 - Mac     : $ sudo mono --server StorageServer.exe
 
