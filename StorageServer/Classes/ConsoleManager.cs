@@ -25,6 +25,7 @@ namespace Kvpbase
         private EncryptionModule Encryption { get; set; }
         private Events Logging { get; set; }
         private MaintenanceManager Maintenance { get; set; }
+        private Func<bool> ExitApplicationDelegate;
 
         #endregion
 
@@ -38,7 +39,8 @@ namespace Kvpbase
             UserManager users, 
             UrlLockManager locks,
             EncryptionModule encryption, 
-            Events logging)
+            Events logging,
+            Func<bool> exitApplication)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (maintenance == null) throw new ArgumentNullException(nameof(maintenance));
@@ -47,6 +49,7 @@ namespace Kvpbase
             if (locks == null) throw new ArgumentNullException(nameof(locks));
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (encryption == null) throw new ArgumentNullException(nameof(encryption));
+            if (exitApplication == null) throw new ArgumentNullException(nameof(exitApplication));
 
             Enabled = true;
             CurrentSettings = settings;
@@ -57,6 +60,7 @@ namespace Kvpbase
             Logging = logging;
             Maintenance = maintenance;
             Encryption = encryption;
+            ExitApplicationDelegate = exitApplication;
 
             Task.Run(() => ConsoleWorker());
         }
@@ -99,6 +103,7 @@ namespace Kvpbase
                     case "q":
                     case "quit":
                         Enabled = false;
+                        ExitApplicationDelegate();
                         break;
 
                     case "find_obj":

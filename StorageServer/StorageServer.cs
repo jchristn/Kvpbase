@@ -133,11 +133,12 @@ namespace Kvpbase
                     Users,
                     LockManager,
                     EncryptionManager,
-                    Logging);
+                    Logging,
+                    ExitApplication);
             }
             else
             {
-                Logging.Log(LoggingModule.Severity.Debug, "Storage server not using interactive mode, console disabled");
+                Logging.Log(LoggingModule.Severity.Debug, "StorageServer not using interactive mode, console disabled");
             }
 
             #endregion
@@ -151,7 +152,7 @@ namespace Kvpbase
                 waitHandleSignal = waitHandle.WaitOne(1000);
             } while (!waitHandleSignal);
              
-            Logging.Log(LoggingModule.Severity.Debug, "Storage server exiting");
+            Logging.Log(LoggingModule.Severity.Debug, "StorageServer exiting");
 
             #endregion
         }
@@ -559,6 +560,13 @@ namespace Kvpbase
 
             Logging.Log(LoggingModule.Severity.Debug, "OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": exiting successfully from OptionsHandler");
             return new HttpResponse(req, true, 200, responseHeaders, null, null, true);
+        }
+
+        static bool ExitApplication()
+        {
+            Logging.Log(LoggingModule.Severity.Info, "StorageServer exiting due to console request");
+            Environment.Exit(0);
+            return true;
         }
     }
 }
