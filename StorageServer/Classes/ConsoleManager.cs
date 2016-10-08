@@ -164,7 +164,7 @@ namespace Kvpbase
             Console.WriteLine("  server                    list endpoint addresses for this node");
             Console.WriteLine("  find_obj                  locate an object by primary GUID and object name");
             Console.WriteLine("  list_topology             list nodes in the topology");
-            Console.WriteLine("  list_active_urls          list URLs that are locked due to current connections");
+            Console.WriteLine("  list_active_urls          list URLs that are locked or being read");
             Console.WriteLine("  maint_enable              enable read broadcast and maintenance mode");
             Console.WriteLine("  maint_disable             disable read broadcast and maintenance mode");
             Console.WriteLine("  maint_status              display maintenance mode status");
@@ -312,18 +312,38 @@ namespace Kvpbase
 
         private void ListActiveUrls()
         {
-            Dictionary<string, Tuple<int?, string, string, DateTime>> urls = LockManager.GetLockedUrls();
-            if (urls == null || urls.Count < 1)
+            Dictionary<string, Tuple<int?, string, string, DateTime>> lockedUrls = LockManager.GetLockedUrls();
+            List<string> readUrls = LockManager.GetReadUrls();
+
+            if (lockedUrls == null || lockedUrls.Count < 1)
             {
-                Console.WriteLine("No locked URLs");
+                Console.WriteLine("No locked objects");
             }
             else
             {
-                Console.WriteLine("Locked URLs: " + urls.Count);
-                foreach (KeyValuePair<string, Tuple<int?, string, string, DateTime>> curr in urls)
+                Console.WriteLine("Locked objects: " + lockedUrls.Count);
+                foreach (KeyValuePair<string, Tuple<int?, string, string, DateTime>> curr in lockedUrls)
                 {
                     // UserMasterId, SourceIp, verb, established
                     Console.WriteLine("  " + curr.Key + " user " + curr.Value.Item1 + " " + curr.Value.Item2 + " " + curr.Value.Item3);
+                }
+                Console.WriteLine("");
+            }
+            if (lockedUrls == null || lockedUrls.Count < 1)
+            {
+                Console.WriteLine("No locked URLs");
+            }
+
+            if (readUrls == null || readUrls.Count < 1)
+            {
+                Console.WriteLine("No objects being read");
+            }
+            else
+            {
+                Console.WriteLine("Read objects: " + readUrls.Count);
+                foreach (string curr in readUrls)
+                {
+                    Console.WriteLine("  " + curr);
                 }
                 Console.WriteLine("");
             }

@@ -71,7 +71,7 @@ namespace Kvpbase
             CurrentTopology = Topology.FromFile(CurrentSettings.Files.Topology);
             ConnManager = new ConnectionManager();
             EncryptionManager = new EncryptionModule(CurrentSettings, Logging);
-            LockManager = new UrlLockManager();
+            LockManager = new UrlLockManager(Logging);
             Logger = new LoggerManager(CurrentSettings, Logging);
             Maintenance = new MaintenanceManager(Logging);
 

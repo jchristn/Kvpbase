@@ -15,15 +15,22 @@ namespace Kvpbase
 
         #region Private-Members
 
-        private ConcurrentDictionary<string, Tuple<int?, string, string, DateTime>> ActiveObjects; // UserMasterId, SourceIp, verb, established
-        
+        private Events Logging;
+        private Dictionary<string, Tuple<int?, string, string, DateTime>> LockedObjects;            // UserMasterId, SourceIp, verb, established
+        private List<string> ReadObjects;                                                           // URL
+        private readonly object MainLock;
+
         #endregion
 
         #region Constructors-and-Factories
 
-        public UrlLockManager()
+        public UrlLockManager(Events logging)
         {
-            ActiveObjects = new ConcurrentDictionary<string, Tuple<int?, string, string, DateTime>>();
+            if (logging == null) throw new ArgumentNullException(nameof(logging));
+            Logging = logging;
+            LockedObjects = new Dictionary<string, Tuple<int?, string, string, DateTime>>();
+            ReadObjects = new List<string>();
+            MainLock = new object();
         }
 
         #endregion
@@ -32,75 +39,127 @@ namespace Kvpbase
 
         public Dictionary<string, Tuple<int?, string, string, DateTime>> GetLockedUrls()
         {
-            Dictionary<string, Tuple<int?, string, string, DateTime>> ret;
-            ret = ActiveObjects.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            return ret;
+            lock (MainLock)
+            {
+                return LockedObjects;
+            }
         }
 
+        public List<string> GetReadUrls()
+        {
+            lock (MainLock)
+            {
+                return ReadObjects;
+            }
+        }
+        
         public bool LockUrl(RequestMetadata md)
         {
-            bool success = false;
-
-            if (md.CurrentUserMaster != null)
+            lock (MainLock)
             {
-                success = ActiveObjects.TryAdd(
-                    md.CurrentObj.DiskPath,
+                if (LockedObjects.ContainsKey(md.CurrentObj.DiskPath))
+                {
+                    Logging.Log(LoggingModule.Severity.Warn, "LockUrl resource currently locked: " + md.CurrentObj.DiskPath);
+                    return false;
+                }
+
+                if (ReadObjects.Contains(md.CurrentObj.DiskPath))
+                {
+                    Logging.Log(LoggingModule.Severity.Warn, "LockUrl resource currently being read: " + md.CurrentObj.DiskPath);
+                    return false;
+                }
+
+                LockedObjects.Add(md.CurrentObj.DiskPath,
                     new Tuple<int?, string, string, DateTime>(
                         md.CurrentUserMaster.UserMasterId,
                         md.CurrentHttpRequest.SourceIp,
                         md.CurrentHttpRequest.Method,
-                        DateTime.Now
-                    ));
+                        DateTime.Now));
             }
-            else
-            {
-                success = ActiveObjects.TryAdd(
-                    md.CurrentObj.DiskPath,
-                    new Tuple<int?, string, string, DateTime>(
-                        0,
-                        md.CurrentHttpRequest.SourceIp,
-                        md.CurrentHttpRequest.Method,
-                        DateTime.Now
-                    ));
-            }
-
-            return success;
+            
+            return true;
         }
 
         public bool LockResource(RequestMetadata md, string resource)
         {
-            bool success = ActiveObjects.TryAdd(
-                resource,
-                new Tuple<int?, string, string, DateTime>(
-                    md.CurrentUserMaster.UserMasterId,
-                    md.CurrentHttpRequest.SourceIp,
-                    md.CurrentHttpRequest.Method,
-                    DateTime.Now
-                ));
+            lock (MainLock)
+            {
+                if (LockedObjects.ContainsKey(md.CurrentObj.DiskPath))
+                {
+                    Logging.Log(LoggingModule.Severity.Warn, "LockResource resource currently locked: " + md.CurrentObj.DiskPath);
+                    return false;
+                }
 
-            return success;
+                if (ReadObjects.Contains(md.CurrentObj.DiskPath))
+                {
+                    Logging.Log(LoggingModule.Severity.Warn, "LockResource resource currently being read: " + md.CurrentObj.DiskPath);
+                    return false;
+                }
+
+                LockedObjects.Add(resource,
+                    new Tuple<int?, string, string, DateTime>(
+                        md.CurrentUserMaster.UserMasterId,
+                        md.CurrentHttpRequest.SourceIp,
+                        md.CurrentHttpRequest.Method,
+                        DateTime.Now));
+            }
+
+            return true;
         }
 
         public bool UnlockUrl(RequestMetadata md)
         {
-            Tuple<int?, string, string, DateTime> original;
+            lock (MainLock)
+            {
+                if (LockedObjects.ContainsKey(md.CurrentObj.DiskPath))
+                {
+                    LockedObjects.Remove(md.CurrentObj.DiskPath);
+                }
+            }
 
-            bool success = ActiveObjects.TryRemove(
-                md.CurrentObj.DiskPath,
-                out original);
-
-            return success;
+            return true;
         }
 
         public bool UnlockResource(RequestMetadata md, string resource)
         {
-            Tuple<int?, string, string, DateTime> original;
+            lock (MainLock)
+            {
+                if (LockedObjects.ContainsKey(resource))
+                {
+                    LockedObjects.Remove(resource);
+                }
+            }
 
-            bool success = ActiveObjects.TryRemove(
-                resource,
-                out original);
+            return true;
+        }
 
-            return success;
+        public bool AddReadResource(string resource)
+        {
+            lock (MainLock)
+            {
+                if (LockedObjects.ContainsKey(resource))
+                {
+                    Logging.Log(LoggingModule.Severity.Warn, "AddReadResource resource currently being read: " + resource);
+                    return false;
+                }
+
+                ReadObjects.Add(resource);
+            }
+
+            return true;
+        }
+
+        public bool RemoveReadResource(string resource)
+        {
+            lock (MainLock)
+            {
+                if (ReadObjects.Contains(resource))
+                {
+                    ReadObjects.Remove(resource);
+                }
+            }
+
+            return true;
         }
 
         #endregion

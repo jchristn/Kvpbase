@@ -239,14 +239,9 @@ namespace Kvpbase
 
                     #endregion
 
-                    #region Delete-File
+                    #region Delete-and-Respond
 
                     deleteSuccess = Common.DeleteFile(md.CurrentObj.DiskPath);
-
-                    #endregion
-
-                    #region Respond
-
                     if (deleteSuccess)
                     {
                         Logging.Log(LoggingModule.Severity.Debug, "ObjectDelete successfully deleted " + md.CurrentObj.DiskPath);
@@ -343,7 +338,7 @@ namespace Kvpbase
                 {
                     if (!LockManager.UnlockUrl(md))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ObjectDelete unable to unlock " + md.CurrentHttpRequest.RawUrlWithoutQuery);
+                        Logging.Log(LoggingModule.Severity.Warn, "ObjectDelete unable to unlock " + md.CurrentObj.DiskPath);
                     }
                 }
 
@@ -435,7 +430,7 @@ namespace Kvpbase
 
                     #region Add-Lock
 
-                    locked = LockManager.LockUrl(md);
+                    locked = LockManager.AddReadResource(md.CurrentObj.DiskPath);
                     if (!locked)
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectHead " + md.CurrentObj.DiskPath + " is unable to be locked");
@@ -647,9 +642,9 @@ namespace Kvpbase
 
                 if (locked)
                 {
-                    if (!LockManager.UnlockUrl(md))
+                    if (!LockManager.RemoveReadResource(md.CurrentObj.DiskPath))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ObjectHead unable to unlock " + md.CurrentHttpRequest.RawUrlWithoutQuery);
+                        Logging.Log(LoggingModule.Severity.Warn, "ObjectHead unable to unlock " + md.CurrentObj.DiskPath);
                     }
                 }
 
@@ -1283,7 +1278,7 @@ namespace Kvpbase
 
                     #region Add-Lock
 
-                    locked = LockManager.LockUrl(md);
+                    locked = LockManager.AddReadResource(md.CurrentObj.DiskPath);
                     if (!locked)
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectRead " + md.CurrentObj.DiskPath + " is unable to be locked");
@@ -1674,9 +1669,9 @@ namespace Kvpbase
 
                 if (locked)
                 {
-                    if (!LockManager.UnlockUrl(md))
+                    if (!LockManager.RemoveReadResource(md.CurrentObj.DiskPath))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ObjectRead unable to unlock " + md.CurrentHttpRequest.RawUrlWithoutQuery);
+                        Logging.Log(LoggingModule.Severity.Warn, "ObjectRead unable to unlock " + md.CurrentObj.DiskPath);
                     }
                 }
 
@@ -3118,7 +3113,7 @@ namespace Kvpbase
                 {
                     if (!LockManager.UnlockUrl(md))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to unlock " + md.CurrentHttpRequest.RawUrlWithoutQuery);
+                        Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to unlock " + md.CurrentObj.DiskPath);
                     }
                 }
 
