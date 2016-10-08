@@ -163,7 +163,7 @@ namespace Kvpbase
                 {
                     Logging.Log(LoggingModule.Severity.Warn, "GetPublicFile " + md.CurrentObj.DiskPath + " is unable to be locked");
                     return new HttpResponse(md.CurrentHttpRequest, false, 401, null, "application/json",
-                        new ErrorResponse(9, 401, "Resource in use.", null).ToJson(), true);
+                        new ErrorResponse(9, 423, "Resource in use.", null).ToJson(), true);
                 }
 
                 #endregion

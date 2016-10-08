@@ -70,6 +70,14 @@ namespace Kvpbase
                     HttpText = "Method Not Allowed";
                     break;
 
+                case 409:
+                    HttpText = "Conflict";
+                    break;
+
+                case 423:
+                    HttpText = "Locked";
+                    break;
+
                 case 429:
                     HttpText = "Too Many Requests";
                     break;

@@ -123,7 +123,7 @@ namespace Kvpbase
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectDelete " + md.CurrentObj.DiskPath + " is unable to be locked");
                         return new HttpResponse(md.CurrentHttpRequest, false, 401, null, "application/json",
-                            new ErrorResponse(9, 401, "Resource in use.", null).ToJson(), true);
+                            new ErrorResponse(9, 423, "Resource in use.", null).ToJson(), true);
                     }
 
                     #endregion
@@ -440,7 +440,7 @@ namespace Kvpbase
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectHead " + md.CurrentObj.DiskPath + " is unable to be locked");
                         return new HttpResponse(md.CurrentHttpRequest, false, 401, null, "application/json",
-                            new ErrorResponse(9, 401, "Resource in use.", null).ToJson(), true);
+                            new ErrorResponse(9, 423, "Resource in use.", null).ToJson(), true);
                     }
 
                     #endregion
@@ -883,7 +883,7 @@ namespace Kvpbase
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectMove source object " + diskPathOriginal + " is unable to be locked");
                         return new HttpResponse(md.CurrentHttpRequest, false, 401, null, "application/json",
-                            new ErrorResponse(9, 401, "Resource in use.", null).ToJson(), true);
+                            new ErrorResponse(9, 423, "Resource in use.", null).ToJson(), true);
                     }
 
                     #endregion
@@ -933,7 +933,7 @@ namespace Kvpbase
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectMove target object " + diskPathTarget + " is unable to be locked");
                         return new HttpResponse(md.CurrentHttpRequest, false, 401, null, "application/json",
-                            new ErrorResponse(9, 401, "Resource in use.", null).ToJson(), true);
+                            new ErrorResponse(9, 423, "Resource in use.", null).ToJson(), true);
                     }
 
                     #endregion
@@ -1288,7 +1288,7 @@ namespace Kvpbase
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectRead " + md.CurrentObj.DiskPath + " is unable to be locked");
                         return new HttpResponse(md.CurrentHttpRequest, false, 401, null, "application/json",
-                            new ErrorResponse(9, 401, "Resource in use.", null).ToJson(), true);
+                            new ErrorResponse(9, 423, "Resource in use.", null).ToJson(), true);
                     }
 
                     #endregion
@@ -1904,7 +1904,7 @@ namespace Kvpbase
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectRename source object " + diskPathOriginal + " is unable to be locked");
                         return new HttpResponse(md.CurrentHttpRequest, false, 401, null, "application/json",
-                            new ErrorResponse(9, 401, "Resource in use.", null).ToJson(), true);
+                            new ErrorResponse(9, 423, "Resource in use.", null).ToJson(), true);
                     }
 
                     #endregion
@@ -1935,7 +1935,7 @@ namespace Kvpbase
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectRename target object " + diskPathTarget + " is unable to be locked");
                         return new HttpResponse(md.CurrentHttpRequest, false, 401, null, "application/json",
-                            new ErrorResponse(9, 401, "Resource in use.", null).ToJson(), true);
+                            new ErrorResponse(9, 423, "Resource in use.", null).ToJson(), true);
                     }
 
                     #endregion
@@ -2533,7 +2533,7 @@ namespace Kvpbase
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite " + md.CurrentObj.DiskPath + " is unable to be locked");
                         return new HttpResponse(md.CurrentHttpRequest, false, 401, null, "application/json",
-                            new ErrorResponse(9, 401, "Resource in use.", null).ToJson(), true);
+                            new ErrorResponse(9, 423, "Resource in use.", null).ToJson(), true);
                     }
 
                     #endregion
