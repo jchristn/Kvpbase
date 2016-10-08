@@ -80,7 +80,7 @@ namespace Kvpbase
                 ret.IsObject = 1;
             }
 
-            ret.ReplicationMode = md.CurrentHttpRequest.RetrieveHeaderValue("replication mode");
+            ret.ReplicationMode = md.CurrentHttpRequest.RetrieveHeaderValue("replication_mode");
             if (String.IsNullOrEmpty(ret.ReplicationMode)) ret.ReplicationMode = settings.Replication.ReplicationMode;
 
             switch (ret.ReplicationMode)
@@ -715,7 +715,7 @@ namespace Kvpbase
             {
                 if (Common.IsTrue(obj.IsEncrypted)) url += "&encrypt=true";
                 if (Common.IsTrue(obj.IsCompressed)) url += "&compress=true";
-                if (!String.IsNullOrEmpty(obj.ReplicationMode)) url += "&replication mode=" + obj.ReplicationMode;
+                if (!String.IsNullOrEmpty(obj.ReplicationMode)) url += "&replication_mode=" + obj.ReplicationMode;
             }
 
             #endregion
