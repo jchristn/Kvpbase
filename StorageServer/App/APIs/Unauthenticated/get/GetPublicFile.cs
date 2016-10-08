@@ -158,7 +158,7 @@ namespace Kvpbase
                 
                 #region Add-Lock
 
-                locked = LockManager.LockUrl(md);
+                locked = LockManager.AddReadResource(md.CurrentObj.DiskPath);
                 if (!locked)
                 {
                     Logging.Log(LoggingModule.Severity.Warn, "GetPublicFile " + md.CurrentObj.DiskPath + " is unable to be locked");
@@ -316,9 +316,9 @@ namespace Kvpbase
 
                 if (locked)
                 {
-                    if (!LockManager.UnlockUrl(md))
+                    if (!LockManager.RemoveReadResource(md.CurrentObj.DiskPath))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "GetPublicFile unable to unlock " + md.CurrentHttpRequest.RawUrlWithoutQuery);
+                        Logging.Log(LoggingModule.Severity.Warn, "GetPublicFile unable to unlock " + md.CurrentObj.DiskPath);
                     }
                 }
 
