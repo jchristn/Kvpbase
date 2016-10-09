@@ -143,8 +143,8 @@
       <HintPath>..\packages\RestWrapper.1.0.3\lib\RestWrapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SyslogLogging, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SyslogLogging.1.0.3\lib\SyslogLogging.dll</HintPath>
+    <Reference Include="SyslogLogging, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SyslogLogging.1.0.4\lib\SyslogLogging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

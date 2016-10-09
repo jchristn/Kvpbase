@@ -4,7 +4,7 @@ using SyslogLogging;
 
 namespace Kvpbase
 {
-    public partial class MimeTypes
+    public class MimeTypes
     {
         // Thank you https://github.com/samuelneff/MimeTypeMap/blob/master/src/MimeTypes/MimeTypeMap.cs
 
