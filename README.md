@@ -26,7 +26,7 @@ Core use cases for Kvpbase Storage Server:
 Numerous SDKs are already available for Kvpbase Storage Server: https://github.com/kvpbase/
 
 ## Getting Started
-It's easy to get started with Kvpbase Storage Server.  Clone to your local machine and build, and then execute the binary.  A setup class is included which will produce the requisite configuration files and directories.
+It's easy to get started with Kvpbase Storage Server.  Clone to your local machine and build, and then execute the binary.  Or, just use the precompiled binary found in StorageServer\bin\release.  A setup class is included which will produce the requisite configuration files and directories.
 
 ## Running under Mono
 Kvpbase is running in Mono in many customer environments.  You must first use the Mono ahead-of-time (AOT) compiler for proper operation, otherwise you will encounter problems.  Further, your configured hostame (which is used to start the HTTP listener) MUST be a DNS address (Mono requires that the host header in the incoming HTTP request match the listener).
