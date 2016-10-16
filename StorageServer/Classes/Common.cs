@@ -846,6 +846,31 @@ namespace Kvpbase
             }
         }
 
+        public static bool IsLaterThanNow(DateTime? dt)
+        {
+            try
+            {
+                DateTime curr = Convert.ToDateTime(dt);
+                return Common.IsLaterThanNow(curr);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public static bool IsLaterThanNow(DateTime dt)
+        {
+            if (DateTime.Compare(dt, DateTime.Now) > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static bool ContainsUnsafeCharacters(string data)
         {
             /*
@@ -939,36 +964,7 @@ namespace Kvpbase
         }
 
         #endregion
-
-        #region Time
-
-        public static bool IsLaterThanNow(DateTime? dt)
-        {
-            try
-            {
-                DateTime curr = Convert.ToDateTime(dt);
-                return Common.IsLaterThanNow(curr);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public static bool IsLaterThanNow(DateTime dt)
-        {
-            if (DateTime.Compare(dt, DateTime.Now) > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        #endregion
-
+        
         #region Dictionary
 
         public static Dictionary<string, string> AddToDictionary(string key, string val, Dictionary<string, string> existing)

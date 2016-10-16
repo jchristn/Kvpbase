@@ -11,6 +11,7 @@ namespace Kvpbase
     {
         #region Private-Members
 
+        private Events Logging;
         private List<ApiKey> ApiKeys;
         private List<ApiKeyPermission> ApiKeyPermissions;
         private readonly object ApiKeyLock;
@@ -20,16 +21,20 @@ namespace Kvpbase
 
         #region Constructors-and-Factories
 
-        public ApiKeyManager()
+        public ApiKeyManager(Events logging)
         {
+            if (logging == null) throw new ArgumentNullException(nameof(logging));
+            Logging = logging;
             ApiKeys = new List<ApiKey>();
             ApiKeyPermissions = new List<ApiKeyPermission>();
             ApiKeyLock = new object();
             ApiKeyPermissionLock = new object();
         }
 
-        public ApiKeyManager(List<ApiKey> keys, List<ApiKeyPermission> perms)
+        public ApiKeyManager(Events logging, List<ApiKey> keys, List<ApiKeyPermission> perms)
         {
+            if (logging == null) throw new ArgumentNullException(nameof(logging));
+            Logging = logging;
             ApiKeys = new List<ApiKey>();
             ApiKeyPermissions = new List<ApiKeyPermission>();
             ApiKeyLock = new object();
@@ -173,7 +178,6 @@ namespace Kvpbase
 
         public bool VerifyApiKey(
             string apiKey,
-            Events logging,
             UserManager userManager,
             out UserMaster currUserMaster,
             out ApiKey currApiKey,
@@ -187,14 +191,14 @@ namespace Kvpbase
             currApiKey = GetApiKeyByGuid(apiKey);
             if (currApiKey == null)
             {
-                logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to retrieve API key " + apiKey);
+                Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to retrieve API key " + apiKey);
                 return false;
             }
 
             currPermission = GetEffectiveApiKeyPermissions(currApiKey.ApiKeyId, currUserMaster.UserMasterId);
             if (currPermission == null)
             {
-                logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to build ApiKeyPermission object for UserMasterId " + currUserMaster.UserMasterId);
+                Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to build ApiKeyPermission object for UserMasterId " + currUserMaster.UserMasterId);
                 return false;
             }
 
@@ -207,7 +211,7 @@ namespace Kvpbase
                     currUserMaster = userManager.GetUserById(currApiKey.UserMasterId);
                     if (currUserMaster == null)
                     {
-                        logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to find UserMasterId " + currApiKey.UserMasterId);
+                        Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to find UserMasterId " + currApiKey.UserMasterId);
                         return false;
                     }
 
@@ -221,7 +225,7 @@ namespace Kvpbase
                         }
                         else
                         {
-                            logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey UserMasterId " + currUserMaster.UserMasterId + " expired at " + currUserMaster.Expiration);
+                            Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey UserMasterId " + currUserMaster.UserMasterId + " expired at " + currUserMaster.Expiration);
                             return false;
                         }
 
@@ -229,13 +233,13 @@ namespace Kvpbase
                     }
                     else
                     {
-                        logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey UserMasterId " + currUserMaster.UserMasterId + " marked inactive");
+                        Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey UserMasterId " + currUserMaster.UserMasterId + " marked inactive");
                         return false;
                     }
                 }
                 else
                 {
-                    logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey ApiKeyId " + currApiKey.ApiKeyId + " expired at " + currApiKey.Expiration);
+                    Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey ApiKeyId " + currApiKey.ApiKeyId + " expired at " + currApiKey.Expiration);
                     return false;
                 }
 
@@ -243,7 +247,7 @@ namespace Kvpbase
             }
             else
             {
-                logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey ApiKeyId " + currApiKey.ApiKeyId + " marked inactive");
+                Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey ApiKeyId " + currApiKey.ApiKeyId + " marked inactive");
                 return false;
             }
         }

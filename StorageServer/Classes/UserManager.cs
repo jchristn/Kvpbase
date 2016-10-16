@@ -11,6 +11,7 @@ namespace Kvpbase
     {
         #region Private-Members
 
+        private Events Logging;
         private List<UserMaster> Users;
         private readonly object UserLock;
 
@@ -18,14 +19,18 @@ namespace Kvpbase
 
         #region Constructors-and-Factories
 
-        public UserManager()
+        public UserManager(Events logging)
         {
+            if (logging == null) throw new ArgumentNullException(nameof(logging));
+            Logging = logging;
             Users = new List<UserMaster>();
             UserLock = new object();
         }
 
-        public UserManager(List<UserMaster> curr)
+        public UserManager(Events logging, List<UserMaster> curr)
         {
+            if (logging == null) throw new ArgumentNullException(nameof(logging));
+            Logging = logging;
             Users = new List<UserMaster>();
             UserLock = new object();
             if (curr != null && curr.Count > 0)
@@ -125,7 +130,7 @@ namespace Kvpbase
             return ret;
         }
 
-        public bool AuthenticateCredentials(string email, string password, Events logging, out UserMaster curr)
+        public bool AuthenticateCredentials(string email, string password, out UserMaster curr)
         {
             curr = null;
             if (String.IsNullOrEmpty(email)) return false;
@@ -134,7 +139,7 @@ namespace Kvpbase
             curr = GetUserByEmail(email);
             if (curr == null)
             {
-                logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials unable to find email " + email);
+                Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials unable to find email " + email);
                 return false;
             }
             
@@ -148,19 +153,19 @@ namespace Kvpbase
                     }
                     else
                     {
-                        logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials UserMasterId " + curr.UserMasterId + " expired at " + curr.Expiration);
+                        Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials UserMasterId " + curr.UserMasterId + " expired at " + curr.Expiration);
                         return false;
                     }
                 }
                 else
                 {
-                    logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials UserMasterId " + curr.UserMasterId + " marked inactive");
+                    Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials UserMasterId " + curr.UserMasterId + " marked inactive");
                     return false;
                 }
             }
             else
             {
-                logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials invalid password supplied for email " + email + " (" + password + " vs " + curr.Password + ")");
+                Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials invalid password supplied for email " + email + " (" + password + " vs " + curr.Password + ")");
                 return false;
             }
         }
@@ -181,7 +186,7 @@ namespace Kvpbase
             UserMaster curr = GetUserByGuid(guid);
             if (curr == null)
             {
-                logging.Log(LoggingModule.Severity.Warn, "GetHomeDirectory unable to find user GUID " + guid);
+                Logging.Log(LoggingModule.Severity.Warn, "GetHomeDirectory unable to find user GUID " + guid);
                 return null;
             }
 

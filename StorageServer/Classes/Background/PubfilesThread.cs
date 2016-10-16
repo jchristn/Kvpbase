@@ -62,7 +62,7 @@ namespace Kvpbase
                     string[] files = Directory.GetFiles(settings.PublicObj.Directory);
                     if (files == null || files.Length < 1)
                     {
-                        logging.Log(LoggingModule.Severity.Debug, "PublicObjWorker no files found to process for expiration");
+                        // logging.Log(LoggingModule.Severity.Debug, "PublicObjWorker no files found to process for expiration");
                         continue;
                     }
 

@@ -66,8 +66,8 @@ namespace Kvpbase
             #region Initialize-Global-Variables
 
             Logging = new Events(CurrentSettings);
-            Users = new UserManager(UserMaster.FromFile(CurrentSettings.Files.UserMaster));
-            ApiKeys = new ApiKeyManager(ApiKey.FromFile(CurrentSettings.Files.ApiKey), ApiKeyPermission.FromFile(CurrentSettings.Files.Permission));
+            Users = new UserManager(Logging, UserMaster.FromFile(CurrentSettings.Files.UserMaster));
+            ApiKeys = new ApiKeyManager(Logging, ApiKey.FromFile(CurrentSettings.Files.ApiKey), ApiKeyPermission.FromFile(CurrentSettings.Files.Permission));
             CurrentTopology = Topology.FromFile(CurrentSettings.Files.Topology);
             ConnManager = new ConnectionManager();
             EncryptionManager = new EncryptionModule(CurrentSettings, Logging);
@@ -356,7 +356,7 @@ namespace Kvpbase
                 }
                 else if (!String.IsNullOrEmpty(apiKey))
                 {
-                    if (!ApiKeys.VerifyApiKey(apiKey, Logging, Users, out currUserMaster, out currApiKey, out currApiKeyPermission))
+                    if (!ApiKeys.VerifyApiKey(apiKey, Users, out currUserMaster, out currApiKey, out currApiKeyPermission))
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify API key " + apiKey);
                         return new HttpResponse(req, false, 401, null, "application/json",
@@ -366,7 +366,7 @@ namespace Kvpbase
                 }
                 else if ((!String.IsNullOrEmpty(email)) && (!String.IsNullOrEmpty(password)))
                 {
-                    if (!Users.AuthenticateCredentials(email, password, Logging, out currUserMaster))
+                    if (!Users.AuthenticateCredentials(email, password, out currUserMaster))
                     {
                         Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify credentials for email " + email);
                         return new HttpResponse(req, false, 401, null, "application/json",
