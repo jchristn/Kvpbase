@@ -648,7 +648,7 @@ namespace Kvpbase
 
             #region Get-User-Home-Directory
 
-            homeDirectory = users.GetHomeDirectory(obj.UserGuid, settings, logging);
+            homeDirectory = users.GetHomeDirectory(obj.UserGuid, settings);
             if (String.IsNullOrEmpty(homeDirectory))
             {
                 logging.Log(LoggingModule.Severity.Warn, "BuildUrlFromFilePath unable to retrieve home directory for user GUID " + obj.UserGuid);

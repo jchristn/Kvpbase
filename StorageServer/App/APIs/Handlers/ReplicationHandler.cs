@@ -1654,7 +1654,7 @@ namespace Kvpbase
 
                 #region Retrieve-Home-Directory
 
-                string homeDirectory = Users.GetHomeDirectory(currObj.UserGuid, CurrentSettings, Logging);
+                string homeDirectory = Users.GetHomeDirectory(currObj.UserGuid, CurrentSettings);
                 if (String.IsNullOrEmpty(homeDirectory))
                 {
                     Logging.Log(LoggingModule.Severity.Warn, "ServerObjectReceiveInternal unable to retrieve home directory for user GUID " + currObj.UserGuid);
@@ -1770,7 +1770,7 @@ namespace Kvpbase
 
                 #region Retrieve-User-Home-Directory
 
-                string homeDirectory = Users.GetHomeDirectory(currObj.UserGuid, CurrentSettings, Logging);
+                string homeDirectory = Users.GetHomeDirectory(currObj.UserGuid, CurrentSettings);
                 if (String.IsNullOrEmpty(homeDirectory))
                 {
                     Logging.Log(LoggingModule.Severity.Warn, "ServerContainerReceiveInternal unable to retrieve home directory for user GUID " + currObj.UserGuid);

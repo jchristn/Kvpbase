@@ -178,7 +178,7 @@ namespace Kvpbase
             return curr.GetGatewayMode(settings);
         }
 
-        public string GetHomeDirectory(string guid, Settings settings, Events logging)
+        public string GetHomeDirectory(string guid, Settings settings)
         {
             if (String.IsNullOrEmpty(guid)) return null;
             if (settings == null) return null;

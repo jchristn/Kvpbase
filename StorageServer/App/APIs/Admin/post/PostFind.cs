@@ -59,7 +59,7 @@ namespace Kvpbase
 
             #region Retrieve-User-Home-Directory
 
-            homeDirectory = Users.GetHomeDirectory(req.UserGuid, CurrentSettings, Logging);
+            homeDirectory = Users.GetHomeDirectory(req.UserGuid, CurrentSettings);
             if (String.IsNullOrEmpty(homeDirectory))
             {
                 Logging.Log(LoggingModule.Severity.Warn, "PostFind unable to retrieve home directory for user GUID " + md.CurrentUserMaster.Guid);

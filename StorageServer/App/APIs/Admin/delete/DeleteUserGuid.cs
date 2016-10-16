@@ -57,7 +57,7 @@ namespace Kvpbase
 
             #region Get-User-Home-Directory
 
-            homeDirectory = Users.GetHomeDirectory(userGuid, CurrentSettings, Logging);
+            homeDirectory = Users.GetHomeDirectory(userGuid, CurrentSettings);
             if (String.IsNullOrEmpty(homeDirectory))
             {
                 Logging.Log(LoggingModule.Severity.Warn, "DeleteUserGuid unable to find home directory for user GUID " + userGuid);

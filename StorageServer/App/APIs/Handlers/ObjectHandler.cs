@@ -2447,7 +2447,7 @@ namespace Kvpbase
 
                 #region Retrieve-User-Home-Directory
 
-                homeDirectory = Users.GetHomeDirectory(md.CurrentUserMaster.Guid, CurrentSettings, Logging);
+                homeDirectory = Users.GetHomeDirectory(md.CurrentUserMaster.Guid, CurrentSettings);
                 if (String.IsNullOrEmpty(homeDirectory))
                 {
                     Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to retrieve home directory for user GUID " + md.CurrentUserMaster.Guid);

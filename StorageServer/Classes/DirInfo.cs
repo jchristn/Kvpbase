@@ -433,7 +433,7 @@ namespace Kvpbase
 
             #region Retrieve-User-Home-Directory
 
-            homeDirectory = Users.GetHomeDirectory(userGuid, CurrentSettings, Logging);
+            homeDirectory = Users.GetHomeDirectory(userGuid, CurrentSettings);
             if (String.IsNullOrEmpty(homeDirectory)) return null;
 
             #endregion

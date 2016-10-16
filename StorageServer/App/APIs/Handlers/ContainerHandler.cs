@@ -282,7 +282,7 @@ namespace Kvpbase
 
             #region Retrieve-User-Home-Directory
 
-            homeDirectory = Users.GetHomeDirectory(md.CurrentUserMaster.Guid, CurrentSettings, Logging);
+            homeDirectory = Users.GetHomeDirectory(md.CurrentUserMaster.Guid, CurrentSettings);
             if (String.IsNullOrEmpty(homeDirectory))
             {
                 Logging.Log(LoggingModule.Severity.Warn, "ContainerHead unable to retrieve home directory for user GUID " + md.CurrentUserMaster.Guid);
@@ -881,7 +881,7 @@ namespace Kvpbase
 
             #region Retrieve-User-Home-Directory
 
-            homeDirectory = Users.GetHomeDirectory(md.CurrentUserMaster.Guid, CurrentSettings, Logging);
+            homeDirectory = Users.GetHomeDirectory(md.CurrentUserMaster.Guid, CurrentSettings);
             if (String.IsNullOrEmpty(homeDirectory))
             {
                 Logging.Log(LoggingModule.Severity.Warn, "ContainerRead unable to retrieve home directory for user GUID " + md.CurrentUserMaster.Guid);
@@ -1517,7 +1517,7 @@ namespace Kvpbase
 
                 #region Retrieve-User-Home-Directory
 
-                homeDirectory = Users.GetHomeDirectory(md.CurrentUserMaster.Guid, CurrentSettings, Logging);
+                homeDirectory = Users.GetHomeDirectory(md.CurrentUserMaster.Guid, CurrentSettings);
                 if (String.IsNullOrEmpty(homeDirectory))
                 {
                     Logging.Log(LoggingModule.Severity.Warn, "ContainerWrite unable to retrieve home directory for user GUID " + md.CurrentUserMaster.Guid);
