@@ -10,19 +10,10 @@ namespace Kvpbase
     {
         static HttpResponse UserApiHandler(RequestMetadata md)
         {
-            #region Variables
-
-            string req_metadata_val = "";
-            bool req_metadata = false;
-
-            #endregion
-
             #region Check-for-Metadata-Request
             
-            req_metadata_val = md.CurrentHttpRequest.RetrieveHeaderValue("request_metadata");
-            req_metadata = Common.IsTrue(req_metadata_val);
-
-            if (req_metadata)
+            bool reqMetadata = Common.IsTrue(md.CurrentHttpRequest.RetrieveHeaderValue("request_metadata"));
+            if (reqMetadata)
             {
                 return new HttpResponse(md.CurrentHttpRequest, true, 200, null, "application/json", Common.SerializeJson(md), true);
             }
