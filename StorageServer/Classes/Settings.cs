@@ -231,12 +231,12 @@ namespace Kvpbase
             if (!Common.FileExists(filename)) throw new FileNotFoundException(nameof(filename));
             
             Console.WriteLine(Common.Line(79, "-"));
-            Console.WriteLine("Reading System.json from local directory");
-            string contents = Common.ReadTextFile(@"System.json");
+            Console.WriteLine("Reading " + filename);
+            string contents = Common.ReadTextFile(@filename);
 
             if (String.IsNullOrEmpty(contents))
             {
-                Common.ExitApplication("Settings", "Unable to read contents of System.json", -1);
+                Common.ExitApplication("Settings", "Unable to read contents of " + filename, -1);
                 return null;
             }
 
@@ -248,14 +248,14 @@ namespace Kvpbase
                 ret = Common.DeserializeJson<Settings>(contents);
                 if (ret == null)
                 {
-                    Common.ExitApplication("Settings", "Unable to deserialize System.json (null)", -1);
+                    Common.ExitApplication("Settings", "Unable to deserialize " + filename + " (null)", -1);
                     return null;
                 }
             }
             catch (Exception e)
             {
-                Events.ExceptionConsole("Settings", "Deserialization issue with System.json", e);
-                Common.ExitApplication("Settings", "Unable to deserialize System.json (exception)", -1);
+                Events.ExceptionConsole("Settings", "Deserialization issue with " + filename, e);
+                Common.ExitApplication("Settings", "Unable to deserialize " + filename + " (exception)", -1);
                 return null;
             }
 
