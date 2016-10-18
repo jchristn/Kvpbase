@@ -17,8 +17,8 @@ In Windows environments, run StorageServer.exe to create the requisite JSON conf
 
 In Linux and Mac environments, first run the Mono AOT prior to running StorageServer.exe in Mono.  It is recommended that you use the ```--server``` flag for both the AOT and while running under Mono.
 ```
-mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server StorageServer.exe
-mono --server StorageServer.exe
+sudo mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server StorageServer.exe
+sudo mono --server StorageServer.exe
 ```
 
 In Linux and Mac environments, the listener (specifically the ```DnsHostname``` defined within each Linux and Mac node within Topology.config) MUST be a hostname or IP address.  Incoming requests must have a HOST header matching this exact value.
@@ -90,16 +90,6 @@ Core use cases for Kvpbase Storage Server:
 
 ## SDKs
 Numerous SDKs are already available for Kvpbase Storage Server: https://github.com/kvpbase/
-
-## Getting Started
-It's easy to get started with Kvpbase Storage Server.  Clone to your local machine and build, and then execute the binary.  Or, just use the precompiled binary found in StorageServer\bin\release.  A setup class is included which will produce the requisite configuration files and directories.
-
-## Running under Mono
-Kvpbase is running in Mono in many customer environments.  You must first use the Mono ahead-of-time (AOT) compiler for proper operation, otherwise you will encounter problems.  Further, your configured hostame (which is used to start the HTTP listener) MUST be a DNS address (Mono requires that the host header in the incoming HTTP request match the listener).
-```
-mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server StorageServer.exe
-mono --server StorageServer.exe
-```
 
 ## Version History
 Notes from previous versions (starting with v2.0.1) will be moved here.
