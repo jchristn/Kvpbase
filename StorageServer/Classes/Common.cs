@@ -492,6 +492,21 @@ namespace Kvpbase
             return File.Exists(filename);
         }
 
+        public static bool VerifyFileReadAccess(string filename)
+        {
+            try
+            {
+                using (FileStream stream = File.Open(filename, System.IO.FileMode.Open, FileAccess.Read))
+                {
+                    return true;
+                }
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+        }
+
         public static List<string> GetFileList(string environment, string directory, bool prependFilename)
         {
             try

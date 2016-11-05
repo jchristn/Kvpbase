@@ -139,12 +139,12 @@
       <HintPath>..\packages\EmailWrapper.1.0.1\lib\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestWrapper, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestWrapper.1.0.4\lib\RestWrapper.dll</HintPath>
+    <Reference Include="RestWrapper, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestWrapper.1.0.5\lib\RestWrapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SyslogLogging, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SyslogLogging.1.0.5\lib\SyslogLogging.dll</HintPath>
+    <Reference Include="SyslogLogging, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SyslogLogging.1.0.6\lib\SyslogLogging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
