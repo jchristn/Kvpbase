@@ -105,7 +105,7 @@ namespace Kvpbase
            string requestBody,
            WebException e)
         {
-            string string_response = "";
+            string strResponse = "";
             if (e.Response != null)
             {
                 try
@@ -114,7 +114,7 @@ namespace Kvpbase
                     {
                         using (StreamReader reader = new StreamReader(stream))
                         {
-                            string_response = reader.ReadToEnd();
+                            strResponse = reader.ReadToEnd();
                         }
                     }
                 }
@@ -140,7 +140,7 @@ namespace Kvpbase
             Log(LoggingModule.Severity.Alert, "Message: " + e.Message);
             Log(LoggingModule.Severity.Alert, "Source: " + e.Source);
             Log(LoggingModule.Severity.Alert, "StackTrace: " + e.StackTrace);
-            Log(LoggingModule.Severity.Alert, "Response: " + string_response);
+            Log(LoggingModule.Severity.Alert, "Response: " + strResponse);
             Log(LoggingModule.Severity.Alert, "Request Body: " + requestBody);
             Log(LoggingModule.Severity.Alert, "Server: " + Dns.GetHostName());
             Log(LoggingModule.Severity.Alert, "");
@@ -168,7 +168,7 @@ namespace Kvpbase
             body += requestBody + "\n\n";
             
             body += "Response Body\n";
-            body += string_response + "\n\n";
+            body += strResponse + "\n\n";
             
             Email email = new Email();
             email.FromAddress = CurrentSettings.Email.EmailFrom;
@@ -188,7 +188,7 @@ namespace Kvpbase
         {
             var st = new StackTrace(e, true);
             var frame = st.GetFrame(0);
-            int file_line = frame.GetFileLineNumber();
+            int fileLine = frame.GetFileLineNumber();
             string filename = frame.GetFileName();
 
             Log(LoggingModule.Severity.Alert, Common.Line(79, "-"));
@@ -202,7 +202,7 @@ namespace Kvpbase
             Log(LoggingModule.Severity.Alert, "Message: " + e.Message);
             Log(LoggingModule.Severity.Alert, "Source: " + e.Source);
             Log(LoggingModule.Severity.Alert, "StackTrace: " + e.StackTrace);
-            Log(LoggingModule.Severity.Alert, "Line: " + file_line);
+            Log(LoggingModule.Severity.Alert, "Line: " + fileLine);
             Log(LoggingModule.Severity.Alert, "File: " + filename);
             Log(LoggingModule.Severity.Alert, "ToString: " + e.ToString());
             Log(LoggingModule.Severity.Alert, "(Servername: " + Dns.GetHostName());
@@ -270,7 +270,7 @@ namespace Kvpbase
         {
             var st = new StackTrace(e, true);
             var frame = st.GetFrame(0);
-            int file_line = frame.GetFileLineNumber();
+            int fileLine = frame.GetFileLineNumber();
             string filename = frame.GetFileName();
 
             Console.WriteLine(Common.Line(79, "-"));
@@ -284,7 +284,7 @@ namespace Kvpbase
             Console.WriteLine("Message: " + e.Message);
             Console.WriteLine("Source: " + e.Source);
             Console.WriteLine("StackTrace: " + e.StackTrace);
-            Console.WriteLine("Line: " + file_line);
+            Console.WriteLine("Line: " + fileLine);
             Console.WriteLine("File: " + filename);
             Console.WriteLine("ToString: " + e.ToString());
             Console.WriteLine("Servername: " + Dns.GetHostName());

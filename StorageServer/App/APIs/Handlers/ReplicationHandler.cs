@@ -1676,9 +1676,9 @@ namespace Kvpbase
                 {
                     if (currObj.ContainerPath.Count > 0)
                     {
-                        foreach (string curr_container in currObj.ContainerPath)
+                        foreach (string currContainer in currObj.ContainerPath)
                         {
-                            homeDirectory += Common.GetPathSeparator(CurrentSettings.Environment) + curr_container;
+                            homeDirectory += Common.GetPathSeparator(CurrentSettings.Environment) + currContainer;
                             if (!Common.DirectoryExists(homeDirectory))
                             {
                                 Common.CreateDirectory(homeDirectory);
@@ -1709,13 +1709,13 @@ namespace Kvpbase
                     Obj expObj = Common.CopyObject<Obj>(currObj);
                     expObj.Value = null;
 
-                    string expiration_filename =
+                    string expFilename =
                         Convert.ToDateTime(expObj.Expiration).ToString("MMddyyyy-hhmmss") +
                         "-" + Common.RandomString(8) + "-" + expObj.Key;
 
-                    if (!Common.WriteFile(CurrentSettings.Expiration.Directory + expiration_filename, Common.SerializeJson(expObj), false))
+                    if (!Common.WriteFile(CurrentSettings.Expiration.Directory + expFilename, Common.SerializeJson(expObj), false))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ServerObjectReceiveInternal unable to create expiration object " + expiration_filename);
+                        Logging.Log(LoggingModule.Severity.Warn, "ServerObjectReceiveInternal unable to create expiration object " + expFilename);
                         return false;
                     }
                 }
@@ -1790,9 +1790,9 @@ namespace Kvpbase
                 {
                     if (currObj.ContainerPath.Count > 0)
                     {
-                        foreach (string curr_container in currObj.ContainerPath)
+                        foreach (string currContainer in currObj.ContainerPath)
                         {
-                            currDirectory += Common.GetPathSeparator(CurrentSettings.Environment) + curr_container;
+                            currDirectory += Common.GetPathSeparator(CurrentSettings.Environment) + currContainer;
                             if (!Common.DirectoryExists(currDirectory))
                             {
                                 Common.CreateDirectory(currDirectory);

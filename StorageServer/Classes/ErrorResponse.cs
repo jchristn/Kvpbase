@@ -26,8 +26,7 @@ namespace Kvpbase
             Id = id;
             Data = data;
             HttpStatus = status;
-
-            // set http_status
+             
             switch (HttpStatus)
             {
                 case 200:
@@ -138,8 +137,7 @@ namespace Kvpbase
                     Text = "Unknown failure code.";
                     break;
             }
-
-            // set text_append
+             
             if (!String.IsNullOrEmpty(textAppend))
             {
                 Text += "  " + textAppend;

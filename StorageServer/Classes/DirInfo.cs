@@ -92,9 +92,9 @@ namespace Kvpbase
                 {
                     foreach (string currContainer in containerList)
                     {
-                        string container_name = Common.StringRemove(currContainer, directory);
-                        container_name = container_name.Replace(Common.GetPathSeparator(CurrentSettings.Environment), "");
-                        ret.ChildContainers.Add(container_name);
+                        string containerName = Common.StringRemove(currContainer, directory);
+                        containerName = containerName.Replace(Common.GetPathSeparator(CurrentSettings.Environment), "");
+                        ret.ChildContainers.Add(containerName);
                     }
                 }
             }
@@ -111,14 +111,9 @@ namespace Kvpbase
             #region Process-Each-File
 
             foreach (string curFile in fileList)
-            {
-                #region Retrieve-Object-Metadata
-
-                // syslog_debug("get_dir_info gathering file information for " + curr_file + " in " + directory);
+            { 
                 ObjInfo currObjInfo = ObjInfo.FromFile(curFile);
-
-                #endregion
-
+                 
                 #region Process-Search-Filters
 
                 if (filters != null)

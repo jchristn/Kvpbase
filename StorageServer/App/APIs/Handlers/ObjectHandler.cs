@@ -229,7 +229,7 @@ namespace Kvpbase
                     ReplicationHandler rh = new ReplicationHandler(CurrentSettings, CurrentTopology, CurrentNode, Users, Logging);
                     if (!rh.ObjectDelete(md.CurrentObj, md.CurrentObj.Replicas))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ObjectDelete negative response from replicate_ObjectDelete, returning 500");
+                        Logging.Log(LoggingModule.Severity.Warn, "ObjectDelete negative response from replication, returning 500");
                         return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                             new ErrorResponse(4, 500, "Unable to process replication.", null).ToJson(), true);
                     }
@@ -305,9 +305,9 @@ namespace Kvpbase
                             Logging.Log(LoggingModule.Severity.Debug, "ObjectDelete redirecting request to " + md.CurrentObj.PrimaryUrlWithoutQs +
                                 " using status " + CurrentSettings.Redirection.DeleteRedirectHttpStatus +
                                 " for object key " + md.CurrentObj.Key);
-                            Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                            redirect_header.Add("location", md.CurrentObj.PrimaryUrlWithQs);
-                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.DeleteRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.DeleteRedirectString, true);
+                            Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                            redirectHeader.Add("location", md.CurrentObj.PrimaryUrlWithQs);
+                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.DeleteRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.DeleteRedirectString, true);
 
                         #endregion
 
@@ -605,15 +605,15 @@ namespace Kvpbase
                             redirectUrls = Obj.BuildRedirectUrl(true, md.CurrentHttpRequest, md.CurrentObj, CurrentTopology, Logging);
                             if (String.IsNullOrEmpty(redirectUrls))
                             {
-                                Logging.Log(LoggingModule.Severity.Warn, "ObjectHead unable to generate redirect_url, returning 500");
+                                Logging.Log(LoggingModule.Severity.Warn, "ObjectHead unable to generate redirect URL, returning 500");
                                 return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                                     new ErrorResponse(4, 500, "Unable to build redirect URL.", null).ToJson(), true);
                             }
 
                             Logging.Log(LoggingModule.Severity.Debug, "ObjectHead redirecting request using status " + CurrentSettings.Redirection.ReadRedirectHttpStatus + " for user GUID " + md.CurrentUserMaster.Guid);
-                            Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                            redirect_header.Add("location", redirectUrls);
-                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.ReadRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.ReadRedirectString, true);
+                            Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                            redirectHeader.Add("location", redirectUrls);
+                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.ReadRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.ReadRedirectString, true);
 
                         #endregion
 
@@ -956,7 +956,7 @@ namespace Kvpbase
                     ReplicationHandler rh = new ReplicationHandler(CurrentSettings, CurrentTopology, CurrentNode, Users, Logging);
                     if (!rh.ObjectMove(req, currObj))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ObjectMove negative response from replicate_ObjectMove, returning 500");
+                        Logging.Log(LoggingModule.Severity.Warn, "ObjectMove negative response from replication, returning 500");
                         return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                             new ErrorResponse(4, 500, "Unable to process replication.", null).ToJson(), true);
                     }
@@ -1036,9 +1036,9 @@ namespace Kvpbase
                             #region redirect
 
                             Logging.Log(LoggingModule.Severity.Debug, "ObjectMove redirecting request to " + md.CurrentObj.PrimaryUrlWithoutQs + " using status " + CurrentSettings.Redirection.WriteRedirectHttpStatus);
-                            Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                            redirect_header.Add("location", md.CurrentObj.PrimaryUrlWithQs);
-                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.WriteRedirectString, true);
+                            Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                            redirectHeader.Add("location", md.CurrentObj.PrimaryUrlWithQs);
+                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.WriteRedirectString, true);
 
                         #endregion
 
@@ -1533,7 +1533,7 @@ namespace Kvpbase
                             }
                             else
                             {
-                                Logging.Log(LoggingModule.Severity.Warn, "get_blob byte data is not an image, returning original data");
+                                Logging.Log(LoggingModule.Severity.Warn, "ObjectRead byte data is not an image, returning original data");
                             }
                         }
 
@@ -1638,9 +1638,9 @@ namespace Kvpbase
                             }
 
                             Logging.Log(LoggingModule.Severity.Debug, "ObjectRead redirecting request using status " + CurrentSettings.Redirection.ReadRedirectHttpStatus + " for user GUID " + md.CurrentUserMaster.Guid);
-                            Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                            redirect_header.Add("location", redirectUrl);
-                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.ReadRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.ReadRedirectString, true);
+                            Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                            redirectHeader.Add("location", redirectUrl);
+                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.ReadRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.ReadRedirectString, true);
 
                         #endregion
 
@@ -1958,7 +1958,7 @@ namespace Kvpbase
                     ReplicationHandler rh = new ReplicationHandler(CurrentSettings, CurrentTopology, CurrentNode, Users, Logging);
                     if (!rh.ObjectRename(req, currObj))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ObjectRename negative response from replicate_ObjectRename, returning 500");
+                        Logging.Log(LoggingModule.Severity.Warn, "ObjectRename negative response from replication, returning 500");
                         return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                             new ErrorResponse(4, 500, "Unable to process replication.", null).ToJson(), true);
                     }
@@ -2038,9 +2038,9 @@ namespace Kvpbase
                             #region redirect
 
                             Logging.Log(LoggingModule.Severity.Debug, "ObjectRename redirecting request to " + md.CurrentObj.PrimaryUrlWithoutQs + " using status " + CurrentSettings.Redirection.WriteRedirectHttpStatus);
-                            Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                            redirect_header.Add("location", md.CurrentObj.PrimaryUrlWithQs);
-                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.WriteRedirectString, true);
+                            Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                            redirectHeader.Add("location", md.CurrentObj.PrimaryUrlWithQs);
+                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.WriteRedirectString, true);
 
                         #endregion
 
@@ -2222,13 +2222,12 @@ namespace Kvpbase
 
                     int resultsCount = maxResults;
                     foreach (string currSubdir in subdirList)
-                    {
-                        // ret_list --> dir_info
+                    { 
                         DirInfo di = new DirInfo(CurrentSettings, Users, Logging);
                         ret = di.FromDirectory(currSubdir, md.CurrentObj.UserGuid, resultsCount, req.Filters, metadataOnly);
                         if (ret == null)
                         {
-                            Logging.Log(LoggingModule.Severity.Warn, "ObjectSearch null response from get_dir_info");
+                            Logging.Log(LoggingModule.Severity.Warn, "ObjectSearch null directory info for " + currSubdir);
                             return new HttpResponse(md.CurrentHttpRequest, false, 404, null, "application/json",
                                 new ErrorResponse(5, 404, "Container does not exist.", null).ToJson(), true);
                         }
@@ -2266,7 +2265,7 @@ namespace Kvpbase
 
                     if (ret == null)
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ObjectSearch null response from get_dir_info");
+                        Logging.Log(LoggingModule.Severity.Warn, "ObjectSearch null directory info for container");
                         return new HttpResponse(md.CurrentHttpRequest, false, 404, null, "application/json",
                             new ErrorResponse(5, 404, "Container does not exist.", null).ToJson(), true);
                     }
@@ -2340,15 +2339,15 @@ namespace Kvpbase
                         redirectUrl = Obj.BuildRedirectUrl(true, md.CurrentHttpRequest, md.CurrentObj, CurrentTopology, Logging);
                         if (String.IsNullOrEmpty(redirectUrl))
                         {
-                            Logging.Log(LoggingModule.Severity.Warn, "ObjectSearch unable to generate redirect_url, returning 500");
+                            Logging.Log(LoggingModule.Severity.Warn, "ObjectSearch unable to generate redirect URL, returning 500");
                             return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                                 new ErrorResponse(4, 500, "Unable to build redirect URL.", null).ToJson(), true);
                         }
 
                         Logging.Log(LoggingModule.Severity.Debug, "ObjectSearch redirecting request using status " + CurrentSettings.Redirection.ReadRedirectHttpStatus + " for user GUID " + md.CurrentUserMaster.Guid);
-                        Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                        redirect_header.Add("location", redirectUrl);
-                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.ReadRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.ReadRedirectString, true);
+                        Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                        redirectHeader.Add("location", redirectUrl);
+                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.ReadRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.ReadRedirectString, true);
 
                     #endregion
 
@@ -2477,7 +2476,7 @@ namespace Kvpbase
                                 md.CurrentObj.PrimaryUrlWithQs = Obj.BuildPrimaryUrl(true, md.CurrentHttpRequest, md.CurrentObj, Logging);
                                 if (String.IsNullOrEmpty(md.CurrentObj.PrimaryUrlWithQs))
                                 {
-                                    Logging.Log(LoggingModule.Severity.Warn, "build_obj unable to build primary URL for request (with querystring)");
+                                    Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to build primary URL for request (with querystring)");
                                     return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                                         new ErrorResponse(4, 500, "Unable to build primary URL.", null).ToJson(), true);
                                 }
@@ -2485,7 +2484,7 @@ namespace Kvpbase
                                 md.CurrentObj.PrimaryUrlWithoutQs = Obj.BuildPrimaryUrl(false, md.CurrentHttpRequest, md.CurrentObj, Logging);
                                 if (String.IsNullOrEmpty(md.CurrentObj.PrimaryUrlWithoutQs))
                                 {
-                                    Logging.Log(LoggingModule.Severity.Warn, "build_obj unable to build primary URL for request (without querystring)");
+                                    Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to build primary URL for request (without querystring)");
                                     return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                                         new ErrorResponse(4, 500, "Unable to build primary URL.", null).ToJson(), true);
                                 }
@@ -2493,7 +2492,7 @@ namespace Kvpbase
                                 md.CurrentObj.DiskPath = Obj.BuildDiskPath(md.CurrentObj, md.CurrentUserMaster, CurrentSettings, Logging);
                                 if (String.IsNullOrEmpty(md.CurrentObj.DiskPath))
                                 {
-                                    Logging.Log(LoggingModule.Severity.Warn, "build_obj unable to build disk path for request");
+                                    Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to build disk path for request");
                                     return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                                         new ErrorResponse(4, 500, "Unable to build disk path from request.", null).ToJson(), true);
                                 }
@@ -2641,14 +2640,14 @@ namespace Kvpbase
                     {
                         if (!Int32.TryParse(writeToVal, out writeTo))
                         {
-                            Logging.Log(LoggingModule.Severity.Warn, "obj_read invalid value for read_from in querystring: " + writeToVal);
+                            Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite invalid value for write_to in querystring: " + writeToVal);
                             return new HttpResponse(md.CurrentHttpRequest, false, 400, null, "application/json",
                                 new ErrorResponse(2, 400, "Invalid value for write_to.", null).ToJson(), true);
                         }
 
                         if (writeTo < 0)
                         {
-                            Logging.Log(LoggingModule.Severity.Warn, "obj_read invalid value for write_to (must be zero or greater): " + writeTo);
+                            Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite invalid value for write_to (must be zero or greater): " + writeTo);
                             return new HttpResponse(md.CurrentHttpRequest, false, 400, null, "application/json",
                                 new ErrorResponse(2, 400, "Invalid value for write_to.", null).ToJson(), true);
                         }
@@ -2675,9 +2674,9 @@ namespace Kvpbase
 
                     baseDir = String.Copy(homeDirectory);
 
-                    foreach (string curr_directory in md.CurrentObj.ContainerPath)
+                    foreach (string currDirectory in md.CurrentObj.ContainerPath)
                     {
-                        baseDir += Common.GetPathSeparator(CurrentSettings.Environment) + curr_directory;
+                        baseDir += Common.GetPathSeparator(CurrentSettings.Environment) + currDirectory;
 
                         if (!Common.DirectoryExists(baseDir))
                         {
@@ -2736,7 +2735,7 @@ namespace Kvpbase
                         currObj = Obj.BuildObjFromDisk(md.CurrentObj.DiskPath, Users, CurrentSettings, CurrentTopology, CurrentNode, Logging);
                         if (currObj == null)
                         {
-                            Logging.Log(LoggingModule.Severity.Warn, "obj_read unable to retrieve obj for " + md.CurrentObj.DiskPath);
+                            Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to retrieve obj for " + md.CurrentObj.DiskPath);
                             return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                                 new ErrorResponse(4, 500, "Unable to read object.", null).ToJson(), true);
                         }
@@ -2801,15 +2800,15 @@ namespace Kvpbase
                                 #region Replace-then-Append
 
                                 // copy original from obj.value to a bigger byte array
-                                byte[] new_obj_bytes = new byte[(writeTo + md.CurrentHttpRequest.Data.Length)];
-                                Buffer.BlockCopy(md.CurrentObj.Value, 0, new_obj_bytes, 0, md.CurrentObj.Value.Length);
+                                byte[] newObjBytes = new byte[(writeTo + md.CurrentHttpRequest.Data.Length)];
+                                Buffer.BlockCopy(md.CurrentObj.Value, 0, newObjBytes, 0, md.CurrentObj.Value.Length);
 
                                 // add new data from http rqeuest
-                                Buffer.BlockCopy(md.CurrentHttpRequest.Data, 0, new_obj_bytes, writeTo, md.CurrentHttpRequest.Data.Length);
+                                Buffer.BlockCopy(md.CurrentHttpRequest.Data, 0, newObjBytes, writeTo, md.CurrentHttpRequest.Data.Length);
 
                                 // copy from bigger byte array back to obj.value
-                                md.CurrentObj.Value = new byte[new_obj_bytes.Length];
-                                Buffer.BlockCopy(new_obj_bytes, 0, md.CurrentObj.Value, 0, new_obj_bytes.Length);
+                                md.CurrentObj.Value = new byte[newObjBytes.Length];
+                                Buffer.BlockCopy(newObjBytes, 0, md.CurrentObj.Value, 0, newObjBytes.Length);
 
                                 #endregion
                             }
@@ -2828,15 +2827,15 @@ namespace Kvpbase
                             #region Append
 
                             // copy original from obj.value to a bigger byte array
-                            byte[] new_obj_bytes = new byte[(writeTo + md.CurrentHttpRequest.Data.Length)];
-                            Buffer.BlockCopy(md.CurrentObj.Value, 0, new_obj_bytes, 0, md.CurrentObj.Value.Length);
+                            byte[] newObjBytes = new byte[(writeTo + md.CurrentHttpRequest.Data.Length)];
+                            Buffer.BlockCopy(md.CurrentObj.Value, 0, newObjBytes, 0, md.CurrentObj.Value.Length);
 
                             // add new data from http rqeuest
-                            Buffer.BlockCopy(md.CurrentHttpRequest.Data, 0, new_obj_bytes, writeTo, md.CurrentHttpRequest.Data.Length);
+                            Buffer.BlockCopy(md.CurrentHttpRequest.Data, 0, newObjBytes, writeTo, md.CurrentHttpRequest.Data.Length);
 
                             // copy from bigger byte array back to obj.value
-                            md.CurrentObj.Value = new byte[new_obj_bytes.Length];
-                            Buffer.BlockCopy(new_obj_bytes, 0, md.CurrentObj.Value, 0, new_obj_bytes.Length);
+                            md.CurrentObj.Value = new byte[newObjBytes.Length];
+                            Buffer.BlockCopy(newObjBytes, 0, md.CurrentObj.Value, 0, newObjBytes.Length);
 
                             #endregion
                         }
@@ -2943,7 +2942,7 @@ namespace Kvpbase
                                 default:
                                     #region default
 
-                                    Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unknown encryption.encryption_mode: " + CurrentSettings.Encryption.Mode);
+                                    Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unknown encryption mode: " + CurrentSettings.Encryption.Mode);
                                     return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                                         new ErrorResponse(4, 500, "Server has incorrect encryption configuration.", null).ToJson(), true);
 
@@ -2965,7 +2964,7 @@ namespace Kvpbase
                     ReplicationHandler rh = new ReplicationHandler(CurrentSettings, CurrentTopology, CurrentNode, Users, Logging);
                     if (!rh.ObjectWrite(md.CurrentObj, out successfulReplicas))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite negative response from replicate_ObjectWrite, returning 500");
+                        Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite negative response from replication, returning 500");
                         return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                             new ErrorResponse(4, 500, "Unable to process replication.", null).ToJson(), true);
                     }
@@ -3062,9 +3061,9 @@ namespace Kvpbase
 
                             Logging.Log(LoggingModule.Severity.Debug, "ObjectWrite redirecting request to " + md.CurrentObj.PrimaryUrlWithoutQs +
                                 " using status " + CurrentSettings.Redirection.WriteRedirectHttpStatus + " for object key " + md.CurrentObj.Key);
-                            Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                            redirect_header.Add("location", md.CurrentObj.PrimaryUrlWithQs);
-                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.WriteRedirectString, true);
+                            Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                            redirectHeader.Add("location", md.CurrentObj.PrimaryUrlWithQs);
+                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.WriteRedirectString, true);
 
                         #endregion
 

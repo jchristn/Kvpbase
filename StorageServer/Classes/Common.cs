@@ -819,15 +819,15 @@ namespace Kvpbase
             return ret;
         }
 
-        public static string RandomString(int num_char)
+        public static string RandomString(int numChar)
         {
             string ret = "";
-            if (num_char < 1) return null;
+            if (numChar < 1) return null;
             int valid = 0;
             Random random = new Random((int)DateTime.Now.Ticks);
             int num = 0;
 
-            for (int i = 0; i < num_char; i++)
+            for (int i = 0; i < numChar; i++)
             {
                 num = 0;
                 valid = 0;
@@ -847,13 +847,13 @@ namespace Kvpbase
             return ret;
         }
 
-        public static double TotalMsFrom(DateTime start_time)
+        public static double TotalMsFrom(DateTime startTime)
         {
             try
             {
-                DateTime end_time = DateTime.Now;
-                TimeSpan total_time = (end_time - start_time);
-                return total_time.TotalMilliseconds;
+                DateTime endTime = DateTime.Now;
+                TimeSpan totalTime = (endTime - startTime);
+                return totalTime.TotalMilliseconds;
             }
             catch (Exception)
             {
@@ -970,9 +970,9 @@ namespace Kvpbase
             byte[] bytes = Encoding.UTF8.GetBytes(guid);
             int ret = 0;
 
-            foreach (byte curr_byte in bytes)
+            foreach (byte currByte in bytes)
             {
-                ret += (int)curr_byte;
+                ret += (int)currByte;
             }
 
             return ret;
@@ -1112,8 +1112,8 @@ namespace Kvpbase
             if (String.IsNullOrEmpty(data)) return null;
 
             MD5 md5 = MD5.Create();
-            byte[] data_bytes = System.Text.Encoding.ASCII.GetBytes(data);
-            byte[] hash = md5.ComputeHash(data_bytes);
+            byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes(data);
+            byte[] hash = md5.ComputeHash(dataBytes);
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < hash.Length; i++) sb.Append(hash[i].ToString("X2"));
             string ret = sb.ToString();

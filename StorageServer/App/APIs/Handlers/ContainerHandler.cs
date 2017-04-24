@@ -136,7 +136,7 @@ namespace Kvpbase
                 ReplicationHandler rh = new ReplicationHandler(CurrentSettings, CurrentTopology, CurrentNode, Users, Logging);
                 if (!rh.ContainerDelete(md.CurrentObj, CurrentTopology.Replicas))
                 {
-                    Logging.Log(LoggingModule.Severity.Warn, "ContainerDelete negative response from replicate_ContainerDelete, returning 500");
+                    Logging.Log(LoggingModule.Severity.Warn, "ContainerDelete negative response from replication, returning 500");
                     return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                         new ErrorResponse(4, 500, "Unable to process replication.", null).ToJson(), true);
                 }
@@ -215,9 +215,9 @@ namespace Kvpbase
                         #region redirect
 
                         Logging.Log(LoggingModule.Severity.Debug, "ContainerDelete redirecting request to " + md.CurrentObj.PrimaryUrlWithoutQs + " using status " + CurrentSettings.Redirection.DeleteRedirectHttpStatus + " for container deletion");
-                        Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                        redirect_header.Add("location", md.CurrentObj.PrimaryUrlWithQs);
-                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.DeleteRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.DeleteRedirectString, true);
+                        Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                        redirectHeader.Add("location", md.CurrentObj.PrimaryUrlWithQs);
+                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.DeleteRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.DeleteRedirectString, true);
 
                     #endregion
 
@@ -354,7 +354,7 @@ namespace Kvpbase
                 di = di.FromDirectory(md.CurrentObj.DiskPath, md.CurrentObj.UserGuid, 1, null, true);
                 if (di == null)
                 {
-                    Logging.Log(LoggingModule.Severity.Warn, "ContainerHead null dir_info returned from get_dir_info for " + md.CurrentObj.DiskPath);
+                    Logging.Log(LoggingModule.Severity.Warn, "ContainerHead null info returned from " + md.CurrentObj.DiskPath);
                     return new HttpResponse(md.CurrentHttpRequest, false, 404, null, "application/json", null, true);
                 }
 
@@ -429,15 +429,15 @@ namespace Kvpbase
                         redirectUrl = Obj.BuildRedirectUrl(true, md.CurrentHttpRequest, md.CurrentObj, CurrentTopology, Logging);
                         if (String.IsNullOrEmpty(redirectUrl))
                         {
-                            Logging.Log(LoggingModule.Severity.Warn, "ContainerHead unable to generate redirect_url, returning 500");
+                            Logging.Log(LoggingModule.Severity.Warn, "ContainerHead unable to generate redirect URL, returning 500");
                             return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                                 new ErrorResponse(4, 500, "Unable to build redirect URL.", null).ToJson(), true);
                         }
 
                         Logging.Log(LoggingModule.Severity.Debug, "ContainerHead redirecting request using status " + CurrentSettings.Redirection.ReadRedirectHttpStatus + " for user GUID " + md.CurrentUserMaster.Guid);
-                        Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                        redirect_header.Add("location", redirectUrl);
-                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.ReadRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.ReadRedirectString, true);
+                        Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                        redirectHeader.Add("location", redirectUrl);
+                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.ReadRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.ReadRedirectString, true);
 
                     #endregion
 
@@ -669,7 +669,7 @@ namespace Kvpbase
                 ReplicationHandler rh = new ReplicationHandler(CurrentSettings, CurrentTopology, CurrentNode, Users, Logging);
                 if (!rh.ContainerMove(req))
                 {
-                    Logging.Log(LoggingModule.Severity.Warn, "ContainerMove negative response from replicate_ContainerMove, returning 500");
+                    Logging.Log(LoggingModule.Severity.Warn, "ContainerMove negative response from replication, returning 500");
                     return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                         new ErrorResponse(4, 500, "Unable to process replication.", null).ToJson(), true);
                 }
@@ -749,9 +749,9 @@ namespace Kvpbase
                         #region redirect
 
                         Logging.Log(LoggingModule.Severity.Debug, "ContainerMove redirecting request to " + md.CurrentObj.PrimaryUrlWithoutQs + " using status " + CurrentSettings.Redirection.WriteRedirectHttpStatus);
-                        Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                        redirect_header.Add("location", md.CurrentObj.PrimaryUrlWithQs);
-                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.WriteRedirectString, true);
+                        Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                        redirectHeader.Add("location", md.CurrentObj.PrimaryUrlWithQs);
+                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.WriteRedirectString, true);
 
                     #endregion
 
@@ -958,7 +958,7 @@ namespace Kvpbase
                 di = di.FromDirectory(md.CurrentObj.DiskPath, md.CurrentObj.UserGuid, maxResults, null, metadataOnly);
                 if (di == null)
                 {
-                    Logging.Log(LoggingModule.Severity.Warn, "ContainerRead null dir_info returned from get_dir_info for " + md.CurrentObj.DiskPath);
+                    Logging.Log(LoggingModule.Severity.Warn, "ContainerRead null info returned from " + md.CurrentObj.DiskPath);
                     return new HttpResponse(md.CurrentHttpRequest, false, 404, null, "application/json",
                         new ErrorResponse(5, 404, "Container does not exist.", null).ToJson(), true);
                 }
@@ -1166,9 +1166,9 @@ namespace Kvpbase
                         }
 
                         Logging.Log(LoggingModule.Severity.Debug, "ContainerRead redirecting request using status " + CurrentSettings.Redirection.ReadRedirectHttpStatus + " for user GUID " + md.CurrentUserMaster.Guid);
-                        Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                        redirect_header.Add("location", redirectUrl);
-                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.ReadRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.ReadRedirectString, true);
+                        Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                        redirectHeader.Add("location", redirectUrl);
+                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.ReadRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.ReadRedirectString, true);
 
                     #endregion
 
@@ -1377,7 +1377,7 @@ namespace Kvpbase
                 ReplicationHandler rh = new ReplicationHandler(CurrentSettings, CurrentTopology, CurrentNode, Users, Logging);
                 if (!rh.ContainerRename(req))
                 {
-                    Logging.Log(LoggingModule.Severity.Warn, "ContainerRename negative response from replicate_ContainerRename, returning 500");
+                    Logging.Log(LoggingModule.Severity.Warn, "ContainerRename negative response from replication, returning 500");
                     return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                         new ErrorResponse(4, 500, "Unable to process replication.", null).ToJson(), true);
                 }
@@ -1457,8 +1457,8 @@ namespace Kvpbase
                         #region redirect
 
                         Logging.Log(LoggingModule.Severity.Debug, "ContainerRename redirecting request to " + md.CurrentObj.PrimaryUrlWithoutQs + " using status " + CurrentSettings.Redirection.WriteRedirectHttpStatus);
-                        Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.WriteRedirectString, true);
+                        Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                        return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.WriteRedirectString, true);
 
                     #endregion
 
@@ -1586,7 +1586,7 @@ namespace Kvpbase
                     ReplicationHandler rh = new ReplicationHandler(CurrentSettings, CurrentTopology, CurrentNode, Users, Logging);
                     if (!rh.ContainerWrite(md.CurrentObj, out successfulReplicas))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "ContainerWrite negative response from replicate_obj_write, returning 500");
+                        Logging.Log(LoggingModule.Severity.Warn, "ContainerWrite negative response from replication, returning 500");
                         return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                             new ErrorResponse(4, 500, "Unable to process replication.", null).ToJson(), true);
                     }
@@ -1664,9 +1664,9 @@ namespace Kvpbase
                             #region redirect
 
                             Logging.Log(LoggingModule.Severity.Debug, "ContainerWrite redirecting request to " + md.CurrentObj.PrimaryUrlWithoutQs + " using status " + CurrentSettings.Redirection.WriteRedirectHttpStatus);
-                            Dictionary<string, string> redirect_header = new Dictionary<string, string>();
-                            redirect_header.Add("location", md.CurrentObj.PrimaryUrlWithQs);
-                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirect_header, null, CurrentSettings.Redirection.WriteRedirectString, true);
+                            Dictionary<string, string> redirectHeader = new Dictionary<string, string>();
+                            redirectHeader.Add("location", md.CurrentObj.PrimaryUrlWithQs);
+                            return new HttpResponse(md.CurrentHttpRequest, true, CurrentSettings.Redirection.WriteRedirectHttpStatus, redirectHeader, null, CurrentSettings.Redirection.WriteRedirectString, true);
 
                         #endregion
 

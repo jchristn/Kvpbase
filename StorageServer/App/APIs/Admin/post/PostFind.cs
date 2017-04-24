@@ -107,7 +107,7 @@ namespace Kvpbase
                     if (Common.IsTrue(CurrentNode.Ssl)) url = "https://";
                     else url = "http://";
                     url += CurrentNode.DnsHostname + ":" + CurrentNode.Port + "/" + req.UserGuid + "/";
-                    foreach (string curr_container in req.ContainerPath) url += curr_container + "/";
+                    foreach (string currContainer in req.ContainerPath) url += currContainer + "/";
                     if (!String.IsNullOrEmpty(req.Key)) url += req.Key;
                     req.Urls.Add(url);
                 }
@@ -129,7 +129,7 @@ namespace Kvpbase
                         if (Common.IsTrue(curr.Ssl)) url = "https://";
                         else url = "http://";
                         url += CurrentNode.DnsHostname + ":" + CurrentNode.Port + "/" + req.UserGuid + "/";
-                        foreach (string curr_container in req.ContainerPath) url += curr_container + "/";
+                        foreach (string currContainer in req.ContainerPath) url += currContainer + "/";
                         if (!String.IsNullOrEmpty(req.Key)) url += req.Key;
                         req.Urls.Add(url);
                     }

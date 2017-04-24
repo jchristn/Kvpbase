@@ -451,7 +451,7 @@ namespace Kvpbase
                     currUser = Users.GetUserByGuid(currUserGuid);
                     if (currUser == null)
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "DataValidation found user GUID " + currUserGuid + " on disk but no matching user_master record");
+                        Logging.Log(LoggingModule.Severity.Warn, "DataValidation found user GUID " + currUserGuid + " on disk but no matching user record");
                         continue;
                     }
 

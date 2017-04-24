@@ -83,9 +83,9 @@ namespace Kvpbase
             PasswordDeriveBytes password = new PasswordDeriveBytes(CurrentSettings.Encryption.Passphrase, salt, "SHA1", 2);
 
             byte[] keyBytes = password.GetBytes(256 / 8);
-            RijndaelManaged symmetric_key = new RijndaelManaged();
-            symmetric_key.Mode = CipherMode.CBC;
-            ICryptoTransform encryptor = symmetric_key.CreateEncryptor(keyBytes, iv);
+            RijndaelManaged symmKey = new RijndaelManaged();
+            symmKey.Mode = CipherMode.CBC;
+            ICryptoTransform encryptor = symmKey.CreateEncryptor(keyBytes, iv);
             MemoryStream ms = new MemoryStream();
             CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write);
 
@@ -119,7 +119,7 @@ namespace Kvpbase
             MemoryStream ms = new MemoryStream(cipher);
             CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
             byte[] clear = new byte[cipher.Length];
-            int decrypted_count = cs.Read(clear, 0, clear.Length);
+            int decryptedCount = cs.Read(clear, 0, clear.Length);
             ms.Close();
             cs.Close();
 
@@ -216,7 +216,7 @@ namespace Kvpbase
 
             RestResponse resp = new RestResponse();
             string url = "";
-            DateTime start_time = DateTime.Now;
+            DateTime startTime = DateTime.Now;
             Dictionary<string, string> headers = new Dictionary<string, string>();
             EncryptedMessage ret = new EncryptedMessage();
             
@@ -250,7 +250,7 @@ namespace Kvpbase
             }
             catch (Exception)
             {
-                EventHandler.Log(LoggingModule.Severity.Warn, "ServerEncrypt unable to deserialize rest response body to encrypt_msg");
+                EventHandler.Log(LoggingModule.Severity.Warn, "ServerEncrypt unable to deserialize rest response body to encrypted message");
                 return false;
             }
 
@@ -265,7 +265,7 @@ namespace Kvpbase
 
             if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption))
             {
-                EventHandler.Log(LoggingModule.Severity.Debug, "ServerEncrypt completed " + Common.TotalMsFrom(start_time) + "ms: " +
+                EventHandler.Log(LoggingModule.Severity.Debug, "ServerEncrypt completed " + Common.TotalMsFrom(startTime) + "ms: " +
                     clear.Length + "B clear, " +
                     cipher.Length + "B cipher " +
                     "KSN " + ksn);

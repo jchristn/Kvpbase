@@ -17,10 +17,10 @@ namespace Kvpbase
 
         public static void CleanupThread()
         {
-            DateTime start_time = DateTime.Now;
+            DateTime startTime = DateTime.Now;
 
-            Logging.Log(LoggingModule.Severity.Info, "CleanupThread starting cleanup at " + start_time);
-            Logging.Log(LoggingModule.Severity.Info, "CleanupThread ending cleanup after " + Common.TotalMsFrom(start_time) + "ms");
+            Logging.Log(LoggingModule.Severity.Info, "CleanupThread starting cleanup at " + startTime);
+            Logging.Log(LoggingModule.Severity.Info, "CleanupThread ending cleanup after " + Common.TotalMsFrom(startTime) + "ms");
             return;
         }
     }

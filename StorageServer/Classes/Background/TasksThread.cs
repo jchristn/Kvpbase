@@ -144,7 +144,7 @@ namespace Kvpbase
 
             if (currTask == null)
             {
-                logging.Log(LoggingModule.Severity.Warn, "TaskRunner null value for curr_task detected");
+                logging.Log(LoggingModule.Severity.Warn, "TaskRunner null value for current task detected");
                 return;
             }
 

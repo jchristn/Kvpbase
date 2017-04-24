@@ -134,9 +134,9 @@ namespace Kvpbase
                 List<string> dirElements = new List<string>(userGuid.Split(Convert.ToChar(Common.GetPathSeparator(settings.Environment))));
                 if (dirElements != null && dirElements.Count > 0)
                 {
-                    foreach (string curr_dir_element in dirElements)
+                    foreach (string currDirElement in dirElements)
                     {
-                        userGuid = String.Copy(curr_dir_element);
+                        userGuid = String.Copy(currDirElement);
                         break;
                     }
                 }

@@ -161,10 +161,10 @@ namespace Kvpbase
             Console.WriteLine("gateway mode allows accessing the data through means outside of kvpbase by");
             Console.WriteLine("disabling encryption and compression.");
             Console.WriteLine("");
-            bool is_gateway_mode = Common.InputBoolean("Configure this node for gateway-mode", true);
+            bool isGatewayMode = Common.InputBoolean("Configure this node for gateway-mode", true);
             Console.WriteLine("");
 
-            if (is_gateway_mode)
+            if (isGatewayMode)
             {
                 currSettings.Storage.GatewayMode = 1;
                 currSettings.Storage.DefaultCompress = 0;
@@ -725,9 +725,9 @@ namespace Kvpbase
 
             #region Create-Sample-Objects
 
-            string html_file = SampleHtmlFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/support", "http://github.com/kvpbase");
-            string text_file = SampleTextFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/support", "http://github.com/kvpbase");
-            string json_file = SampleJsonFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/support", "http://github.com/kvpbase");
+            string htmlFile = SampleHtmlFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/support", "http://github.com/kvpbase");
+            string textFile = SampleTextFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/support", "http://github.com/kvpbase");
+            string jsonFile = SampleJsonFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/support", "http://github.com/kvpbase");
 
             if (!Common.CreateDirectory(currSettings.Storage.Directory + "default"))
             {
@@ -752,67 +752,67 @@ namespace Kvpbase
             htmlObj.ReplicationMode = "none";
             htmlObj.Tags = null;
             htmlObj.UserGuid = "default";
-            htmlObj.Value = Encoding.UTF8.GetBytes(html_file);
+            htmlObj.Value = Encoding.UTF8.GetBytes(htmlFile);
             htmlObj.Md5Hash = Common.Md5(htmlObj.Value);
             htmlObj.DiskPath = currSettings.Storage.Directory + "default" + separator + "hello.html";
 
-            Obj text_obj = new Obj();
-            text_obj.IsCompressed = 0;
-            text_obj.IsContainer = 0;
-            text_obj.ContainerPath = null;
-            text_obj.ContentType = "text/plain";
-            text_obj.Created = DateTime.Now;
-            text_obj.IsEncrypted = 0;
-            text_obj.Key = "hello.txt";
-            text_obj.LastAccess = DateTime.Now;
-            text_obj.LastUpdate = DateTime.Now;
-            text_obj.PrimaryNode = currNode;
-            text_obj.PrimaryUrlWithQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.txt?x-api-key=default";
-            text_obj.PrimaryUrlWithoutQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.txt";
-            text_obj.Replicas = null;
-            text_obj.ReplicationMode = "none";
-            text_obj.Tags = null;
-            text_obj.UserGuid = "default";
-            text_obj.Value = Encoding.UTF8.GetBytes(text_file);
-            text_obj.Md5Hash = Common.Md5(text_obj.Value);
-            text_obj.DiskPath = currSettings.Storage.Directory + "default" + separator + "hello.txt";
+            Obj textObj = new Obj();
+            textObj.IsCompressed = 0;
+            textObj.IsContainer = 0;
+            textObj.ContainerPath = null;
+            textObj.ContentType = "text/plain";
+            textObj.Created = DateTime.Now;
+            textObj.IsEncrypted = 0;
+            textObj.Key = "hello.txt";
+            textObj.LastAccess = DateTime.Now;
+            textObj.LastUpdate = DateTime.Now;
+            textObj.PrimaryNode = currNode;
+            textObj.PrimaryUrlWithQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.txt?x-api-key=default";
+            textObj.PrimaryUrlWithoutQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.txt";
+            textObj.Replicas = null;
+            textObj.ReplicationMode = "none";
+            textObj.Tags = null;
+            textObj.UserGuid = "default";
+            textObj.Value = Encoding.UTF8.GetBytes(textFile);
+            textObj.Md5Hash = Common.Md5(textObj.Value);
+            textObj.DiskPath = currSettings.Storage.Directory + "default" + separator + "hello.txt";
 
-            Obj json_obj = new Obj();
-            json_obj.IsCompressed = 0;
-            json_obj.IsContainer = 0;
-            json_obj.ContainerPath = null;
-            json_obj.ContentType = "application/json";
-            json_obj.Created = DateTime.Now;
-            json_obj.IsEncrypted = 0;
-            json_obj.Key = "hello.json";
-            json_obj.LastAccess = DateTime.Now;
-            json_obj.LastUpdate = DateTime.Now;
-            json_obj.PrimaryNode = currNode;
-            json_obj.PrimaryUrlWithQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.json?x-api-key=default";
-            json_obj.PrimaryUrlWithoutQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.json";
-            json_obj.Replicas = null;
-            json_obj.ReplicationMode = "none";
-            json_obj.Tags = null;
-            json_obj.UserGuid = "default";
-            json_obj.Value = Encoding.UTF8.GetBytes(json_file);
-            json_obj.Md5Hash = Common.Md5(json_obj.Value);
-            json_obj.DiskPath = currSettings.Storage.Directory + "default" + separator + "hello.json";
+            Obj jsonObj = new Obj();
+            jsonObj.IsCompressed = 0;
+            jsonObj.IsContainer = 0;
+            jsonObj.ContainerPath = null;
+            jsonObj.ContentType = "application/json";
+            jsonObj.Created = DateTime.Now;
+            jsonObj.IsEncrypted = 0;
+            jsonObj.Key = "hello.json";
+            jsonObj.LastAccess = DateTime.Now;
+            jsonObj.LastUpdate = DateTime.Now;
+            jsonObj.PrimaryNode = currNode;
+            jsonObj.PrimaryUrlWithQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.json?x-api-key=default";
+            jsonObj.PrimaryUrlWithoutQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.json";
+            jsonObj.Replicas = null;
+            jsonObj.ReplicationMode = "none";
+            jsonObj.Tags = null;
+            jsonObj.UserGuid = "default";
+            jsonObj.Value = Encoding.UTF8.GetBytes(jsonFile);
+            jsonObj.Md5Hash = Common.Md5(jsonObj.Value);
+            jsonObj.DiskPath = currSettings.Storage.Directory + "default" + separator + "hello.json";
 
             if (Common.IsTrue(currSettings.Storage.GatewayMode))
             {
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.html", html_file, false))
+                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.html", htmlFile, false))
                 {
                     Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.html", -1);
                     return;
                 }
 
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.txt", text_file, false))
+                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.txt", textFile, false))
                 {
                     Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.txt", -1);
                     return;
                 }
 
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.json", json_file, false))
+                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.json", jsonFile, false))
                 {
                     Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.json", -1);
                     return;
@@ -826,13 +826,13 @@ namespace Kvpbase
                     return;
                 }
 
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.txt", Common.SerializeJson(text_obj), false))
+                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.txt", Common.SerializeJson(textObj), false))
                 {
                     Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.txt", -1);
                     return;
                 }
 
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.json", Common.SerializeJson(json_obj), false))
+                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.json", Common.SerializeJson(jsonObj), false))
                 {
                     Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.json", -1);
                     return;

@@ -99,9 +99,7 @@ namespace Kvpbase
                 }
             }
 
-            if (!String.IsNullOrEmpty(req.Key)) fullPath += req.Key;
-
-            // EventHandler.Log(LoggingModule.Severity.Debug, "BuildDiskPath returning full_path " + full_path);
+            if (!String.IsNullOrEmpty(req.Key)) fullPath += req.Key; 
             return fullPath;
 
             #endregion

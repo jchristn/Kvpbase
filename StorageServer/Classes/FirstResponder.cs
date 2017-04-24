@@ -75,9 +75,9 @@ namespace Kvpbase
                 // Thread.Sleep(1000);
             }
 
-            bool response_received = false;
+            bool respReceived = false;
 
-            while (!response_received)
+            while (!respReceived)
             {
                 if (md.FirstResponse != null)
                 {
@@ -87,7 +87,7 @@ namespace Kvpbase
                         (md.FirstResponse.StatusCode == 201)
                         )
                     {
-                        response_received = true;
+                        respReceived = true;
                     }
                     else
                     {
@@ -96,22 +96,22 @@ namespace Kvpbase
                     }
                 }
 
-                bool threads_finished = true;
-                if (!response_received)
+                bool threadsFinished = true;
+                if (!respReceived)
                 {
-                    foreach (Thread curr_thread in threads)
+                    foreach (Thread currThread in threads)
                     {
-                        if (curr_thread.IsAlive)
+                        if (currThread.IsAlive)
                         {
-                            threads_finished = false;
+                            threadsFinished = false;
                             break;
                         }
                     }
                 }
 
-                if (threads_finished)
+                if (threadsFinished)
                 {
-                    response_received = true;
+                    respReceived = true;
                 }
             }
 

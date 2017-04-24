@@ -180,9 +180,7 @@ namespace Kvpbase
             body += "       <br />";
             body += "       <table align='center' bgcolor='#ffffff' border='0' cellspacing='0' cellpadding='0' width='1200' style='background:#ffffff; padding-bottom:25px'>";
             body += "        <tbody>";
-            body += "         <tr>";
-            // body_bytes += "          <td width='30'>";
-            // body_bytes += "          </td>";
+            body += "         <tr>"; 
             body += "          <td style='font-color: #222222; font-family:helvetica neue, arial, helvetica, sans-serif; font-color:#222222; font-size:14px; line-height:24px'>";
 
             return body;

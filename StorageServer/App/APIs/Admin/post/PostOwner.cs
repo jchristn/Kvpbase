@@ -58,7 +58,7 @@ namespace Kvpbase
             owner = Node.DetermineOwner(req.UserGuid, Users, CurrentTopology, CurrentNode, Logging);
             if (owner == null)
             {                            
-                Logging.Log(LoggingModule.Severity.Alert, "PostOwner primary for GUID " + req.UserGuid + " could not be discerned (null response from calculate_owner), returning 500");
+                Logging.Log(LoggingModule.Severity.Alert, "PostOwner primary for GUID " + req.UserGuid + " could not be discerned, returning 500");
                 return new HttpResponse(md.CurrentHttpRequest, false, 500, null, "application/json",
                     new ErrorResponse(4, 500, "Unable to determine primary node.", null).ToJson(),
                     true);
