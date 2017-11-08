@@ -160,8 +160,7 @@ namespace Kvpbase
             Console.WriteLine(Common.Line(79, "-"));
             Console.WriteLine("  ?                         help / this menu");
             Console.WriteLine("  cls / c                   clear the console");
-            Console.WriteLine("  quit / q                  exit the application");
-            Console.WriteLine("  server                    list endpoint addresses for this node");
+            Console.WriteLine("  quit / q                  exit the application"); 
             Console.WriteLine("  find_obj                  locate an object by primary GUID and object name");
             Console.WriteLine("  list_topology             list nodes in the topology");
             Console.WriteLine("  list_active_urls          list URLs that are locked or being read");

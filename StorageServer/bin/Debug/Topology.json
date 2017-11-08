@@ -1,0 +1,13 @@
+{
+  "CurrNodeId": 1,
+  "Nodes": [
+    {
+      "NodeId": 1,
+      "Name": "localhost",
+      "DnsHostname": "+",
+      "Port": 8800,
+      "Ssl": 0,
+      "NumFailures": 0
+    }
+  ]
+}
