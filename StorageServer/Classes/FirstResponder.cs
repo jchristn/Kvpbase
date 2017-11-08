@@ -16,11 +16,15 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         #endregion
 
-        #region Public-Static-Methods
+        #region Public-Methods
 
         public static RestResponse SendRequest(
             Settings settings,
@@ -61,7 +65,7 @@ namespace Kvpbase
 
             md.FirstResponse = null;
             md.FirstResponseUrl = null;
-            md.FirstResponseLock = new object();
+            md.FirstRespLock = new object();
 
             List<Thread> threads = new List<Thread>();
 
@@ -71,8 +75,7 @@ namespace Kvpbase
                 logging.Log(LoggingModule.Severity.Debug, "SendRequest starting thread to " + url);
                 Thread t = new Thread(() => SendRequestThread(settings, logging, ref md, url, encoding, method, user, pass, encodeCredentials, headers, body));
                 threads.Add(t);
-                t.Start();
-                // Thread.Sleep(1000);
+                t.Start(); 
             }
 
             bool respReceived = false;
@@ -123,6 +126,10 @@ namespace Kvpbase
             #endregion
         }
 
+        #endregion
+
+        #region Private-Methods
+
         private static void SendRequestThread(
             Settings settings,
             Events logging,
@@ -143,7 +150,7 @@ namespace Kvpbase
                 Common.IsTrue(settings.Rest.AcceptInvalidCerts),
                 headers, body);
             
-            lock (md.FirstResponseLock)
+            lock (md.FirstRespLock)
             {
                 if (md.FirstResponse == null)
                 {

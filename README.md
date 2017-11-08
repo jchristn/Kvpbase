@@ -76,8 +76,11 @@ The response is simply a 200/OK.
 Please read our documentation on Github: https://github.com/kvpbase/storage-server/wiki/Getting-Started
 And our API documentation here: http://www.kvpbase.com/docs
 
-## New in v2.0.1
-- Our first open source release!
+## New in v2.1.0
+- Performance improvements
+- Simplified default HTML pages
+- Reduced CPU utilization
+- Single instancing of certain classes to reduce overhead
 
 ## Use Cases
 Core use cases for Kvpbase Storage Server:
@@ -93,3 +96,5 @@ Numerous SDKs are already available for Kvpbase Storage Server: https://github.c
 
 ## Version History
 Notes from previous versions (starting with v2.0.1) will be moved here.
+- First open source release
+- Massive refactor

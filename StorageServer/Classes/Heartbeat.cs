@@ -14,12 +14,24 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public Heartbeat()
         {
 
         }
+
+        #endregion
+
+        #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

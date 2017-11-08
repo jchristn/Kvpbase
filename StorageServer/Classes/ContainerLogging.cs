@@ -18,12 +18,24 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public ContainerLogging()
         {
 
         }
+
+        #endregion
+
+        #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

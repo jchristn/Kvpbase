@@ -15,6 +15,10 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public RenameRequest()
@@ -24,7 +28,7 @@ namespace Kvpbase
 
         #endregion
 
-        #region Public-Static-Methods
+        #region Public-Methods
 
         public static string BuildDiskPath(RenameRequest req, bool useRenameFrom, UserManager users, Settings settings, Events logging)
         {
@@ -110,14 +114,9 @@ namespace Kvpbase
             #endregion
         }
 
-        public static bool UnsafeFsChars(RenameRequest currRename)
-        {
-            if (currRename == null) return true;
-            if (Common.ContainsUnsafeCharacters(currRename.ContainerPath)) return true;
-            if (Common.ContainsUnsafeCharacters(currRename.RenameFrom)) return true;
-            if (Common.ContainsUnsafeCharacters(currRename.RenameTo)) return true;
-            return false;
-        }
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

@@ -19,12 +19,24 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public Connection()
         {
 
         }
+
+        #endregion
+
+        #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

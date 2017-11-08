@@ -8,15 +8,35 @@ namespace Kvpbase
 {
     public class RequestMetadata
     {
-        public HttpRequest CurrentHttpRequest { get; set; }
-        public UserMaster CurrentUserMaster { get; set; }
-        public ApiKey CurrentApiKey { get; set; }
-        public ApiKeyPermission CurrentApiKeyPermission { get; set; }
-        public Node CurrentNode { get; set; }
-        public Obj CurrentObj { get; set; }
+        #region Public-Members
 
-        public object FirstResponseLock { get; set; }
+        public HttpRequest CurrHttpReq { get; set; }
+        public UserMaster CurrUser { get; set; }
+        public ApiKey CurrApiKey { get; set; }
+        public ApiKeyPermission CurrPerm { get; set; }
+        public Node CurrNode { get; set; }
+        public Obj CurrObj { get; set; }
+
+        public object FirstRespLock { get; set; }
         public RestResponse FirstResponse { get; set; }
         public string FirstResponseUrl { get; set; }
+
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Constructors-and-Factories
+
+        #endregion
+
+        #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
+        
+        #endregion
     }
 }

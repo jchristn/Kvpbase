@@ -16,6 +16,10 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public MoveRequest()
@@ -25,7 +29,7 @@ namespace Kvpbase
 
         #endregion
 
-        #region Public-Static-Methods
+        #region Public-Methods
 
         public static string BuildDiskPath(MoveRequest req, bool useMoveFrom, bool includeObjectName, UserManager users, Settings settings, Events logging)
         {
@@ -117,16 +121,10 @@ namespace Kvpbase
 
             #endregion
         }
+        
+        #endregion
 
-        public static bool UnsafeFsChars(MoveRequest currMove)
-        {
-            if (currMove == null) return true;
-            if (Common.ContainsUnsafeCharacters(currMove.FromContainer)) return true;
-            if (Common.ContainsUnsafeCharacters(currMove.ToContainer)) return true;
-            if (Common.ContainsUnsafeCharacters(currMove.MoveFrom)) return true;
-            if (Common.ContainsUnsafeCharacters(currMove.MoveTo)) return true;
-            return false;
-        }
+        #region Private-Methods
 
         #endregion
     }

@@ -24,6 +24,10 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public Node()
@@ -59,10 +63,6 @@ namespace Kvpbase
             if (node == null) return false;
             return IsNeighbor(node.NodeId);
         }
-
-        #endregion
-
-        #region Public-Static-Methods
 
         public static Node DetermineOwner(string userGuid, UserManager users, Topology topology, Node currentNode, Events logging)
         {
@@ -185,6 +185,10 @@ namespace Kvpbase
             return true;
         }
 
+        #endregion
+
+        #region Private-Methods
+        
         #endregion
     }
 }

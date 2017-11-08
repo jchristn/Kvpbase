@@ -13,9 +13,31 @@ namespace Kvpbase
 {
     public partial class StorageServer
     {
+        public static Settings _Settings;
+        public static Events _Logging;
+        public static UserManager _Users;
+        public static ApiKeyManager _ApiKeys;
+        public static Topology _Topology;
+        public static Node _Node;
+        public static ConnectionManager _ConnMgr;
+        public static MessageManager _MessageMgr;
+        public static EncryptionModule _EncryptionMgr;
+        public static TokenManager _Tokens;
+        public static UrlLockManager _UrlLockMgr;
+        public static LoggerManager _Logger;
+        public static MaintenanceManager _MaintenanceMgr;
+        public static ConsoleManager _ConsoleMgr;
+        public static ConcurrentQueue<Dictionary<string, object>> _FailedRequests;
+        public static Server _Server;
+
+        public static BunkerHandler _Bunker;
+        public static ReplicationHandler _Replication;
+        public static ObjectHandler _Object;
+        public static ContainerHandler _Container;
+
         public static void Main(string[] args)
         {
-            #region Check-for-Admin
+            #region Startup-Check
 
             if (!Common.IsAdmin())
             {
@@ -23,9 +45,15 @@ namespace Kvpbase
                 return;
             }
 
+            if (!HttpListener.IsSupported)
+            {
+                Common.ExitApplication("StorageServer", "Your OS does not support HttpListener", -1);
+                return;
+            }
+
             #endregion
-            
-            #region Initial-Setup
+
+            #region Load-Settings
 
             bool initialSetup = false;
             if (args != null && args.Length >= 1)
@@ -38,16 +66,8 @@ namespace Kvpbase
             {
                 Setup setup = new Setup();
             }
-
-            #endregion
-
-            #region Initialize-Settings
-
-            CurrentSettings = Settings.FromFile("System.json");
-
-            #endregion
-
-            #region Welcome
+             
+            _Settings = Settings.FromFile("System.json");
 
             Welcome();
 
@@ -55,7 +75,7 @@ namespace Kvpbase
 
             #region Verify-Storage-Directory-Access
 
-            if (!Common.VerifyDirectoryAccess(CurrentSettings.Environment, CurrentSettings.Storage.Directory))
+            if (!Common.VerifyDirectoryAccess(_Settings.Environment, _Settings.Storage.Directory))
             {
                 Common.ExitApplication("StorageServer", "Unable to verify storage directory access", -1);
                 return;
@@ -65,80 +85,74 @@ namespace Kvpbase
 
             #region Initialize-Global-Variables
 
-            Logging = new Events(CurrentSettings);
-            Users = new UserManager(Logging, UserMaster.FromFile(CurrentSettings.Files.UserMaster));
-            ApiKeys = new ApiKeyManager(Logging, ApiKey.FromFile(CurrentSettings.Files.ApiKey), ApiKeyPermission.FromFile(CurrentSettings.Files.Permission));
-            CurrentTopology = Topology.FromFile(CurrentSettings.Files.Topology);
-            ConnManager = new ConnectionManager();
-            EncryptionManager = new EncryptionModule(CurrentSettings, Logging);
-            LockManager = new UrlLockManager(Logging);
-            Logger = new LoggerManager(CurrentSettings, Logging);
-            Maintenance = new MaintenanceManager(Logging);
+            _Logging = new Events(_Settings);
+            _Users = new UserManager(_Logging, UserMaster.FromFile(_Settings.Files.UserMaster));
+            _ApiKeys = new ApiKeyManager(_Logging, ApiKey.FromFile(_Settings.Files.ApiKey), ApiKeyPermission.FromFile(_Settings.Files.Permission));
+            _Topology = Topology.FromFile(_Settings.Files.Topology);
+            _ConnMgr = new ConnectionManager();
+            _MessageMgr = new MessageManager(_Settings, _Logging);
+            _EncryptionMgr = new EncryptionModule(_Settings, _Logging);
+            _Tokens = new TokenManager(_Settings, _Logging, _EncryptionMgr, _Users);
+            _UrlLockMgr = new UrlLockManager(_Logging);
+            _Logger = new LoggerManager(_Settings, _Logging);
+            _MaintenanceMgr = new MaintenanceManager(_Logging);
 
             #endregion
 
             #region Verify-Topology
 
-            if (!CurrentTopology.ValidateTopology(out CurrentNode))
+            if (!_Topology.ValidateTopology(out _Node))
             {
                 Common.ExitApplication("StorageServer", "Topology errors detected", -1);
                 return;
             }
 
-            CurrentTopology.PopulateReplicas(CurrentNode);
-            Console.WriteLine("Populated " + CurrentTopology.Replicas.Count + " replica nodes in topology");            
+            _Topology.PopulateReplicas(_Node);
+            Console.WriteLine("Populated " + _Topology.Replicas.Count + " replica node(s) in topology");
 
             #endregion
 
-            #region Check-for-HTTP-Listener
+            #region Initialize-Handlers
 
-            if (!HttpListener.IsSupported)
-            {
-                Common.ExitApplication("StorageServer", "Your OS does not support HttpListener", -1);
-                return;
-            }
+            _Bunker = new BunkerHandler(_Settings, _Logging);
+            _Replication = new ReplicationHandler(_Settings, _Logging, _MessageMgr, _Topology, _Node, _Users);
+            _Object = new ObjectHandler(_Settings, _Logging, _MessageMgr, _Topology, _Node, _Users, _UrlLockMgr, _MaintenanceMgr, _EncryptionMgr, _Logger, _Bunker, _Replication);
+            _Container = new ContainerHandler(_Settings, _Logging, _MessageMgr, _Topology, _Node, _Users, _MaintenanceMgr, _Logger, _Bunker, _Replication);
 
             #endregion
 
             #region Start-Threads
 
-            new PublicObjThread(CurrentSettings, Logging);
-            new FailedRequestsThread(CurrentSettings, Logging, FailedRequests);
-            new PeerManagerThread(CurrentSettings, Logging, CurrentTopology, CurrentNode);
-            new MessengerThread(CurrentSettings, Logging, CurrentTopology, CurrentNode);
-            new ExpirationThread(CurrentSettings, Logging);
-            new ReplicationThread(CurrentSettings, Logging, CurrentTopology, CurrentNode);
-            new TasksThread(CurrentSettings, Logging);
-            
-            #endregion
+            new PublicObjThread(_Settings, _Logging);
+            new FailedRequestsThread(_Settings, _Logging, _FailedRequests);
+            new PeerManagerThread(_Settings, _Logging, _Topology, _Node);
+            new MessengerThread(_Settings, _Logging, _Topology, _Node);
+            new ExpirationThread(_Settings, _Logging);
+            new ReplicationThread(_Settings, _Logging, _Topology, _Node);
+            new TasksThread(_Settings, _Logging);
 
-            #region Start-Server
-
-            Server watson = new Server(CurrentNode.DnsHostname, CurrentNode.Port, Common.IsTrue(CurrentNode.Ssl), RequestReceived, true);
-            watson.DebugRestRequests = false;
-            watson.DebugRestResponses = false;
-            watson.ConsoleLogging = false;
+            _Server = new Server(_Node.DnsHostname, _Node.Port, Common.IsTrue(_Node.Ssl), RequestReceived, false); 
 
             #endregion
 
             #region Console
 
-            if (Common.IsTrue(CurrentSettings.EnableConsole))
+            if (Common.IsTrue(_Settings.EnableConsole))
             {
-                CurrentConsole = new ConsoleManager(
-                    CurrentSettings,
-                    Maintenance,
-                    CurrentTopology,
-                    CurrentNode,
-                    Users,
-                    LockManager,
-                    EncryptionManager,
-                    Logging,
+                _ConsoleMgr = new ConsoleManager(
+                    _Settings,
+                    _MaintenanceMgr,
+                    _Topology,
+                    _Node,
+                    _Users,
+                    _UrlLockMgr,
+                    _EncryptionMgr,
+                    _Logging,
                     ExitApplication);
             }
             else
             {
-                Logging.Log(LoggingModule.Severity.Debug, "StorageServer not using interactive mode, console disabled");
+                _Logging.Log(LoggingModule.Severity.Debug, "StorageServer not using interactive mode, console disabled");
             }
 
             #endregion
@@ -152,7 +166,7 @@ namespace Kvpbase
                 waitHandleSignal = waitHandle.WaitOne(1000);
             } while (!waitHandleSignal);
              
-            Logging.Log(LoggingModule.Severity.Debug, "StorageServer exiting");
+            _Logging.Log(LoggingModule.Severity.Debug, "StorageServer exiting");
 
             #endregion
         }
@@ -170,7 +184,7 @@ namespace Kvpbase
                 @"           |_|                        " + Environment.NewLine +
                 @"                                      " + Environment.NewLine +
                 Environment.NewLine +
-                "  " + CurrentSettings.ProductName + " :: v" + CurrentSettings.ProductVersion + Environment.NewLine +
+                "  " + _Settings.ProductName + " :: v" + _Settings.ProductVersion + Environment.NewLine +
                 Environment.NewLine;
 
             Console.WriteLine(msg);
@@ -178,6 +192,10 @@ namespace Kvpbase
 
         static HttpResponse RequestReceived(HttpRequest req)
         {
+            HttpResponse resp = new HttpResponse(req, false, 500, null, "application/json", 
+                new ErrorResponse(4, 500, null, null).ToJson(),
+                true);
+
             try
             {
                 #region Variables
@@ -195,12 +213,12 @@ namespace Kvpbase
                 ApiKey currApiKey = null;
                 ApiKeyPermission currApiKeyPermission = null;
                 
-                md.CurrentHttpRequest = req;
-                md.CurrentNode = CurrentNode;
+                md.CurrHttpReq = req;
+                md.CurrNode = _Node;
 
-                if (Common.IsTrue(CurrentSettings.Syslog.LogHttpRequests))
+                if (Common.IsTrue(_Settings.Syslog.LogHttpRequests))
                 {
-                    Logging.Log(LoggingModule.Severity.Debug, "RequestReceived request received: " + Environment.NewLine + md.CurrentHttpRequest.ToString());
+                    _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived request received: " + Environment.NewLine + md.CurrHttpReq.ToString());
                 }
 
                 #endregion
@@ -209,8 +227,9 @@ namespace Kvpbase
 
                 if (req.Method.ToLower().Trim().Contains("option"))
                 {
-                    Logging.Log(LoggingModule.Severity.Debug, "RequestReceived " + Thread.CurrentThread.ManagedThreadId + ": OPTIONS request received");
-                    return OptionsHandler(req);
+                    _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived " + Thread.CurrentThread.ManagedThreadId + ": OPTIONS request received");
+                    resp = OptionsHandler(req);
+                    return resp;
                 }
 
                 #endregion
@@ -221,33 +240,30 @@ namespace Kvpbase
                 {
                     if (String.Compare(req.RawUrlEntries[0].ToLower(), "favicon.ico") == 0)
                     {
-                        return new HttpResponse(req, true, 200, null, null, null, true);
+                        resp = new HttpResponse(req, true, 200, null, null, null, true);
+                        return resp;
                     }
-                }
-
-                if (req.RawUrlEntries != null && req.RawUrlEntries.Count > 0)
-                {
+                
                     if (String.Compare(req.RawUrlEntries[0].ToLower(), "robots.txt") == 0)
                     {
-                        return new HttpResponse(req, true, 200, null, "text/plain", "User-Agent: *\r\nDisallow:\r\n", true);
+                        resp = new HttpResponse(req, true, 200, null, "text/plain", "User-Agent: *\r\nDisallow:\r\n", true);
+                        return resp;
                     }
                 }
 
                 if (req.RawUrlEntries == null || req.RawUrlEntries.Count == 0)
                 {
-                    Logging.Log(LoggingModule.Severity.Info, "RequestReceived null raw URL list detected, redirecting to documentation page");
-                    return new HttpResponse(req, true, 301,
-                        Common.AddToDictionary("location", CurrentSettings.DocumentationUrl, null),
-                        "text/plain",
-                        "Moved Permanently",
+                    resp = new HttpResponse(req, true, 200, null, "text/html",
+                        DefaultPage("http://www.kvpbase.com/", _Settings.DocumentationUrl, "http://github.com/kvpbase"),
                         true);
+                    return resp;
                 }
 
                 #endregion
 
                 #region Add-Connection
 
-                ConnManager.Add(Thread.CurrentThread.ManagedThreadId, req);
+                _ConnMgr.Add(Thread.CurrentThread.ManagedThreadId, req);
 
                 #endregion
 
@@ -271,7 +287,8 @@ namespace Kvpbase
 
                         if (req.RawUrlWithoutQuery.StartsWith("/public/"))
                         {
-                            return GetPublicObject(md);
+                            resp = GetPublicObject(md);
+                            return resp;
                         }
 
                         #endregion
@@ -280,7 +297,8 @@ namespace Kvpbase
 
                         if (WatsonCommon.UrlEqual(req.RawUrlWithoutQuery, "/version", false))
                         {
-                            return new HttpResponse(req, true, 200, null, "text/plain", CurrentSettings.ProductVersion, true);
+                            resp = new HttpResponse(req, true, 200, null, "text/plain", _Settings.ProductVersion, true);
+                            return resp;
                         }
 
                         #endregion
@@ -306,11 +324,11 @@ namespace Kvpbase
 
                 #region Retrieve-Auth-Parameters
 
-                apiKey = req.RetrieveHeaderValue(CurrentSettings.Server.HeaderApiKey);
-                email = req.RetrieveHeaderValue(CurrentSettings.Server.HeaderEmail);
-                password = req.RetrieveHeaderValue(CurrentSettings.Server.HeaderPassword);
-                token = req.RetrieveHeaderValue(CurrentSettings.Server.HeaderToken);
-                version = req.RetrieveHeaderValue(CurrentSettings.Server.HeaderVersion);
+                apiKey = req.RetrieveHeaderValue(_Settings.Server.HeaderApiKey);
+                email = req.RetrieveHeaderValue(_Settings.Server.HeaderEmail);
+                password = req.RetrieveHeaderValue(_Settings.Server.HeaderPassword);
+                token = req.RetrieveHeaderValue(_Settings.Server.HeaderToken);
+                version = req.RetrieveHeaderValue(_Settings.Server.HeaderVersion);
 
                 #endregion
 
@@ -322,21 +340,24 @@ namespace Kvpbase
                     {
                         if (String.IsNullOrEmpty(apiKey))
                         {
-                            Logging.Log(LoggingModule.Severity.Warn, "RequestReceived admin API requested but no API key specified");
-                            return new HttpResponse(req, false, 401, null, "application/json",
+                            _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived admin API requested but no API key specified");
+                            resp = new HttpResponse(req, false, 401, null, "application/json",
                                 new ErrorResponse(3, 401, "No API key specified.", null).ToJson(),
                                 true);
+                            return resp;
                         }
 
-                        if (String.Compare(CurrentSettings.Server.AdminApiKey, apiKey) != 0)
+                        if (String.Compare(_Settings.Server.AdminApiKey, apiKey) != 0)
                         {
-                            Logging.Log(LoggingModule.Severity.Warn, "RequestReceived admin API requested but invalid API key specified");
-                            return new HttpResponse(req, false, 401, null, "application/json",
+                            _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived admin API requested but invalid API key specified");
+                            resp = new HttpResponse(req, false, 401, null, "application/json",
                                 new ErrorResponse(3, 401, null, null).ToJson(),
                                 true);
+                            return resp;
                         }
 
-                        return AdminApiHandler(md);
+                        resp = AdminApiHandler(md);
+                        return resp;
                     }
                 }
 
@@ -346,80 +367,81 @@ namespace Kvpbase
                 
                 if (!String.IsNullOrEmpty(token))
                 {
-                    if (!Token.VerifyToken(token, Users, EncryptionManager, Logging, out currUserMaster, out currApiKeyPermission))
+                    if (!_Tokens.VerifyToken(token, out currUserMaster, out currApiKeyPermission))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify token");
-                        return new HttpResponse(req, false, 401, null, "application/json",
+                        _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify token");
+                        resp = new HttpResponse(req, false, 401, null, "application/json",
                             new ErrorResponse(3, 401, null, null).ToJson(),
                             true);
+                        return resp;
                     }
                 }
                 else if (!String.IsNullOrEmpty(apiKey))
                 {
-                    if (!ApiKeys.VerifyApiKey(apiKey, Users, out currUserMaster, out currApiKey, out currApiKeyPermission))
+                    if (!_ApiKeys.VerifyApiKey(apiKey, _Users, out currUserMaster, out currApiKey, out currApiKeyPermission))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify API key " + apiKey);
-                        return new HttpResponse(req, false, 401, null, "application/json",
+                        _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify API key " + apiKey);
+                        resp = new HttpResponse(req, false, 401, null, "application/json",
                            new ErrorResponse(3, 401, null, null).ToJson(),
                            true);
+                        return resp;
                     }
                 }
                 else if ((!String.IsNullOrEmpty(email)) && (!String.IsNullOrEmpty(password)))
                 {
-                    if (!Users.AuthenticateCredentials(email, password, out currUserMaster))
+                    if (!_Users.AuthenticateCredentials(email, password, out currUserMaster))
                     {
-                        Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify credentials for email " + email);
-                        return new HttpResponse(req, false, 401, null, "application/json",
+                        _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify credentials for email " + email);
+                        resp = new HttpResponse(req, false, 401, null, "application/json",
                             new ErrorResponse(3, 401, null, null).ToJson(),
                             true);
+                        return resp;
                     }
 
                     currApiKeyPermission = ApiKeyPermission.DefaultPermit(currUserMaster);
                 }
                 else
                 {
-                    Logging.Log(LoggingModule.Severity.Warn, "RequestReceived user API requested but no authentication material supplied");
-                    return new HttpResponse(req, false, 401, null, "application/json",
+                    _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived user API requested but no authentication material supplied");
+                    resp = new HttpResponse(req, false, 401, null, "application/json",
                         new ErrorResponse(3, 401, "No authentication material.", null).ToJson(),
                         true);
+                    return resp;
                 }
 
-                md.CurrentUserMaster = currUserMaster;
-                md.CurrentApiKey = currApiKey;
-                md.CurrentApiKeyPermission = currApiKeyPermission;
+                md.CurrUser = currUserMaster;
+                md.CurrApiKey = currApiKey;
+                md.CurrPerm = currApiKeyPermission;
 
-                ConnManager.Update(Thread.CurrentThread.ManagedThreadId, Convert.ToInt32(currUserMaster.UserMasterId), currUserMaster.Email);
+                _ConnMgr.Update(Thread.CurrentThread.ManagedThreadId, Convert.ToInt32(currUserMaster.UserMasterId), currUserMaster.Email);
 
                 #endregion
 
                 #region User-Administrative-APIs
                 
-                switch (md.CurrentHttpRequest.Method.ToLower())
+                switch (md.CurrHttpReq.Method.ToLower())
                 {
                     case "get":
                         #region get
 
-                        if (WatsonCommon.UrlEqual(md.CurrentHttpRequest.RawUrlWithoutQuery, "/token", false))
+                        if (WatsonCommon.UrlEqual(md.CurrHttpReq.RawUrlWithoutQuery, "/token", false))
                         {
-                            return new HttpResponse(req, true, 200, null, "text/plain", Token.FromUser(md.CurrentUserMaster, CurrentSettings, EncryptionManager), true);
+                            resp = new HttpResponse(req, true, 200, null, "text/plain", _Tokens.TokenFromUser(md.CurrUser), true);
+                            return resp;
                         }
 
-                        if (WatsonCommon.UrlEqual(md.CurrentHttpRequest.RawUrlWithoutQuery, "/replicas", false))
+                        if (WatsonCommon.UrlEqual(md.CurrHttpReq.RawUrlWithoutQuery, "/replicas", false))
                         {
-                            return GetReplicas(md);
+                            resp = GetReplicas(md);
+                            return resp;
                         }
 
-                        if (WatsonCommon.UrlEqual(md.CurrentHttpRequest.RawUrlWithoutQuery, "/user_master", false))
+                        if (WatsonCommon.UrlEqual(md.CurrHttpReq.RawUrlWithoutQuery, "/user_master", false))
                         {
-                            return new HttpResponse(md.CurrentHttpRequest, true, 200, null, "application/json", Common.SerializeJson(md.CurrentUserMaster), true);
+                            resp = new HttpResponse(md.CurrHttpReq, true, 200, null, "application/json", Common.SerializeJson(md.CurrUser), true);
+                            return resp;
                         }
-
-                        if (WatsonCommon.UrlEqual(md.CurrentHttpRequest.RawUrlWithoutQuery, "/wait", false))
-                        {
-                            Thread.Sleep(10000);
-                            return new HttpResponse(md.CurrentHttpRequest, true, 200, null, "application/json", null, true);
-                        }
-
+                        
                         break;
 
                     #endregion
@@ -455,10 +477,11 @@ namespace Kvpbase
                     default:
                         #region default
 
-                        Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unknown http method: " + md.CurrentHttpRequest.Method);
-                        return new HttpResponse(req, false, 400, null, "application/json",
+                        _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unknown http method: " + md.CurrHttpReq.Method);
+                        resp = new HttpResponse(req, false, 400, null, "application/json",
                             new ErrorResponse(2, 400, "Unknown method.", null).ToJson(),
                             true);
+                        return resp;
 
                         #endregion
                 }
@@ -467,46 +490,46 @@ namespace Kvpbase
 
                 #region Build-Object
 
-                md.CurrentObj = Obj.BuildObj(md, Users, CurrentSettings, CurrentTopology, CurrentNode, Logging);
-                if (md.CurrentObj == null)
+                md.CurrObj = Obj.BuildObj(md, _Users, _Settings, _Topology, _Node, _Logging);
+                if (md.CurrObj == null)
                 {
-                    Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to build payload object from request");
-                    return new HttpResponse(req, false, 500, null, "application/json",
+                    _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to build payload object from request");
+                    resp = new HttpResponse(req, false, 500, null, "application/json",
                         new ErrorResponse(4, 500, "Unable to build object from request.", null).ToJson(),
                         true);
+                    return resp;
                 }
 
                 #endregion
 
                 #region Call-User-API
 
-                HttpResponse resp = UserApiHandler(md);
-
-                if (Common.IsTrue(CurrentSettings.Syslog.LogHttpRequests))
-                {
-                    Logging.Log(LoggingModule.Severity.Debug, "RequestReceived sending response: " + Environment.NewLine + resp.ToString());
-                }
-
+                resp = UserApiHandler(md);
                 return resp;
 
                 #endregion
             }
             catch (Exception e)
             {
-                Logging.Exception("RequestReceived", "Outer exception", e);
+                _Logging.Exception("RequestReceived", "Outer exception", e);
                 return new HttpResponse(req, false, 500, null, "application/json",
                     new ErrorResponse(1, 500, "Outer exception.", null).ToJson(),
                     true);
             }
             finally
             {
-                ConnManager.Close(Thread.CurrentThread.ManagedThreadId);
+                _ConnMgr.Close(Thread.CurrentThread.ManagedThreadId);
+
+                if (Common.IsTrue(_Settings.Syslog.LogHttpRequests))
+                {
+                    _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived sending response: " + Environment.NewLine + resp.ToString());
+                }
             }
         }
 
         static HttpResponse OptionsHandler(HttpRequest req)
         {
-            Logging.Log(LoggingModule.Severity.Debug, "OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": processing options request");
+            _Logging.Log(LoggingModule.Severity.Debug, "OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": processing options request");
 
             Dictionary<string, string> responseHeaders = new Dictionary<string, string>();
 
@@ -526,11 +549,11 @@ namespace Kvpbase
             }
 
             string headers =
-                CurrentSettings.Server.HeaderApiKey + ", " +
-                CurrentSettings.Server.HeaderEmail + ", " +
-                CurrentSettings.Server.HeaderPassword + ", " +
-                CurrentSettings.Server.HeaderToken + ", " +
-                CurrentSettings.Server.HeaderVersion;
+                _Settings.Server.HeaderApiKey + ", " +
+                _Settings.Server.HeaderEmail + ", " +
+                _Settings.Server.HeaderPassword + ", " +
+                _Settings.Server.HeaderToken + ", " +
+                _Settings.Server.HeaderVersion;
 
             if (requestedHeaders != null)
             {
@@ -549,22 +572,70 @@ namespace Kvpbase
             responseHeaders.Add("Accept-Charset", "ISO-8859-1, utf-8");
             responseHeaders.Add("Connection", "keep-alive");
 
-            if (Common.IsTrue(CurrentNode.Ssl))
+            if (Common.IsTrue(_Node.Ssl))
             {
-                responseHeaders.Add("Host", "https://" + CurrentNode.DnsHostname + ":" + CurrentNode.Port);
+                responseHeaders.Add("Host", "https://" + _Node.DnsHostname + ":" + _Node.Port);
             }
             else
             {
-                responseHeaders.Add("Host", "http://" + CurrentNode.DnsHostname + ":" + CurrentNode.Port);
+                responseHeaders.Add("Host", "http://" + _Node.DnsHostname + ":" + _Node.Port);
             }
 
-            Logging.Log(LoggingModule.Severity.Debug, "OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": exiting successfully from OptionsHandler");
+            _Logging.Log(LoggingModule.Severity.Debug, "OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": exiting successfully from OptionsHandler");
             return new HttpResponse(req, true, 200, responseHeaders, null, null, true);
+        }
+
+        static string DefaultPage(string homepageLink, string docsLink, string sdkLink)
+        {
+            string html =
+                "<html>" + Environment.NewLine +
+                "   <head>" + Environment.NewLine +
+                "      <title>Welcome to Kvpbase!</title>" + Environment.NewLine +
+                "      <style>" + Environment.NewLine +
+                "          body {" + Environment.NewLine +
+                "            font-family: arial;" + Environment.NewLine +
+                "          }" + Environment.NewLine +
+                "          h3 {" + Environment.NewLine +
+                "            background-color: #e5e7ea;" + Environment.NewLine +
+                "            color: #333333; " + Environment.NewLine +
+                "            padding: 16px;" + Environment.NewLine +
+                "            border: 16px;" + Environment.NewLine +
+                "          }" + Environment.NewLine +
+                "          p {" + Environment.NewLine +
+                "            color: #333333; " + Environment.NewLine +
+                "            padding: 4px;" + Environment.NewLine +
+                "            border: 4px;" + Environment.NewLine +
+                "          }" + Environment.NewLine +
+                "          a {" + Environment.NewLine +
+                "            background-color: #4cc468;" + Environment.NewLine +
+                "            color: white;" + Environment.NewLine +
+                "            padding: 4px;" + Environment.NewLine +
+                "            border: 4px;" + Environment.NewLine +
+                "         text-decoration: none; " + Environment.NewLine +
+                "          }" + Environment.NewLine +
+                "          li {" + Environment.NewLine +
+                "            padding: 6px;" + Environment.NewLine +
+                "            border: 6px;" + Environment.NewLine +
+                "          }" + Environment.NewLine +
+                "      </style>" + Environment.NewLine +
+                "   </head>" + Environment.NewLine +
+                "   <body>" + Environment.NewLine +
+                "      <h3>Kvpbase Storage Server</h3>" + Environment.NewLine +
+                "      <p>Congratulations, your Kvpbase Storage Server node is running!</p>" + Environment.NewLine +
+                "      <p>" + Environment.NewLine +
+                "        <a href='" + docsLink + "' target='_blank'>API Documentation</a>&nbsp;&nbsp;" + Environment.NewLine +
+                "        <a href='" + homepageLink + "' target='_blank'>Homepage</a>&nbsp;&nbsp;" + Environment.NewLine +
+                "        <a href='" + sdkLink + "' target='_blank'>SDKs and Source Code</a>" + Environment.NewLine +
+                "      </p>" + Environment.NewLine +
+                "   </body>" + Environment.NewLine +
+                "</html>";
+
+            return html;
         }
 
         static bool ExitApplication()
         {
-            Logging.Log(LoggingModule.Severity.Info, "StorageServer exiting due to console request");
+            _Logging.Log(LoggingModule.Severity.Info, "StorageServer exiting due to console request");
             Environment.Exit(0);
             return true;
         }

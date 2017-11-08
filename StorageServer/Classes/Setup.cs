@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using SyslogLogging;
 
@@ -7,10 +8,28 @@ namespace Kvpbase
 {
     public class Setup
     {
+        #region Public-Members
+
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Constructors-and-Factories
+
         public Setup()
         {
             RunSetup();
         }
+
+        #endregion
+
+        #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
 
         private void RunSetup()
         {
@@ -47,11 +66,11 @@ namespace Kvpbase
             Console.ResetColor();
 
             Console.WriteLine("");
-            Console.WriteLine("kvpbase storage server");
+            Console.WriteLine("Kvpbase Storage Server");
             Console.WriteLine("");
             //          1         2         3         4         5         6         7
             // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-            Console.WriteLine("Thank you for using kvpbase!  We'll put together a basic system configuration");
+            Console.WriteLine("Thank you for using Kvpbase!  We'll put together a basic system configuration");
             Console.WriteLine("so you can be up and running quickly.  You'll want to modify the System.json");
             Console.WriteLine("file after to ensure a more secure operating environment.");
             Console.WriteLine("");
@@ -64,8 +83,12 @@ namespace Kvpbase
 
             #region Initial-Settings
 
-            currSettings.ProductName = "kvpbase";
-            currSettings.ProductVersion = "2.0.1";
+            currSettings.ProductName = "Kvpbase";
+
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            currSettings.ProductVersion = fvi.FileVersion; 
+
             currSettings.DocumentationUrl = "http://www.kvpbase.com/docs/";
             currSettings.LogoUrl = "http://kvpbase.com/Content/Images/cloud-only_25px.png";
             currSettings.HomepageUrl = "http://www.kvpbase.com";
@@ -291,7 +314,7 @@ namespace Kvpbase
             #endregion
 
             #endregion
-            
+
             #region System-Config
 
             if (
@@ -660,7 +683,7 @@ namespace Kvpbase
 
                 #endregion
             }
-            
+
             #endregion
 
             #region Create-Directories
@@ -725,9 +748,9 @@ namespace Kvpbase
 
             #region Create-Sample-Objects
 
-            string htmlFile = SampleHtmlFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/support", "http://github.com/kvpbase");
-            string textFile = SampleTextFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/support", "http://github.com/kvpbase");
-            string jsonFile = SampleJsonFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/support", "http://github.com/kvpbase");
+            string htmlFile = SampleHtmlFile("http://www.kvpbase.com/", currSettings.DocumentationUrl, "http://github.com/kvpbase");
+            string textFile = SampleTextFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/", "http://github.com/kvpbase");
+            string jsonFile = SampleJsonFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/", "http://github.com/kvpbase");
 
             if (!Common.CreateDirectory(currSettings.Storage.Directory + "default"))
             {
@@ -865,6 +888,7 @@ namespace Kvpbase
             switch (currSettings.Environment)
             {
                 case "linux":
+                    Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port + "/");
                     Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.html?x-api-key=default");
                     Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.html?x-api-key=default&metadata=true");
                     Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.txt?x-api-key=default");
@@ -872,6 +896,7 @@ namespace Kvpbase
                     break;
 
                 case "windows":
+                    Console.WriteLine("  http://localhost:" + currNode.Port + "/");
                     Console.WriteLine("  http://localhost:" + currNode.Port + "/default/hello.html?x-api-key=default");
                     Console.WriteLine("  http://localhost:" + currNode.Port + "/default/hello.html?x-api-key=default&metadata=true");
                     Console.WriteLine("  http://localhost:" + currNode.Port + "/default/hello.txt?x-api-key=default");
@@ -884,49 +909,48 @@ namespace Kvpbase
             #endregion
         }
 
-        private string SampleHtmlFile(string docLink, string supportLink, string sdkLink)
+        private string SampleHtmlFile(string homepageLink, string docsLink, string sdkLink)
         {
             string html =
                 "<html>" + Environment.NewLine +
                 "   <head>" + Environment.NewLine +
-                "      <title>Welcome to kvpbase!</title>" + Environment.NewLine +
+                "      <title>Welcome to Kvpbase!</title>" + Environment.NewLine +
                 "      <style>" + Environment.NewLine +
-                "      	body {" + Environment.NewLine +
-                "  		  font-family: arial;" + Environment.NewLine +
-                "      	}" + Environment.NewLine +
-                "      	h3 {" + Environment.NewLine +
-                "  		  background-color: grey;" + Environment.NewLine +
-                "         color: white; " + Environment.NewLine +
-                "  		  padding: 16px;" + Environment.NewLine +
-                "  		  border: 16px;" + Environment.NewLine +
-                "      	}" + Environment.NewLine +
-                "      	p {" + Environment.NewLine +
-                "      	  padding: 4px;" + Environment.NewLine +
-                "      	  border: 4px;" + Environment.NewLine +
-                "      	}" + Environment.NewLine +
-                "      	a {" + Environment.NewLine +
-                "      	  background-color: green;" + Environment.NewLine +
-                "      	  color: white;" + Environment.NewLine +
-                "      	  padding: 4px;" + Environment.NewLine +
-                "      	  border: 4px;" + Environment.NewLine +
-                "      	}" + Environment.NewLine +
-                "      	li {" + Environment.NewLine +
-                "      	  padding: 6px;" + Environment.NewLine +
-                "      	  border: 6px;" + Environment.NewLine +
-                "      	}" + Environment.NewLine +
+                "          body {" + Environment.NewLine +
+                "            font-family: arial;" + Environment.NewLine +
+                "          }" + Environment.NewLine +
+                "          h3 {" + Environment.NewLine +
+                "            background-color: #e5e7ea;" + Environment.NewLine +
+                "            color: #333333; " + Environment.NewLine +
+                "            padding: 16px;" + Environment.NewLine +
+                "            border: 16px;" + Environment.NewLine +
+                "          }" + Environment.NewLine +
+                "          p {" + Environment.NewLine +
+                "            color: #333333; " + Environment.NewLine +
+                "            padding: 4px;" + Environment.NewLine +
+                "            border: 4px;" + Environment.NewLine +
+                "          }" + Environment.NewLine +
+                "          a {" + Environment.NewLine +
+                "            background-color: #4cc468;" + Environment.NewLine +
+                "            color: white;" + Environment.NewLine +
+                "            padding: 4px;" + Environment.NewLine +
+                "            border: 4px;" + Environment.NewLine +
+                "         text-decoration: none; " + Environment.NewLine +
+                "          }" + Environment.NewLine +
+                "          li {" + Environment.NewLine +
+                "            padding: 6px;" + Environment.NewLine +
+                "            border: 6px;" + Environment.NewLine +
+                "          }" + Environment.NewLine +
                 "      </style>" + Environment.NewLine +
                 "   </head>" + Environment.NewLine +
                 "   <body>" + Environment.NewLine +
-                "      <h3>Welcome to kvpbase!</h3>" + Environment.NewLine +
-                "      <p>If you can see this file, your kvpbase node is running!</p>" + Environment.NewLine +
-                "      <p>If you opened this file using your browser, it should have been rendered as HTML. That's because kvpbase preserves the content-type when you write an object, meaning you can use your kvpbase nodes as an extension of your web servers!" + Environment.NewLine +
+                "      <h3>Kvpbase Storage Server</h3>" + Environment.NewLine +
+                "      <p>Congratulations, your Kvpbase Storage Server node is running!</p>" + Environment.NewLine +
+                "      <p>" + Environment.NewLine +
+                "        <a href='" + docsLink + "' target='_blank'>API Documentation</a>&nbsp;&nbsp;" + Environment.NewLine +
+                "        <a href='" + homepageLink + "' target='_blank'>Homepage</a>&nbsp;&nbsp;" + Environment.NewLine +
+                "        <a href='" + sdkLink + "' target='_blank'>SDKs and Source Code</a>" + Environment.NewLine +
                 "      </p>" + Environment.NewLine +
-                "      <p>Remember these helpful links!</p>" + Environment.NewLine +
-                "      	<ul>" + Environment.NewLine +
-                "      	  <li><a href='" + docLink + "' target='_blank'>API Documentation</a></li>" + Environment.NewLine +
-                "      	  <li><a href='" + supportLink + "' target='_blank'>Support Portal</a></li>" + Environment.NewLine +
-                "      	  <li><a href='" + sdkLink + "' target='_blank'>Download SDKs</a></li>" + Environment.NewLine +
-                "      	</ul>" + Environment.NewLine +
                 "   </body>" + Environment.NewLine +
                 "</html>";
 
@@ -964,5 +988,7 @@ namespace Kvpbase
 
             return text;
         }
+
+        #endregion
     }
 }

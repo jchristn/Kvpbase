@@ -16,6 +16,10 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public Topology()
@@ -122,7 +126,7 @@ namespace Kvpbase
             #region Find-Current-Node
 
             bool currentNodeFound = false;
-            
+
             foreach (Node curr in Nodes)
             {
                 if (CurrNodeId == curr.NodeId)
@@ -138,11 +142,11 @@ namespace Kvpbase
                 Console.WriteLine("Unable to find local node in topology");
                 return false;
             }
-            
+
             #endregion
 
             #region Verify-Replicas-Exit
-            
+
             foreach (Node currNode in Nodes)
             {
                 if (currNode.Neighbors == null || currNode.Neighbors.Count < 1) continue;
@@ -158,7 +162,7 @@ namespace Kvpbase
             }
 
             #endregion
-            
+
             return true;
         }
 
@@ -167,6 +171,10 @@ namespace Kvpbase
             if (Nodes.Count < 2) return true;
             return false;
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

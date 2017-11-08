@@ -18,6 +18,10 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public PublicObj()
@@ -27,7 +31,7 @@ namespace Kvpbase
 
         #endregion
 
-        #region Public-Static-Method
+        #region Public-Methods
 
         public static string BuildUrl(string guid, Node curr)
         {
@@ -41,6 +45,10 @@ namespace Kvpbase
 
             return url;
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

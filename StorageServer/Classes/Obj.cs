@@ -38,6 +38,10 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public Obj()
@@ -50,8 +54,8 @@ namespace Kvpbase
             #region Check-for-Null-Values
 
             if (md == null) throw new ArgumentNullException(nameof(md));
-            if (md.CurrentHttpRequest == null) throw new ArgumentException("CurrentHttpRequest is null");
-            if (md.CurrentUserMaster == null) throw new ArgumentException("CurrentUserMaster is null");
+            if (md.CurrHttpReq == null) throw new ArgumentException("CurrentHttpRequest is null");
+            if (md.CurrUser == null) throw new ArgumentException("CurrentUserMaster is null");
             if (users == null) throw new ArgumentNullException(nameof(users));
             if (topology == null) throw new ArgumentNullException(nameof(topology));
             if (node == null) throw new ArgumentNullException(nameof(node));
@@ -69,7 +73,7 @@ namespace Kvpbase
             string tags = "";
             bool gatewayMode = false;
 
-            if (Common.IsTrue(md.CurrentHttpRequest.RetrieveHeaderValue("container")))
+            if (Common.IsTrue(md.CurrHttpReq.RetrieveHeaderValue("container")))
             {
                 ret.IsContainer = 1;
                 ret.IsObject = 0;
@@ -80,7 +84,7 @@ namespace Kvpbase
                 ret.IsObject = 1;
             }
 
-            ret.ReplicationMode = md.CurrentHttpRequest.RetrieveHeaderValue("replication_mode");
+            ret.ReplicationMode = md.CurrHttpReq.RetrieveHeaderValue("replication_mode");
             if (String.IsNullOrEmpty(ret.ReplicationMode)) ret.ReplicationMode = settings.Replication.ReplicationMode;
 
             switch (ret.ReplicationMode)
@@ -103,33 +107,33 @@ namespace Kvpbase
             ret.IsEncrypted = 0;
             ret.IsEncoded = 0;
 
-            if (md.CurrentUserMaster.GetCompressionMode(settings)) ret.IsCompressed = 1;
-            if (md.CurrentUserMaster.GetEncryptionMode(settings)) ret.IsEncrypted = 1;
+            if (md.CurrUser.GetCompressionMode(settings)) ret.IsCompressed = 1;
+            if (md.CurrUser.GetEncryptionMode(settings)) ret.IsEncrypted = 1;
 
             if (Common.IsTrue(ret.IsObject))
             {
-                if (Common.IsTrue(md.CurrentHttpRequest.RetrieveHeaderValue("compress")))
+                if (Common.IsTrue(md.CurrHttpReq.RetrieveHeaderValue("compress")))
                 {
                     ret.IsCompressed = 1;
                 }
 
-                if (Common.IsTrue(md.CurrentHttpRequest.RetrieveHeaderValue("encrypt")))
+                if (Common.IsTrue(md.CurrHttpReq.RetrieveHeaderValue("encrypt")))
                 {
                     ret.IsEncrypted = 1;
                 }
 
-                if (Common.IsTrue(md.CurrentHttpRequest.RetrieveHeaderValue("encoded")))
+                if (Common.IsTrue(md.CurrHttpReq.RetrieveHeaderValue("encoded")))
                 {
                     ret.IsEncoded = 1;
                 }
             }
 
-            ret.ContentType = md.CurrentHttpRequest.RetrieveHeaderValue("content-type");
-            tags = md.CurrentHttpRequest.RetrieveHeaderValue("x-tags");
+            ret.ContentType = md.CurrHttpReq.RetrieveHeaderValue("content-type");
+            tags = md.CurrHttpReq.RetrieveHeaderValue("x-tags");
             ret.Tags = Common.CsvToStringList(tags);
-            ret.Value = md.CurrentHttpRequest.Data;
+            ret.Value = md.CurrHttpReq.Data;
 
-            gatewayMode = md.CurrentUserMaster.GetGatewayMode(settings);
+            gatewayMode = md.CurrUser.GetGatewayMode(settings);
             if (gatewayMode) ret.GatewayMode = 1;
             else ret.GatewayMode = 0;
 
@@ -140,7 +144,7 @@ namespace Kvpbase
                 ret.IsEncoded = 0;
             }
 
-            expSec = md.CurrentUserMaster.GetExpirationSeconds(settings, md.CurrentApiKey);
+            expSec = md.CurrUser.GetExpirationSeconds(settings, md.CurrApiKey);
             if (expSec > 0)
             {
                 ret.Expiration = DateTime.Now.AddSeconds(expSec);
@@ -150,7 +154,7 @@ namespace Kvpbase
 
             #region Set-Container-and-Object-Data
 
-            foreach (string currRue in md.CurrentHttpRequest.RawUrlEntries)
+            foreach (string currRue in md.CurrHttpReq.RawUrlEntries)
             {
                 if (String.IsNullOrEmpty(currRue)) continue;
 
@@ -172,7 +176,7 @@ namespace Kvpbase
 
                 if (Common.IsTrue(ret.IsObject))
                 {
-                    if (rueCount == md.CurrentHttpRequest.RawUrlEntries.Count)
+                    if (rueCount == md.CurrHttpReq.RawUrlEntries.Count)
                     {
                         // logging.Log(LoggingModule.Severity.Debug, "BuildObj adding " + currRue + " to Key");
                         ret.Key = currRue;
@@ -199,14 +203,14 @@ namespace Kvpbase
 
             #region Determine-Primary-and-URLs
 
-            ret.PrimaryNode = Node.DetermineOwner(md.CurrentUserMaster.Guid, users, topology, node, logging);
+            ret.PrimaryNode = Node.DetermineOwner(md.CurrUser.Guid, users, topology, node, logging);
             if (ret.PrimaryNode == null)
             {
-                logging.Log(LoggingModule.Severity.Warn, "BuildObj unable to determine primary for user GUID " + md.CurrentUserMaster.Guid);
+                logging.Log(LoggingModule.Severity.Warn, "BuildObj unable to determine primary for user GUID " + md.CurrUser.Guid);
                 return null;
             }
 
-            ret.PrimaryUrlWithQs = BuildPrimaryUrl(true, md.CurrentHttpRequest, ret, logging);
+            ret.PrimaryUrlWithQs = BuildPrimaryUrl(true, md.CurrHttpReq, ret, logging);
             if (String.IsNullOrEmpty(ret.PrimaryUrlWithQs))
             {
                 logging.Log(LoggingModule.Severity.Warn, "BuildObj unable to build primary URL for request (with querystring)");
@@ -224,7 +228,7 @@ namespace Kvpbase
 
             #region Build-Disk-Path
 
-            ret.DiskPath = Obj.BuildDiskPath(ret, md.CurrentUserMaster, settings, logging);
+            ret.DiskPath = Obj.BuildDiskPath(ret, md.CurrUser, settings, logging);
             if (String.IsNullOrEmpty(ret.DiskPath))
             {
                 logging.Log(LoggingModule.Severity.Warn, "BuildObj unable to build disk path for obj");
@@ -418,100 +422,6 @@ namespace Kvpbase
 
         #endregion
 
-        #region Private-Methods
-
-        private static bool GetKeyGuidContainers(
-            string path,
-            string homeDirectory,
-            bool isContainer,
-            Settings settings,
-            Events logging,
-            out List<string> containers,
-            out string key)
-        {
-            containers = new List<string>();
-            key = "";
-            
-            #region Check-for-Null-Values
-
-            if (String.IsNullOrEmpty(path))
-            {
-                logging.Log(LoggingModule.Severity.Warn, "GetKeyGuidContainers null path supplied");
-                return false;
-            }
-
-            #endregion
-
-            #region Variables
-
-            string tempString = "";
-            string reduced = "";
-
-            #endregion
-
-            #region Remove-Storage-Directory-from-Path
-
-            reduced = path.Replace(homeDirectory + Common.GetPathSeparator(settings.Environment), "");
-            reduced = reduced.Replace(homeDirectory, "");
-
-            #endregion
-            
-            #region Containers
-
-            foreach (char c in reduced)
-            {
-                if (String.Compare(c.ToString(), Common.GetPathSeparator(settings.Environment)) == 0)
-                {
-                    // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers encountered path separator: " + Common.GetPathSeparator(settings.Environment));
-
-                    if (!String.IsNullOrEmpty(tempString))
-                    {
-                        if (String.Compare(tempString, Common.GetPathSeparator(settings.Environment)) == 0)
-                        {
-                            // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers encountered path separator in temp string, skipping");
-                            tempString = "";
-                            continue;
-                        }
-
-                        // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers adding " + tempString + " to containerPath");
-                        containers.Add(tempString);
-                        tempString = "";
-                        continue;
-                    }
-                }
-
-                tempString += c;
-            }
-
-            // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers exiting iterator, tempString is " + tempString);
-            if (!String.IsNullOrEmpty(tempString))
-            {
-                // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers tempString is not null, adding: " + tempString);
-                containers.Add(tempString);
-                tempString = "";
-            }
-
-            #endregion
-
-            #region Extract-Key
-
-            if (!isContainer)
-            {
-                foreach (string currContainer in containers)
-                {
-                    key = currContainer;
-                }
-
-                containers.RemoveAt(containers.Count - 1);
-            }
-
-            #endregion
-
-            return true;
-        }
-
-        #endregion
-
         #region Public-Methods
 
         public override string ToString()
@@ -533,16 +443,12 @@ namespace Kvpbase
                 ret += "  Replicas: none" + Environment.NewLine;
             }
 
-            if (IsCompressed != null)   ret += "  Compressed : " + IsCompressed + Environment.NewLine;
+            if (IsCompressed != null) ret += "  Compressed : " + IsCompressed + Environment.NewLine;
             if (IsEncrypted != null) ret += "  Encrypted  : " + IsEncrypted + Environment.NewLine;
             if (IsEncoded != null) ret += "  Encoded    : " + IsEncoded + Environment.NewLine;
             ret += "  Disk Path  : " + DiskPath + Environment.NewLine;
             return ret;
         }
-
-        #endregion
-
-        #region Public-Static-Methods
 
         public static string BuildPrimaryUrl(bool includeQuery, HttpRequest req, Obj currObj, Events logging)
         {
@@ -617,7 +523,7 @@ namespace Kvpbase
 
             #endregion
         }
-        
+
         public static string BuildUrlFromFilePath(string filename, Node node, Obj obj, UserManager users, Settings settings, Events logging)
         {
             #region Check-for-Null-Values
@@ -810,7 +716,7 @@ namespace Kvpbase
             urlList = urlList.Distinct().ToList();
             return urlList;
         }
-        
+
         public static List<string> BuildMaintReadUrls(bool includeQuery, HttpRequest req, Obj currObj, Topology topology, Events logging)
         {
             #region Check-for-Null-Values
@@ -890,7 +796,7 @@ namespace Kvpbase
             urlList = urlList.Distinct().ToList();
             return urlList;
         }
-        
+
         public static string BuildRedirectUrl(bool includeQuery, HttpRequest req, Obj currObj, Topology topology, Events logging)
         {
             #region Check-for-Null-Values
@@ -1012,7 +918,7 @@ namespace Kvpbase
 
             #endregion
         }
-        
+
         public static string BuildDiskPath(Obj currObj, UserMaster currUser, Settings settings, Events logging)
         {
             #region Check-for-Null-Values
@@ -1039,7 +945,7 @@ namespace Kvpbase
             #endregion
 
             #region Get-Home-Directory
-                
+
             if (String.IsNullOrEmpty(currUser.HomeDirectory))
             {
                 // global directory
@@ -1054,7 +960,7 @@ namespace Kvpbase
                 homeDirectory = String.Copy(currUser.HomeDirectory);
                 if (!homeDirectory.EndsWith(Common.GetPathSeparator(settings.Environment))) homeDirectory += Common.GetPathSeparator(settings.Environment);
             }
-            
+
             #endregion
 
             #region Process
@@ -1090,24 +996,100 @@ namespace Kvpbase
             #endregion
         }
 
-        public static bool UnsafeFsChars(Obj currObj)
+        #endregion
+
+        #region Private-Methods
+
+        private static bool GetKeyGuidContainers(
+            string path,
+            string homeDirectory,
+            bool isContainer,
+            Settings settings,
+            Events logging,
+            out List<string> containers,
+            out string key)
         {
-            if (currObj == null) return true;
-            if (currObj.ContainerPath != null && currObj.ContainerPath.Count > 0)
+            containers = new List<string>();
+            key = "";
+            
+            #region Check-for-Null-Values
+
+            if (String.IsNullOrEmpty(path))
             {
-                if (Common.ContainsUnsafeCharacters(currObj.ContainerPath)) return true;
+                logging.Log(LoggingModule.Severity.Warn, "GetKeyGuidContainers null path supplied");
+                return false;
             }
-            if (!String.IsNullOrEmpty(currObj.Key))
+
+            #endregion
+
+            #region Variables
+
+            string tempString = "";
+            string reduced = "";
+
+            #endregion
+
+            #region Remove-Storage-Directory-from-Path
+
+            reduced = path.Replace(homeDirectory + Common.GetPathSeparator(settings.Environment), "");
+            reduced = reduced.Replace(homeDirectory, "");
+
+            #endregion
+            
+            #region Containers
+
+            foreach (char c in reduced)
             {
-                if (Common.ContainsUnsafeCharacters(currObj.Key)) return true;
+                if (String.Compare(c.ToString(), Common.GetPathSeparator(settings.Environment)) == 0)
+                {
+                    // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers encountered path separator: " + Common.GetPathSeparator(settings.Environment));
+
+                    if (!String.IsNullOrEmpty(tempString))
+                    {
+                        if (String.Compare(tempString, Common.GetPathSeparator(settings.Environment)) == 0)
+                        {
+                            // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers encountered path separator in temp string, skipping");
+                            tempString = "";
+                            continue;
+                        }
+
+                        // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers adding " + tempString + " to containerPath");
+                        containers.Add(tempString);
+                        tempString = "";
+                        continue;
+                    }
+                }
+
+                tempString += c;
             }
-            return false;
+
+            // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers exiting iterator, tempString is " + tempString);
+            if (!String.IsNullOrEmpty(tempString))
+            {
+                // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers tempString is not null, adding: " + tempString);
+                containers.Add(tempString);
+                tempString = "";
+            }
+
+            #endregion
+
+            #region Extract-Key
+
+            if (!isContainer)
+            {
+                foreach (string currContainer in containers)
+                {
+                    key = currContainer;
+                }
+
+                containers.RemoveAt(containers.Count - 1);
+            }
+
+            #endregion
+
+            return true;
         }
 
-        #endregion
-
-        #region Private-Static-Methods
-        
-        #endregion
+        #endregion 
     }
 }

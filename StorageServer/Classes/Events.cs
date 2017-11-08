@@ -13,25 +13,29 @@ namespace Kvpbase
     {
         #region Public-Members
 
-        public EmailClient Email { get; set; }
-        public LoggingModule Logging { get; set; }
-        public Settings CurrentSettings { get; set; }
+        #endregion
+
+        #region Private-Members
+
+        private EmailClient _Email;
+        private LoggingModule _Logging;
+        private Settings _Settings;
 
         #endregion
 
-        #region Constructor
+        #region Constructors-and-Factories
 
         public Events(Settings settings)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            CurrentSettings = settings;
+            _Settings = settings;
 
             if (settings.Email != null)
             {
                 switch (settings.Email.EmailProvider)
                 {
                     case "smtp":
-                        Email = new EmailClient(
+                        _Email = new EmailClient(
                             settings.Email.SmtpServer,
                             settings.Email.SmtpPort,
                             settings.Email.SmtpUsername,
@@ -40,7 +44,7 @@ namespace Kvpbase
                         break;
 
                     case "mailgun":
-                        Email = new EmailClient(
+                        _Email = new EmailClient(
                             settings.Mailgun.ApiKey,
                             settings.Mailgun.Domain);
                         break;
@@ -48,12 +52,12 @@ namespace Kvpbase
             }
             else
             {
-                Email = null;
+                _Email = null;
             }
 
             if (settings.Syslog != null)
             {
-                Logging = new LoggingModule(
+                _Logging = new LoggingModule(
                     settings.Syslog.ServerIp,
                     settings.Syslog.ServerPort,
                     Common.IsTrue(settings.Syslog.ConsoleLogging),
@@ -61,9 +65,9 @@ namespace Kvpbase
                     false,
                     true,
                     true,
+                    false,
                     true,
-                    true,
-                    true);
+                    false);
             }
         }
 
@@ -73,18 +77,17 @@ namespace Kvpbase
 
         public void SendEmail(Email email)
         {
-            if (Email == null) return;
-            if (email == null) return;
-            Email.Send(email);
+            if (_Email == null || email == null) return;
+            _Email.Send(email);
         }
 
         public void DebugEmail(string subject, string content)
         {
             Email email = new Email();
-            email.FromAddress = CurrentSettings.Email.EmailFrom;
-            email.ToAddress = CurrentSettings.Email.EmailExceptionsTo;
+            email.FromAddress = _Settings.Email.EmailFrom;
+            email.ToAddress = _Settings.Email.EmailExceptionsTo;
             email.Body = content;
-            email.ReplyAddress = CurrentSettings.Email.EmailReplyTo;
+            email.ReplyAddress = _Settings.Email.EmailReplyTo;
             email.Subject = subject;
             email.BccAddress = "";
             email.CcAddress = "";
@@ -93,8 +96,8 @@ namespace Kvpbase
 
         public void Log(LoggingModule.Severity sev, string msg)
         {
-            if (Logging == null) return;
-            Logging.Log(sev, msg);
+            if (_Logging == null) return;
+            _Logging.Log(sev, msg);
         }
 
         public void WebException(
@@ -122,7 +125,7 @@ namespace Kvpbase
                 {
                 }
             }
-            
+
             Log(LoggingModule.Severity.Alert, Common.Line(79, "-"));
             Log(LoggingModule.Severity.Alert, "");
             Log(LoggingModule.Severity.Alert, "A WebException was encountered which triggered this message.");
@@ -145,14 +148,14 @@ namespace Kvpbase
             Log(LoggingModule.Severity.Alert, "Server: " + Dns.GetHostName());
             Log(LoggingModule.Severity.Alert, "");
             Log(LoggingModule.Severity.Alert, Common.Line(79, "-"));
-            
+
             string body = "";
-            
+
             body += "WebException on " + Dns.GetHostName() + " at " + DateTime.Now + " in " + filename + "\n\n";
-            
+
             body += "A web exception was encountered on " + Dns.GetHostName() + " at " + DateTime.Now + " in " + filename + ".\n";
             body += "The details of the exception are below.\n\n";
-            
+
             body += "Exception Detail\n";
             body += "  Exception Type: " + e.GetType().ToString() + "\n";
             body += "  URL: " + url + "\n";
@@ -163,21 +166,21 @@ namespace Kvpbase
             body += "  Exception Message: " + e.Message + "\n";
             body += "  Exception Source: " + e.Source + "\n";
             body += "  Exception StackTrace: " + e.StackTrace + "\n\n";
-            
+
             body += "Request Body\n";
             body += requestBody + "\n\n";
-            
+
             body += "Response Body\n";
             body += strResponse + "\n\n";
-            
+
             Email email = new Email();
-            email.FromAddress = CurrentSettings.Email.EmailFrom;
-            email.ToAddress = CurrentSettings.Email.EmailExceptionsTo;
+            email.FromAddress = _Settings.Email.EmailFrom;
+            email.ToAddress = _Settings.Email.EmailExceptionsTo;
             email.BccAddress = "";
             email.CcAddress = "";
             email.Subject = "WebException on " + Dns.GetHostName() + " at " + DateTime.Now + " in " + method;
             email.Body = body;
-            email.ReplyAddress = CurrentSettings.Email.EmailReplyTo;
+            email.ReplyAddress = _Settings.Email.EmailReplyTo;
             email.IsHtml = false;
             SendEmail(email);
 
@@ -208,13 +211,13 @@ namespace Kvpbase
             Log(LoggingModule.Severity.Alert, "(Servername: " + Dns.GetHostName());
             Log(LoggingModule.Severity.Alert, Common.Line(79, "-"));
 
-            if (Common.IsTrue(CurrentSettings.Email.EmailExceptions))
+            if (Common.IsTrue(_Settings.Email.EmailExceptions))
             {
                 Email email = new Email();
-                email.FromAddress = CurrentSettings.Email.EmailExceptionsFrom;
-                email.ToAddress = CurrentSettings.Email.EmailExceptionsTo;
+                email.FromAddress = _Settings.Email.EmailExceptionsFrom;
+                email.ToAddress = _Settings.Email.EmailExceptionsTo;
                 email.Body = ExceptionHtml(method, text, e);
-                email.ReplyAddress = CurrentSettings.Email.EmailExceptionsReplyTo;
+                email.ReplyAddress = _Settings.Email.EmailExceptionsReplyTo;
                 email.Subject = "Exception on " + Dns.GetHostName() + " in " + method + " at " + DateTime.Now;
                 email.BccAddress = "";
                 email.CcAddress = "";
@@ -262,10 +265,6 @@ namespace Kvpbase
             return html;
         }
 
-        #endregion
-
-        #region Public-Static-Methods
-
         public static void ExceptionConsole(string method, string text, Exception e)
         {
             var st = new StackTrace(e, true);
@@ -291,6 +290,10 @@ namespace Kvpbase
             Console.WriteLine(Common.Line(79, "-"));
             return;
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

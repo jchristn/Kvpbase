@@ -13,9 +13,9 @@ namespace Kvpbase
     public class EncryptionModule
     {
         #region Public-Members
-        
-        public Settings CurrentSettings { get; set; }
-        public Events EventHandler { get; set; }
+
+        public Settings _Settings { get; set; }
+        public Events _Logging { get; set; }
 
         #endregion
 
@@ -25,36 +25,36 @@ namespace Kvpbase
 
         #region Constructors-and-Factories
 
-        public EncryptionModule(Settings currentSettings, Events logging)
+        public EncryptionModule(Settings settings, Events logging)
         {
             if (logging == null) throw new ArgumentNullException(nameof(logging));
-            if (currentSettings == null) throw new ArgumentNullException(nameof(currentSettings));
-            if (currentSettings.Encryption == null) throw new ArgumentException("Settings.Encryption is null or empty");
-            if (String.Compare(currentSettings.Encryption.Mode, "local") != 0
-                && String.Compare(currentSettings.Encryption.Mode, "server") != 0)
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
+            if (settings.Encryption == null) throw new ArgumentException("Settings.Encryption is null or empty");
+            if (String.Compare(settings.Encryption.Mode, "local") != 0
+                && String.Compare(settings.Encryption.Mode, "server") != 0)
             {
                 throw new ArgumentException("Settings.Encryption.Mode should either be local or server");
             }
-            
-            CurrentSettings = currentSettings;
-            EventHandler = logging;
+
+            _Settings = settings;
+            _Logging = logging;
         }
 
         #endregion
 
         #region Public-Methods
-        
+
         public byte[] LocalEncrypt(byte[] clear)
         {
             if (clear == null) return null;
             if (clear.Length < 1) return null;
 
             // Taken from http://www.obviex.com/samples/Encryption.aspx
-            if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption)) EventHandler.Log(LoggingModule.Severity.Debug, "LocalEncrypt clear: " + Common.BytesToBase64(clear));
+            if (Common.IsTrue(_Settings.Debug.DebugEncryption)) _Logging.Log(LoggingModule.Severity.Debug, "LocalEncrypt clear: " + Common.BytesToBase64(clear));
 
-            byte[] iv = Encoding.ASCII.GetBytes(CurrentSettings.Encryption.Iv);
-            byte[] salt = Encoding.ASCII.GetBytes(CurrentSettings.Encryption.Salt);
-            PasswordDeriveBytes password = new PasswordDeriveBytes(CurrentSettings.Encryption.Passphrase, salt, "SHA1", 2);
+            byte[] iv = Encoding.ASCII.GetBytes(_Settings.Encryption.Iv);
+            byte[] salt = Encoding.ASCII.GetBytes(_Settings.Encryption.Salt);
+            PasswordDeriveBytes password = new PasswordDeriveBytes(_Settings.Encryption.Passphrase, salt, "SHA1", 2);
 
             byte[] key = password.GetBytes(256 / 8);
             RijndaelManaged symmetricKey = new RijndaelManaged();
@@ -68,19 +68,19 @@ namespace Kvpbase
             ms.Close();
             cs.Close();
 
-            if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption)) EventHandler.Log(LoggingModule.Severity.Debug, "LocalEncrypt cipher: " + Common.BytesToBase64(cipherBytes));
+            if (Common.IsTrue(_Settings.Debug.DebugEncryption)) _Logging.Log(LoggingModule.Severity.Debug, "LocalEncrypt cipher: " + Common.BytesToBase64(cipherBytes));
             return cipherBytes;
         }
 
         public string LocalEncrypt(string clear)
         {
             // Taken from http://www.obviex.com/samples/Encryption.aspx
-            if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption)) EventHandler.Log(LoggingModule.Severity.Debug, "LocalEncrypt clear: " + clear);
+            if (Common.IsTrue(_Settings.Debug.DebugEncryption)) _Logging.Log(LoggingModule.Severity.Debug, "LocalEncrypt clear: " + clear);
 
-            byte[] iv = Encoding.ASCII.GetBytes(CurrentSettings.Encryption.Iv);
-            byte[] salt = Encoding.ASCII.GetBytes(CurrentSettings.Encryption.Salt);
+            byte[] iv = Encoding.ASCII.GetBytes(_Settings.Encryption.Iv);
+            byte[] salt = Encoding.ASCII.GetBytes(_Settings.Encryption.Salt);
             byte[] clearBytes = Encoding.UTF8.GetBytes(clear);
-            PasswordDeriveBytes password = new PasswordDeriveBytes(CurrentSettings.Encryption.Passphrase, salt, "SHA1", 2);
+            PasswordDeriveBytes password = new PasswordDeriveBytes(_Settings.Encryption.Passphrase, salt, "SHA1", 2);
 
             byte[] keyBytes = password.GetBytes(256 / 8);
             RijndaelManaged symmKey = new RijndaelManaged();
@@ -96,7 +96,7 @@ namespace Kvpbase
             cs.Close();
             string cipher = Convert.ToBase64String(cipherBytes);
 
-            if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption)) EventHandler.Log(LoggingModule.Severity.Debug, "LocalEncrypt cipher: " + cipher);
+            if (Common.IsTrue(_Settings.Debug.DebugEncryption)) _Logging.Log(LoggingModule.Severity.Debug, "LocalEncrypt cipher: " + cipher);
             return cipher;
         }
 
@@ -106,11 +106,11 @@ namespace Kvpbase
             if (cipher.Length < 1) return null;
 
             // Taken from http://www.obviex.com/samples/Encryption.aspx
-            if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption)) EventHandler.Log(LoggingModule.Severity.Debug, "LocalDecrypt cipher: " + Common.BytesToBase64(cipher));
+            if (Common.IsTrue(_Settings.Debug.DebugEncryption)) _Logging.Log(LoggingModule.Severity.Debug, "LocalDecrypt cipher: " + Common.BytesToBase64(cipher));
 
-            byte[] iv = Encoding.ASCII.GetBytes(CurrentSettings.Encryption.Iv);
-            byte[] salt = Encoding.ASCII.GetBytes(CurrentSettings.Encryption.Salt);
-            PasswordDeriveBytes password = new PasswordDeriveBytes(CurrentSettings.Encryption.Passphrase, salt, "SHA1", 2);
+            byte[] iv = Encoding.ASCII.GetBytes(_Settings.Encryption.Iv);
+            byte[] salt = Encoding.ASCII.GetBytes(_Settings.Encryption.Salt);
+            PasswordDeriveBytes password = new PasswordDeriveBytes(_Settings.Encryption.Passphrase, salt, "SHA1", 2);
 
             byte[] keyBytes = password.GetBytes(256 / 8);
             RijndaelManaged symmetricKey = new RijndaelManaged();
@@ -123,19 +123,19 @@ namespace Kvpbase
             ms.Close();
             cs.Close();
 
-            if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption)) EventHandler.Log(LoggingModule.Severity.Debug, "LocalDecrypt clear: " + Common.BytesToBase64(clear));
+            if (Common.IsTrue(_Settings.Debug.DebugEncryption)) _Logging.Log(LoggingModule.Severity.Debug, "LocalDecrypt clear: " + Common.BytesToBase64(clear));
             return clear;
         }
 
         public string LocalDecrypt(string cipher)
         {
             // Taken from http://www.obviex.com/samples/Encryption.aspx
-            if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption)) EventHandler.Log(LoggingModule.Severity.Debug, "LocalDecrypt cipher: " + cipher);
+            if (Common.IsTrue(_Settings.Debug.DebugEncryption)) _Logging.Log(LoggingModule.Severity.Debug, "LocalDecrypt cipher: " + cipher);
 
-            byte[] iv = Encoding.ASCII.GetBytes(CurrentSettings.Encryption.Iv);
-            byte[] salt = Encoding.ASCII.GetBytes(CurrentSettings.Encryption.Salt);
+            byte[] iv = Encoding.ASCII.GetBytes(_Settings.Encryption.Iv);
+            byte[] salt = Encoding.ASCII.GetBytes(_Settings.Encryption.Salt);
             byte[] cipherBytes = Convert.FromBase64String(cipher);
-            PasswordDeriveBytes password = new PasswordDeriveBytes(CurrentSettings.Encryption.Passphrase, salt, "SHA1", 2);
+            PasswordDeriveBytes password = new PasswordDeriveBytes(_Settings.Encryption.Passphrase, salt, "SHA1", 2);
 
             byte[] keyBytes = password.GetBytes(256 / 8);
             RijndaelManaged symmetricKey = new RijndaelManaged();
@@ -149,7 +149,7 @@ namespace Kvpbase
             cs.Close();
             string clear = Encoding.UTF8.GetString(clearBytes, 0, decryptedCount);
 
-            if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption)) EventHandler.Log(LoggingModule.Severity.Debug, "LocalDecrypt clear: " + clear);
+            if (Common.IsTrue(_Settings.Debug.DebugEncryption)) _Logging.Log(LoggingModule.Severity.Debug, "LocalDecrypt clear: " + clear);
             return clear;
         }
 
@@ -165,44 +165,44 @@ namespace Kvpbase
             DateTime startTime = DateTime.Now;
             Dictionary<string, string> headers = new Dictionary<string, string>();
             EncryptedMessage req = new EncryptedMessage();
-            
-            if (Common.IsTrue(CurrentSettings.Encryption.Ssl)) url = "https://";
+
+            if (Common.IsTrue(_Settings.Encryption.Ssl)) url = "https://";
             else url = "http://";
-            url += CurrentSettings.Encryption.Server + ":" + CurrentSettings.Encryption.Port + "/decrypt";
-                
-            headers = Common.AddToDictionary(CurrentSettings.Encryption.ApiKeyHeader, CurrentSettings.Encryption.ApiKeyValue, null);
-                
+            url += _Settings.Encryption.Server + ":" + _Settings.Encryption.Port + "/decrypt";
+
+            headers = Common.AddToDictionary(_Settings.Encryption.ApiKeyHeader, _Settings.Encryption.ApiKeyValue, null);
+
             req.Cipher = cipher;
             req.Ksn = ksn;
-            
+
             resp = RestRequest.SendRequestSafe(
                 url, "application/json", "POST", null, null, false,
-                Common.IsTrue(CurrentSettings.Rest.AcceptInvalidCerts),
+                Common.IsTrue(_Settings.Rest.AcceptInvalidCerts),
                 headers,
                 Encoding.UTF8.GetBytes(Common.SerializeJson(req)));
 
             if (resp == null)
             {
-                EventHandler.Log(LoggingModule.Severity.Warn, "ServerDecrypt null rest response returned");
+                _Logging.Log(LoggingModule.Severity.Warn, "ServerDecrypt null rest response returned");
                 return false;
             }
 
             if (resp.StatusCode != 200)
             {
-                EventHandler.Log(LoggingModule.Severity.Warn, "ServerDecrypt non-200 response returned: " + resp.StatusCode);
+                _Logging.Log(LoggingModule.Severity.Warn, "ServerDecrypt non-200 response returned: " + resp.StatusCode);
                 return false;
             }
 
             clear = resp.Data;
 
-            if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption))
+            if (Common.IsTrue(_Settings.Debug.DebugEncryption))
             {
-                EventHandler.Log(LoggingModule.Severity.Debug, "ServerDecrypt completed " + Common.TotalMsFrom(startTime) + "ms: " +
+                _Logging.Log(LoggingModule.Severity.Debug, "ServerDecrypt completed " + Common.TotalMsFrom(startTime) + "ms: " +
                     cipher.Length + "B cipher " +
                     clear.Length + "B clear, " +
                     "KSN " + ksn);
             }
-            
+
             return true;
         }
 
@@ -219,28 +219,28 @@ namespace Kvpbase
             DateTime startTime = DateTime.Now;
             Dictionary<string, string> headers = new Dictionary<string, string>();
             EncryptedMessage ret = new EncryptedMessage();
-            
-            if (Common.IsTrue(CurrentSettings.Encryption.Ssl)) url = "https://";
-            else url = "http://";
-            url += CurrentSettings.Encryption.Server + ":" + CurrentSettings.Encryption.Port + "/encrypt";
 
-            headers = Common.AddToDictionary(CurrentSettings.Encryption.ApiKeyHeader, CurrentSettings.Encryption.ApiKeyValue, null);
+            if (Common.IsTrue(_Settings.Encryption.Ssl)) url = "https://";
+            else url = "http://";
+            url += _Settings.Encryption.Server + ":" + _Settings.Encryption.Port + "/encrypt";
+
+            headers = Common.AddToDictionary(_Settings.Encryption.ApiKeyHeader, _Settings.Encryption.ApiKeyValue, null);
 
             resp = RestRequest.SendRequestSafe(
                 url, null, "POST", null, null, false,
-                Common.IsTrue(CurrentSettings.Rest.AcceptInvalidCerts),
+                Common.IsTrue(_Settings.Rest.AcceptInvalidCerts),
                 headers,
                 clear);
 
             if (resp == null)
             {
-                EventHandler.Log(LoggingModule.Severity.Warn, "ServerEncrypt null rest response returned");
+                _Logging.Log(LoggingModule.Severity.Warn, "ServerEncrypt null rest response returned");
                 return false;
             }
 
             if (resp.StatusCode != 200)
             {
-                EventHandler.Log(LoggingModule.Severity.Warn, "ServerEncrypt non-200 response returned: " + resp.StatusCode);
+                _Logging.Log(LoggingModule.Severity.Warn, "ServerEncrypt non-200 response returned: " + resp.StatusCode);
                 return false;
             }
 
@@ -250,29 +250,33 @@ namespace Kvpbase
             }
             catch (Exception)
             {
-                EventHandler.Log(LoggingModule.Severity.Warn, "ServerEncrypt unable to deserialize rest response body to encrypted message");
+                _Logging.Log(LoggingModule.Severity.Warn, "ServerEncrypt unable to deserialize rest response body to encrypted message");
                 return false;
             }
 
             if (ret == null)
             {
-                EventHandler.Log(LoggingModule.Severity.Warn, "ServerEncrypt null response object after deserialization");
+                _Logging.Log(LoggingModule.Severity.Warn, "ServerEncrypt null response object after deserialization");
                 return false;
             }
 
             cipher = ret.Cipher;
             ksn = ret.Ksn;
 
-            if (Common.IsTrue(CurrentSettings.Debug.DebugEncryption))
+            if (Common.IsTrue(_Settings.Debug.DebugEncryption))
             {
-                EventHandler.Log(LoggingModule.Severity.Debug, "ServerEncrypt completed " + Common.TotalMsFrom(startTime) + "ms: " +
+                _Logging.Log(LoggingModule.Severity.Debug, "ServerEncrypt completed " + Common.TotalMsFrom(startTime) + "ms: " +
                     clear.Length + "B clear, " +
                     cipher.Length + "B cipher " +
                     "KSN " + ksn);
             }
-            
+
             return true;
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

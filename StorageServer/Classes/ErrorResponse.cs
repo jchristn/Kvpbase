@@ -15,6 +15,10 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public ErrorResponse(
@@ -152,6 +156,10 @@ namespace Kvpbase
         {
             return Common.SerializeJson(this);
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

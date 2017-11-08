@@ -51,3 +51,6 @@ D:\code\kvpbase\storageserver-2.0\StorageServer\bin\Release\Watson.pdb
 D:\code\kvpbase\storageserver-2.0\StorageServer\obj\Release\StorageServer.csprojResolveAssemblyReference.cache
 D:\code\kvpbase\storageserver-2.0\StorageServer\obj\Release\StorageServer.exe
 D:\code\kvpbase\storageserver-2.0\StorageServer\obj\Release\StorageServer.pdb
+D:\code\kvpbase\storageserver-2.0\StorageServer\bin\Release\StorageServer.exe.config
+D:\code\kvpbase\storageserver-2.0\StorageServer\bin\Release\RegexMatcher.dll
+D:\code\kvpbase\storageserver-2.0\StorageServer\bin\Release\RegexMatcher.pdb

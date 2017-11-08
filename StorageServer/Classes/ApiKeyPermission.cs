@@ -29,7 +29,11 @@ namespace Kvpbase
         public DateTime? Expiration { get; set; }
 
         #endregion
-        
+
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public ApiKeyPermission()
@@ -94,6 +98,10 @@ namespace Kvpbase
         #endregion
 
         #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

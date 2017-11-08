@@ -40,6 +40,10 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public UserMaster()
@@ -252,6 +256,10 @@ namespace Kvpbase
 
             return 0;
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

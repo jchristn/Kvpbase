@@ -8,12 +8,16 @@ namespace Kvpbase
         #region Public-Members
 
         public DateTime? Created { get; set; }
-        public DateTime? Expiration { get; set;  }
+        public DateTime? Expiration { get; set; }
         public DateTime? Completion { get; set; }
         public string TaskType { get; set; }
         public string Owner { get; set; }
         public string Description { get; set; }
         public object Data { get; set; }
+
+        #endregion
+
+        #region Private-Members
 
         #endregion
 
@@ -23,6 +27,14 @@ namespace Kvpbase
         {
 
         }
+
+        #endregion
+
+        #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

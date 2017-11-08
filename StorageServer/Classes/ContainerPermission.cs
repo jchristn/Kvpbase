@@ -22,6 +22,10 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public ContainerPermission()
@@ -47,7 +51,7 @@ namespace Kvpbase
 
         #endregion
 
-        #region Public-Static-Methods
+        #region Public-Methods
 
         public static bool GetPermission(string operation, RequestMetadata md, ContainerPropertiesFile props)
         {
@@ -55,8 +59,8 @@ namespace Kvpbase
 
             if (String.IsNullOrEmpty(operation)) return false;
             if (md == null) return false;
-            if (md.CurrentUserMaster == null) return false;
-            if (md.CurrentApiKey == null) return false;
+            if (md.CurrUser == null) return false;
+            if (md.CurrApiKey == null) return false;
             if (props == null) return true;
 
             #endregion
@@ -84,18 +88,18 @@ namespace Kvpbase
 
             foreach (ContainerPermission curr in props.Permissions)
             {
-                if (md.CurrentUserMaster != null)
+                if (md.CurrUser != null)
                 {
-                    if (md.CurrentUserMaster.UserMasterId == curr.UserMasterId)
+                    if (md.CurrUser.UserMasterId == curr.UserMasterId)
                     {
                         permlist.Add(curr);
                         continue;
                     }
                 }
 
-                if (md.CurrentApiKey != null)
+                if (md.CurrApiKey != null)
                 {
-                    if (md.CurrentApiKey.ApiKeyId == curr.ApiKeyId)
+                    if (md.CurrApiKey.ApiKeyId == curr.ApiKeyId)
                     {
                         permlist.Add(curr);
                         continue;
@@ -157,6 +161,10 @@ namespace Kvpbase
 
             #endregion
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

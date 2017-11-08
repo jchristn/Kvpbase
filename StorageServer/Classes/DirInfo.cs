@@ -25,9 +25,9 @@ namespace Kvpbase
 
         #region Private-Members
 
-        private Settings CurrentSettings;
-        private UserManager Users;
-        private Events Logging;
+        private Settings _Settings;
+        private UserManager _UserMgr;
+        private Events _Logging;
 
         #endregion
 
@@ -44,10 +44,14 @@ namespace Kvpbase
             if (users == null) throw new ArgumentNullException(nameof(users));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
                 
-            CurrentSettings = settings;
-            Users = users;
-            Logging = logging;
+            _Settings = settings;
+            _UserMgr = users;
+            _Logging = logging;
         }
+
+        #endregion
+
+        #region Public-Methods
 
         public DirInfo FromDirectory(string directory, string userGuid, int maxResults, List<SearchFilter> filters, bool metadataOnly)
         {
@@ -93,7 +97,7 @@ namespace Kvpbase
                     foreach (string currContainer in containerList)
                     {
                         string containerName = Common.StringRemove(currContainer, directory);
-                        containerName = containerName.Replace(Common.GetPathSeparator(CurrentSettings.Environment), "");
+                        containerName = containerName.Replace(Common.GetPathSeparator(_Settings.Environment), "");
                         ret.ChildContainers.Add(containerName);
                     }
                 }
@@ -111,9 +115,9 @@ namespace Kvpbase
             #region Process-Each-File
 
             foreach (string curFile in fileList)
-            { 
+            {
                 ObjInfo currObjInfo = ObjInfo.FromFile(curFile);
-                 
+
                 #region Process-Search-Filters
 
                 if (filters != null)
@@ -326,7 +330,7 @@ namespace Kvpbase
                                     switch (currFilter.Condition)
                                     {
                                         case "Contains":
-                                            currObjContents = Common.ReadTextFile(directory + Common.GetPathSeparator(CurrentSettings.Environment) + currObjInfo.Key);
+                                            currObjContents = Common.ReadTextFile(directory + Common.GetPathSeparator(_Settings.Environment) + currObjInfo.Key);
                                             if (String.IsNullOrEmpty(currObjContents)) continue;
 
                                             if (currObjContents.ToLower().Contains(currFilter.Value.ToLower())) filterMatch = true;
@@ -334,7 +338,7 @@ namespace Kvpbase
                                             break;
 
                                         case "ContainsNot":
-                                            currObjContents = Common.ReadTextFile(directory + Common.GetPathSeparator(CurrentSettings.Environment) + currObjInfo.Key);
+                                            currObjContents = Common.ReadTextFile(directory + Common.GetPathSeparator(_Settings.Environment) + currObjInfo.Key);
                                             if (String.IsNullOrEmpty(currObjContents)) continue;
 
                                             if (currObjContents.ToLower().Contains(currFilter.Value.ToLower())) filterMatch = false;
@@ -393,22 +397,6 @@ namespace Kvpbase
             return ret;
         }
 
-        #endregion
-
-        #region Public-Methods
-
-        #endregion
-
-        #region Private-Methods
-
-        #endregion
-
-        #region Public-Static-Methods
-
-        #endregion
-
-        #region Private-Static-Methods
-
         public List<string> GetContainerList(string path, string userGuid)
         {
             #region Check-for-Null-Values
@@ -428,28 +416,28 @@ namespace Kvpbase
 
             #region Retrieve-User-Home-Directory
 
-            homeDirectory = Users.GetHomeDirectory(userGuid, CurrentSettings);
+            homeDirectory = _UserMgr.GetHomeDirectory(userGuid, _Settings);
             if (String.IsNullOrEmpty(homeDirectory)) return null;
 
             #endregion
 
             #region Process
-            
-            reduced = reduced.Replace(homeDirectory + Common.GetPathSeparator(CurrentSettings.Environment), "");
+
+            reduced = reduced.Replace(homeDirectory + Common.GetPathSeparator(_Settings.Environment), "");
             reduced = reduced.Replace(homeDirectory, "");
-            
+
             foreach (char c in reduced)
             {
-                if (String.Compare(c.ToString(), Common.GetPathSeparator(CurrentSettings.Environment)) == 0)
+                if (String.Compare(c.ToString(), Common.GetPathSeparator(_Settings.Environment)) == 0)
                 {
                     if (!String.IsNullOrEmpty(tempString))
                     {
-                        if (String.Compare(tempString, Common.GetPathSeparator(CurrentSettings.Environment)) == 0)
+                        if (String.Compare(tempString, Common.GetPathSeparator(_Settings.Environment)) == 0)
                         {
                             tempString = "";
                             continue;
                         }
-                        
+
                         ret.Add(tempString);
                         tempString = "";
                         continue;
@@ -471,5 +459,9 @@ namespace Kvpbase
         }
 
         #endregion
+
+        #region Private-Methods
+
+        #endregion 
     }
 }

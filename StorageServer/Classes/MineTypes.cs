@@ -8,6 +8,10 @@ namespace Kvpbase
     {
         // Thank you https://github.com/samuelneff/MimeTypeMap/blob/master/src/MimeTypes/MimeTypeMap.cs
 
+        #region Public-Members
+
+        #endregion
+
         #region Private-Members
 
         private static readonly IDictionary<string, string> data = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {
@@ -598,16 +602,16 @@ namespace Kvpbase
 
         #endregion
 
-        #region Public-Members
-
-        #endregion
-
         #region Constructors-and-Factories
 
         public MimeTypes()
         {
 
         }
+
+        #endregion
+
+        #region Public-Methods
 
         public static string GetFromExtension(string extension)
         {
@@ -621,6 +625,10 @@ namespace Kvpbase
             string mime;
             return data.TryGetValue(extension, out mime) ? mime : "application/octet-stream";
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

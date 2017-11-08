@@ -19,6 +19,10 @@ namespace Kvpbase
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public Find()
@@ -28,7 +32,7 @@ namespace Kvpbase
 
         #endregion
 
-        #region Public-Static-Methods
+        #region Public-Methods
 
         public static string BuildDiskPath(Find req, UserManager users, Settings settings, Events logging)
         {
@@ -104,6 +108,10 @@ namespace Kvpbase
 
             #endregion
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }
