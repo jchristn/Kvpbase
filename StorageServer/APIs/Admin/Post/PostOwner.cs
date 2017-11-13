@@ -55,7 +55,7 @@ namespace Kvpbase
 
             #region Retrieve-Owner
 
-            owner = Node.DetermineOwner(req.UserGuid, _Users, _Topology, _Node, _Logging);
+            owner = _TopologyMgr.DetermineOwner(req.UserGuid);
             if (owner == null)
             {                            
                 _Logging.Log(LoggingModule.Severity.Alert, "PostOwner primary for GUID " + req.UserGuid + " could not be discerned, returning 500");

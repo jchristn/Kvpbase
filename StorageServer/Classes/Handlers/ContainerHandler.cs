@@ -28,6 +28,7 @@ namespace Kvpbase
         private LoggerManager _LoggerMgr;
         private BunkerHandler _Bunker;
         private ReplicationHandler _Replication;
+        private ObjManager _ObjMgr;
 
         #endregion
 
@@ -43,7 +44,8 @@ namespace Kvpbase
             MaintenanceManager maintenance,
             LoggerManager logger,
             BunkerHandler bunker,
-            ReplicationHandler replication)
+            ReplicationHandler replication,
+            ObjManager obj)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
@@ -54,6 +56,7 @@ namespace Kvpbase
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (bunker == null) throw new ArgumentNullException(nameof(bunker));
             if (replication == null) throw new ArgumentNullException(nameof(replication));
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
 
             _Settings = settings;
             _Logging = logging;
@@ -65,6 +68,7 @@ namespace Kvpbase
             _LoggerMgr = logger;
             _Bunker = bunker;
             _Replication = replication;
+            _ObjMgr = obj;
         }
 
         #endregion
@@ -401,11 +405,11 @@ namespace Kvpbase
 
                         if (_MaintenanceMgr.IsEnabled())
                         {
-                            urls = Obj.BuildMaintReadUrls(true, md.CurrHttpReq, md.CurrObj, _Topology, _Logging);
+                            urls = _ObjMgr.BuildMaintReadUrls(true, md.CurrHttpReq, md.CurrObj);
                         }
                         else
                         {
-                            urls = Obj.BuildReplicaUrls(true, md.CurrHttpReq, md.CurrObj, _Topology, _Logging);
+                            urls = _ObjMgr.BuildReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
                         }
 
                         if (urls == null || urls.Count < 1)
@@ -443,7 +447,7 @@ namespace Kvpbase
                     case "redirect":
                         #region redirect
 
-                        redirectUrl = Obj.BuildRedirectUrl(true, md.CurrHttpReq, md.CurrObj, _Topology, _Logging);
+                        redirectUrl = _ObjMgr.BuildRedirectUrl(true, md.CurrHttpReq, md.CurrObj);
                         if (String.IsNullOrEmpty(redirectUrl))
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "ContainerHead unable to generate redirect URL, returning 500");
@@ -1130,11 +1134,11 @@ namespace Kvpbase
 
                         if (_MaintenanceMgr.IsEnabled())
                         {
-                            urlList = Obj.BuildMaintReadUrls(true, md.CurrHttpReq, md.CurrObj, _Topology, _Logging);
+                            urlList = _ObjMgr.BuildMaintReadUrls(true, md.CurrHttpReq, md.CurrObj);
                         }
                         else
                         {
-                            urlList = Obj.BuildReplicaUrls(true, md.CurrHttpReq, md.CurrObj, _Topology, _Logging);
+                            urlList = _ObjMgr.BuildReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
                         }
 
                         if (urlList == null || urlList.Count < 1)
@@ -1172,7 +1176,7 @@ namespace Kvpbase
                     case "redirect":
                         #region redirect
 
-                        redirectUrl = Obj.BuildRedirectUrl(true, md.CurrHttpReq, md.CurrObj, _Topology, _Logging);
+                        redirectUrl = _ObjMgr.BuildRedirectUrl(true, md.CurrHttpReq, md.CurrObj);
                         if (String.IsNullOrEmpty(redirectUrl))
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "ContainerRead unable to generate redirect_url, returning 500");
@@ -1821,7 +1825,7 @@ namespace Kvpbase
 
             #region Retrieve-Object
 
-            currObj = Obj.BuildObjFromDisk(filename, _UserMgr, _Settings, _Topology, _Node, _Logging);
+            currObj = _ObjMgr.BuildObjFromDisk(filename);
             if (currObj == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "RewriteObject unable to build disk obj from file " + filename);

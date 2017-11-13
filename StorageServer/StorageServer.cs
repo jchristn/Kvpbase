@@ -24,9 +24,11 @@ namespace Kvpbase
         public static EncryptionModule _EncryptionMgr;
         public static TokenManager _Tokens;
         public static UrlLockManager _UrlLockMgr;
+        public static ConsoleManager _ConsoleMgr;
         public static LoggerManager _Logger;
         public static MaintenanceManager _MaintenanceMgr;
-        public static ConsoleManager _ConsoleMgr;
+        public static ObjManager _ObjMgr;
+        public static TopologyManager _TopologyMgr;
         public static ConcurrentQueue<Dictionary<string, object>> _FailedRequests;
         public static Server _Server;
 
@@ -96,7 +98,7 @@ namespace Kvpbase
             _UrlLockMgr = new UrlLockManager(_Logging);
             _Logger = new LoggerManager(_Settings, _Logging);
             _MaintenanceMgr = new MaintenanceManager(_Logging);
-
+            
             #endregion
 
             #region Verify-Topology
@@ -114,18 +116,20 @@ namespace Kvpbase
 
             #region Initialize-Handlers
 
+            _TopologyMgr = new TopologyManager(_Settings, _Logging, _Topology, _Node, _Users);
+            _ObjMgr = new ObjManager(_Settings, _Logging, _TopologyMgr, _Node, _Users);
+
             _Bunker = new BunkerHandler(_Settings, _Logging);
-            _Replication = new ReplicationHandler(_Settings, _Logging, _MessageMgr, _Topology, _Node, _Users);
-            _Object = new ObjectHandler(_Settings, _Logging, _MessageMgr, _Topology, _Node, _Users, _UrlLockMgr, _MaintenanceMgr, _EncryptionMgr, _Logger, _Bunker, _Replication);
-            _Container = new ContainerHandler(_Settings, _Logging, _MessageMgr, _Topology, _Node, _Users, _MaintenanceMgr, _Logger, _Bunker, _Replication);
+            _Replication = new ReplicationHandler(_Settings, _Logging, _MessageMgr, _Topology, _Node, _Users, _ObjMgr);
+            _Object = new ObjectHandler(_Settings, _Logging, _MessageMgr, _Topology, _Node, _Users, _UrlLockMgr, _MaintenanceMgr, _EncryptionMgr, _Logger, _Bunker, _Replication, _ObjMgr);
+            _Container = new ContainerHandler(_Settings, _Logging, _MessageMgr, _Topology, _Node, _Users, _MaintenanceMgr, _Logger, _Bunker, _Replication, _ObjMgr);
 
             #endregion
 
             #region Start-Threads
 
             new PublicObjThread(_Settings, _Logging);
-            new FailedRequestsThread(_Settings, _Logging, _FailedRequests);
-            new PeerManagerThread(_Settings, _Logging, _Topology, _Node);
+            new FailedRequestsThread(_Settings, _Logging, _FailedRequests); 
             new MessengerThread(_Settings, _Logging, _Topology, _Node);
             new ExpirationThread(_Settings, _Logging);
             new ReplicationThread(_Settings, _Logging, _Topology, _Node);
@@ -142,12 +146,13 @@ namespace Kvpbase
                 _ConsoleMgr = new ConsoleManager(
                     _Settings,
                     _MaintenanceMgr,
-                    _Topology,
+                    _TopologyMgr,
                     _Node,
                     _Users,
                     _UrlLockMgr,
                     _EncryptionMgr,
                     _Logging,
+                    _ObjMgr,
                     ExitApplication);
             }
             else
@@ -490,7 +495,7 @@ namespace Kvpbase
 
                 #region Build-Object
 
-                md.CurrObj = Obj.BuildObj(md, _Users, _Settings, _Topology, _Node, _Logging);
+                md.CurrObj = _ObjMgr.BuildObj(md);
                 if (md.CurrObj == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to build payload object from request");

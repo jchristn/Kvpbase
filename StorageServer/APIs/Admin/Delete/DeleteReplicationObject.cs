@@ -37,7 +37,7 @@ namespace Kvpbase
 
             #region Build-Disk-Path
 
-            req.DiskPath = Obj.BuildDiskPath(req, md.CurrUser, _Settings, _Logging);
+            req.DiskPath = _ObjMgr.BuildDiskPath(req, md.CurrUser);
             if (String.IsNullOrEmpty(req.DiskPath))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "DeleteReplicationObject unable to build disk path from request");

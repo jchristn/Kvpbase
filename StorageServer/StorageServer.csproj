@@ -207,6 +207,8 @@
     <Compile Include="APIs\UserApiHandler.cs" />
     <Compile Include="Classes\Helpers\FsHelper.cs" />
     <Compile Include="Classes\Managers\MessageManager.cs" />
+    <Compile Include="Classes\Managers\TopologyManager.cs" />
+    <Compile Include="Classes\Managers\ObjManager.cs" />
     <Compile Include="Classes\Managers\TokenManager.cs" />
     <Compile Include="Classes\Managers\ConsoleManager.cs" />
     <Compile Include="Classes\Managers\LoggerManager.cs" />
@@ -256,7 +258,6 @@
     <Compile Include="Classes\Heartbeat.cs" />
     <Compile Include="Classes\Topology.cs" />
     <Compile Include="Classes\UserMaster.cs" />
-    <Compile Include="Classes\BackgroundThreads\PeerManagerThread.cs" />
     <Compile Include="StorageServer.cs" />
     <Compile Include="Classes\SearchFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

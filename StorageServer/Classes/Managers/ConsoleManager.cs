@@ -18,13 +18,14 @@ namespace Kvpbase
 
         private bool _Enabled { get; set; }
         private Settings _Settings { get; set; }
-        private Topology _Topology { get; set; }
+        private TopologyManager _Topology { get; set; }
         private Node _Node { get; set; }
         private UserManager _UserMgr { get; set; }
         private UrlLockManager _UrlLockMgr { get; set; }
         private EncryptionModule _Encryption { get; set; }
         private Events _Logging { get; set; }
         private MaintenanceManager _MaintenanceMgr { get; set; }
+        private ObjManager _ObjMgr { get; set; }
         private Func<bool> _ExitDelegate;
 
         #endregion
@@ -34,12 +35,13 @@ namespace Kvpbase
         public ConsoleManager(
             Settings settings, 
             MaintenanceManager maintenance, 
-            Topology topology, 
+            TopologyManager topology, 
             Node node, 
             UserManager users, 
             UrlLockManager locks,
             EncryptionModule encryption, 
             Events logging,
+            ObjManager obj,
             Func<bool> exitApplication)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
@@ -49,6 +51,7 @@ namespace Kvpbase
             if (locks == null) throw new ArgumentNullException(nameof(locks));
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (encryption == null) throw new ArgumentNullException(nameof(encryption));
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
             if (exitApplication == null) throw new ArgumentNullException(nameof(exitApplication));
 
             _Enabled = true;
@@ -60,6 +63,7 @@ namespace Kvpbase
             _Logging = logging;
             _MaintenanceMgr = maintenance;
             _Encryption = encryption;
+            _ObjMgr = obj;
             _ExitDelegate = exitApplication;
 
             Task.Run(() => ConsoleWorker());
@@ -105,11 +109,7 @@ namespace Kvpbase
                         _Enabled = false;
                         _ExitDelegate();
                         break;
-
-                    case "find_obj":
-                        FindObject(_Topology);
-                        break;
-
+                         
                     case "list_topology":
                         ListTopology();
                         break;
@@ -160,8 +160,7 @@ namespace Kvpbase
             Console.WriteLine(Common.Line(79, "-"));
             Console.WriteLine("  ?                         help / this menu");
             Console.WriteLine("  cls / c                   clear the console");
-            Console.WriteLine("  quit / q                  exit the application"); 
-            Console.WriteLine("  find_obj                  locate an object by primary GUID and object name");
+            Console.WriteLine("  quit / q                  exit the application");  
             Console.WriteLine("  list_topology             list nodes in the topology");
             Console.WriteLine("  list_active_urls          list URLs that are locked or being read");
             Console.WriteLine("  maint_enable              enable read broadcast and maintenance mode");
@@ -172,91 +171,7 @@ namespace Kvpbase
             Console.WriteLine("");
             return;
         }
-
-        private void FindObject(Topology topology)
-        {
-            Console.Write("Node name [ENTER for all]: ");
-            string node = Console.ReadLine();
-
-            Console.Write("User GUID: ");
-            string userGuid = Console.ReadLine();
-
-            Console.Write("Object key: ");
-            string key = Console.ReadLine();
-
-            List<string> containers = new List<string>();
-            Console.WriteLine("Enter each container name, starting from the root.  Do not enter the user GUID.");
-            Console.WriteLine("When finished, press ENTER.");
-            while (true)
-            {
-                Console.Write("  Container: ");
-                string container = Console.ReadLine();
-                if (String.IsNullOrEmpty(container)) break;
-                containers.Add(container);
-            }
-
-            if (String.IsNullOrEmpty(userGuid) || String.IsNullOrEmpty(key))
-            {
-                Console.WriteLine("Both user GUID and object name must be populated.");
-                return;
-            }
-
-            Find req = new Find();
-            req.UserGuid = userGuid;
-            req.Key = key;
-            req.ContainerPath = containers;
-
-            List<string> found = new List<string>();
-            if (topology != null && topology.Nodes != null)
-            {
-                foreach (Node curr in topology.Nodes)
-                {
-                    if ((String.IsNullOrEmpty(node)) ||
-                        (String.Compare(curr.Name, node) == 0))
-                    {
-                        if (FindObjectOnPeer(curr, req))
-                        {
-                            found.Add("Found on: " + curr.Name + " " + curr.DnsHostname + ":" + curr.Port);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("No nodes in topology");
-            }
-
-            Console.WriteLine(Common.Line(79, "-"));
-            Console.WriteLine("");
-
-            if (found != null)
-            {
-                if (found.Count > 0)
-                {
-                    Console.WriteLine("Search for key " + key + " for user GUID " + userGuid + " found on the following nodes:");
-                    Console.WriteLine("");
-
-                    foreach (string s in found)
-                    {
-                        Console.WriteLine("  " + s);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Not found (empty list)");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Not found (null)");
-            }
-
-            Console.WriteLine("");
-            Console.WriteLine(Common.Line(79, "-"));
-
-            return;
-        }
-
+         
         private bool FindObjectOnPeer(Node curr, Find req)
         {
             string url = "";
@@ -279,30 +194,39 @@ namespace Kvpbase
 
         private void ListTopology()
         {
-            if (_Topology == null || _Topology.Nodes == null || _Topology.Nodes.Count < 1)
+            if (_Topology == null)
             {
                 Console.WriteLine("Topology contains no nodes");
             }
             else
             {
                 Console.WriteLine("Nodes in topology:");
-                foreach (Node curr in _Topology.Nodes)
+                List<Node> nodes = _Topology.GetNodes();
+                if (nodes != null && nodes.Count > 0)
                 {
-                    Console.WriteLine(curr.ToString());
-                }
-
-                Console.WriteLine("");
-                if (_Topology.Replicas == null || _Topology.Replicas.Count < 1)
-                {
-                    Console.WriteLine("No replicas defined in topology");
-                }
-                else
-                {
-                    Console.WriteLine("Replica nodes:");
-                    foreach (Node curr in _Topology.Replicas)
+                    foreach (Node curr in _Topology.GetNodes())
                     {
                         Console.WriteLine(curr.ToString());
                     }
+                }
+                else
+                {
+                    Console.WriteLine("Topology contains no nodes");
+                }
+
+                Console.WriteLine("");
+                Console.WriteLine("Replica nodes:");
+                List<Node> replicas = _Topology.GetReplicas();
+                if (replicas != null && replicas.Count > 0)
+                {
+                    foreach (Node curr in _Topology.GetReplicas())
+                    {
+                        Console.WriteLine(curr.ToString());
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Topology contains no replicas");
                 }
             }
 
@@ -467,7 +391,7 @@ namespace Kvpbase
                         }
                     }
 
-                    currOwner = Node.DetermineOwner(currUserGuid, _UserMgr, _Topology, _Node, _Logging);
+                    currOwner = _Topology.DetermineOwner(currUserGuid);
                     if (currOwner == null)
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to calculate primary for user GUID " + currUserGuid);
@@ -483,7 +407,7 @@ namespace Kvpbase
                     else
                     {
                         bool isNeighbor = false;
-                        foreach (Node currNode in _Topology.Nodes)
+                        foreach (Node currNode in _Topology.GetNodes())
                         {
                             if (currNode.NodeId == currOwner.NodeId)
                             {
@@ -539,7 +463,7 @@ namespace Kvpbase
 
                         #region Build-Subdirectory-URL
 
-                        subdirUrl = Obj.BuildUrlFromFilePath(currUserSubdir, currOwner, null, _UserMgr, _Settings, _Logging);
+                        subdirUrl = _ObjMgr.BuildUrlFromFilePath(currUserSubdir, null);
                         _Logging.Log(LoggingModule.Severity.Debug, "DataValidation processing subdirectory path " + currUserSubdir);
                         _Logging.Log(LoggingModule.Severity.Debug, "DataValidation processing subdirectory URL " + subdirUrl);
 
@@ -609,7 +533,7 @@ namespace Kvpbase
 
                             #region Build-Object
 
-                            currObj = Obj.BuildObjFromDisk(currUserFile, _UserMgr, _Settings, _Topology, _Node, _Logging);
+                            currObj = _ObjMgr.BuildObjFromDisk(currUserFile);
                             if (currObj == null)
                             {
                                 _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to retrieve obj for " + currUserFile);
@@ -620,7 +544,7 @@ namespace Kvpbase
 
                             #region Build-File-URL
 
-                            fileUrl = Obj.BuildUrlFromFilePath(currUserFile, currOwner, currObj, _UserMgr, _Settings, _Logging);
+                            fileUrl = _ObjMgr.BuildUrlFromFilePath(currUserFile, currObj);
                             if (String.IsNullOrEmpty(fileUrl))
                             {
                                 _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to build file URL for user GUID " + currUserGuid + " file " + currUserFile);

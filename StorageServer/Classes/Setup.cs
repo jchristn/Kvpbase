@@ -205,7 +205,7 @@ namespace Kvpbase
             #region Messages
 
             currSettings.Messages = new Settings.SettingsMessages();
-            currSettings.Messages.Directory = "." + separator + "messages" + separator;
+            currSettings.Messages.Directory = "." + separator + "Messages" + separator;
             currSettings.Messages.RefreshSec = 10;
 
             #endregion
@@ -213,7 +213,7 @@ namespace Kvpbase
             #region Expiration
 
             currSettings.Expiration = new Settings.SettingsExpiration();
-            currSettings.Expiration.Directory = "." + separator + "expiration" + separator;
+            currSettings.Expiration.Directory = "." + separator + "Expiration" + separator;
             currSettings.Expiration.RefreshSec = 10;
             currSettings.Expiration.DefaultExpirationSec = 0;
 
@@ -222,7 +222,7 @@ namespace Kvpbase
             #region Replication
 
             currSettings.Replication = new Settings.SettingsReplication();
-            currSettings.Replication.Directory = "." + separator + "replication" + separator;
+            currSettings.Replication.Directory = "." + separator + "Replication" + separator;
             currSettings.Replication.RefreshSec = 10;
             currSettings.Replication.ReplicationMode = "sync";
 
@@ -231,7 +231,7 @@ namespace Kvpbase
             #region Bunker
 
             currSettings.Bunker = new Settings.SettingsBunker();
-            currSettings.Bunker.Directory = "." + separator + "bunker" + separator;
+            currSettings.Bunker.Directory = "." + separator + "Bunker" + separator;
             currSettings.Bunker.Enable = 0;
             currSettings.Bunker.RefreshSec = 30;
             currSettings.Bunker.Nodes = null;
@@ -241,7 +241,7 @@ namespace Kvpbase
             #region Pubfiles
 
             currSettings.PublicObj = new Settings.SettingsPublicObj();
-            currSettings.PublicObj.Directory = "." + separator + "pubfiles" + separator;
+            currSettings.PublicObj.Directory = "." + separator + "Pubfiles" + separator;
             currSettings.PublicObj.RefreshSec = 600;
             currSettings.PublicObj.DefaultExpirationSec = 7776000;
 
@@ -250,7 +250,7 @@ namespace Kvpbase
             #region Tasks
 
             currSettings.Tasks = new Settings.SettingsTasks();
-            currSettings.Tasks.Directory = "." + separator + "tasks" + separator;
+            currSettings.Tasks.Directory = "." + separator + "Tasks" + separator;
             currSettings.Tasks.RefreshSec = 10;
 
             #endregion

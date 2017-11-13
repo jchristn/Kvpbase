@@ -124,7 +124,7 @@ namespace Kvpbase
                 foreach (Node curr in _Topology.Nodes)
                 {
                     if (curr.NodeId == _Node.NodeId) continue;
-                    if (Node.FindObject(_Settings, curr, req))
+                    if (_TopologyMgr.FindObject(req))
                     {
                         if (Common.IsTrue(curr.Ssl)) url = "https://";
                         else url = "http://";

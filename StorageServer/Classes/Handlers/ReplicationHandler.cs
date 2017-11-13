@@ -23,25 +23,28 @@ namespace Kvpbase
         private Topology _Topology;
         private Node _Node;
         private UserManager _Users;
-        
+        private ObjManager _ObjMgr;
+
         #endregion
 
         #region Constructors-and-Factories
 
-        public ReplicationHandler(Settings settings, Events logging, MessageManager messages, Topology topology, Node node, UserManager users)
+        public ReplicationHandler(Settings settings, Events logging, MessageManager messages, Topology topology, Node node, UserManager users, ObjManager obj)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (messages == null) throw new ArgumentNullException(nameof(messages));
             if (users == null) throw new ArgumentNullException(nameof(users));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
-            
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+
             _Settings = settings;
             _Topology = topology;
             _MessageMgr = messages;
             _Node = node;
             _Users = users;
             _Logging = logging;
+            _ObjMgr = obj;
         }
 
         #endregion
@@ -1035,7 +1038,7 @@ namespace Kvpbase
 
                 #region Overwrite-Path-in-Path-Object
 
-                req.DiskPath = Obj.BuildDiskPath(req, currUser, _Settings, _Logging);
+                req.DiskPath = _ObjMgr.BuildDiskPath(req, currUser);
                 if (String.IsNullOrEmpty(req.DiskPath))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerObjectReceive unable to build disk path from request");
@@ -1112,7 +1115,7 @@ namespace Kvpbase
 
                 #region Overwrite-Path-in-Path-Object
 
-                req.DiskPath = Obj.BuildDiskPath(req, currUser, _Settings, _Logging);
+                req.DiskPath = _ObjMgr.BuildDiskPath(req, currUser);
                 if (String.IsNullOrEmpty(req.DiskPath))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerContainerReceive unable to build disk path from request");
@@ -1236,7 +1239,7 @@ namespace Kvpbase
 
                 #region Read-Object
 
-                currObj = Obj.BuildObjFromDisk(diskPathOriginalObj, _Users, _Settings, _Topology, _Node, _Logging);
+                currObj = _ObjMgr.BuildObjFromDisk(diskPathOriginalObj);
                 if (currObj == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerObjectMoveInternal unable to retrieve obj for " + diskPathOriginalObj);
@@ -1341,7 +1344,7 @@ namespace Kvpbase
 
                 #region Read-Object
 
-                currObj = Obj.BuildObjFromDisk(diskPathOriginal, _Users, _Settings, _Topology, _Node, _Logging);
+                currObj = _ObjMgr.BuildObjFromDisk(diskPathOriginal);
                 if (currObj == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "PostReplicationRenameObject unable to retrieve obj for " + diskPathOriginal);
@@ -2812,7 +2815,7 @@ namespace Kvpbase
 
                 #region Retrieve-Object
 
-                currObj = Obj.BuildObjFromDisk(filename, _Users, _Settings, _Topology, _Node, _Logging);
+                currObj = _ObjMgr.BuildObjFromDisk(filename);
                 if (currObj == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "RewriteObject unable to build disk obj from file " + filename);
