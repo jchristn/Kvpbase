@@ -1038,7 +1038,7 @@ namespace Kvpbase
 
                 #region Overwrite-Path-in-Path-Object
 
-                req.DiskPath = _ObjMgr.BuildDiskPath(req, currUser);
+                req.DiskPath = _ObjMgr.DiskPath(req, currUser);
                 if (String.IsNullOrEmpty(req.DiskPath))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerObjectReceive unable to build disk path from request");
@@ -1115,7 +1115,7 @@ namespace Kvpbase
 
                 #region Overwrite-Path-in-Path-Object
 
-                req.DiskPath = _ObjMgr.BuildDiskPath(req, currUser);
+                req.DiskPath = _ObjMgr.DiskPath(req, currUser);
                 if (String.IsNullOrEmpty(req.DiskPath))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerContainerReceive unable to build disk path from request");
@@ -1239,7 +1239,7 @@ namespace Kvpbase
 
                 #region Read-Object
 
-                currObj = _ObjMgr.BuildObjFromDisk(diskPathOriginalObj);
+                currObj = _ObjMgr.BuildFromDisk(diskPathOriginalObj);
                 if (currObj == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerObjectMoveInternal unable to retrieve obj for " + diskPathOriginalObj);
@@ -1344,7 +1344,7 @@ namespace Kvpbase
 
                 #region Read-Object
 
-                currObj = _ObjMgr.BuildObjFromDisk(diskPathOriginal);
+                currObj = _ObjMgr.BuildFromDisk(diskPathOriginal);
                 if (currObj == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "PostReplicationRenameObject unable to retrieve obj for " + diskPathOriginal);
@@ -2815,7 +2815,7 @@ namespace Kvpbase
 
                 #region Retrieve-Object
 
-                currObj = _ObjMgr.BuildObjFromDisk(filename);
+                currObj = _ObjMgr.BuildFromDisk(filename);
                 if (currObj == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "RewriteObject unable to build disk obj from file " + filename);

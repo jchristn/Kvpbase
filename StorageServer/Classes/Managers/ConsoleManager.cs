@@ -463,7 +463,7 @@ namespace Kvpbase
 
                         #region Build-Subdirectory-URL
 
-                        subdirUrl = _ObjMgr.BuildUrlFromFilePath(currUserSubdir, null);
+                        subdirUrl = _ObjMgr.PrimaryUrlFromDisk(currUserSubdir, null);
                         _Logging.Log(LoggingModule.Severity.Debug, "DataValidation processing subdirectory path " + currUserSubdir);
                         _Logging.Log(LoggingModule.Severity.Debug, "DataValidation processing subdirectory URL " + subdirUrl);
 
@@ -533,7 +533,7 @@ namespace Kvpbase
 
                             #region Build-Object
 
-                            currObj = _ObjMgr.BuildObjFromDisk(currUserFile);
+                            currObj = _ObjMgr.BuildFromDisk(currUserFile);
                             if (currObj == null)
                             {
                                 _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to retrieve obj for " + currUserFile);
@@ -544,7 +544,7 @@ namespace Kvpbase
 
                             #region Build-File-URL
 
-                            fileUrl = _ObjMgr.BuildUrlFromFilePath(currUserFile, currObj);
+                            fileUrl = _ObjMgr.PrimaryUrlFromDisk(currUserFile, currObj);
                             if (String.IsNullOrEmpty(fileUrl))
                             {
                                 _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to build file URL for user GUID " + currUserGuid + " file " + currUserFile);

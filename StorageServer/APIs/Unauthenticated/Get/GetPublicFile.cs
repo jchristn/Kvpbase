@@ -142,7 +142,7 @@ namespace Kvpbase
 
                 #region Rewrite-Metadata-Object
 
-                currObj = _ObjMgr.BuildObjFromDisk(currPubfile.DiskPath);
+                currObj = _ObjMgr.BuildFromDisk(currPubfile.DiskPath);
                 if (currObj == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "GetPublicFile unable to overwrite metadata object using disk path " + currPubfile.DiskPath);

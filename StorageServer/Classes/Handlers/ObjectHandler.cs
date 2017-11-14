@@ -574,11 +574,11 @@ namespace Kvpbase
 
                             if (_MaintenanceMgr.IsEnabled())
                             {
-                                urls = _ObjMgr.BuildMaintReadUrls(true, md.CurrHttpReq, md.CurrObj);
+                                urls = _ObjMgr.MaintenanceUrls(true, md.CurrHttpReq, md.CurrObj);
                             }
                             else
                             {
-                                urls = _ObjMgr.BuildReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
+                                urls = _ObjMgr.ReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
                             }
 
                             if (urls == null || urls.Count < 1)
@@ -616,7 +616,7 @@ namespace Kvpbase
                         case "redirect":
                             #region redirect
 
-                            redirectUrls = _ObjMgr.BuildRedirectUrl(true, md.CurrHttpReq, md.CurrObj);
+                            redirectUrls = _ObjMgr.RedirectUrl(true, md.CurrHttpReq, md.CurrObj);
                             if (String.IsNullOrEmpty(redirectUrls))
                             {
                                 _Logging.Log(LoggingModule.Severity.Warn, "ObjectHead unable to generate redirect URL, returning 500");
@@ -955,7 +955,7 @@ namespace Kvpbase
 
                     #region Read-Original-Object
 
-                    currObj = _ObjMgr.BuildObjFromDisk(diskPathOriginal);
+                    currObj = _ObjMgr.BuildFromDisk(diskPathOriginal);
                     if (currObj == null)
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "ObjectMove unable to retrieve obj for " + md.CurrObj.DiskPath);
@@ -1414,7 +1414,7 @@ namespace Kvpbase
 
                     #region Retrieve-Object
 
-                    currObj = _ObjMgr.BuildObjFromDisk(md.CurrObj.DiskPath);
+                    currObj = _ObjMgr.BuildFromDisk(md.CurrObj.DiskPath);
                     if (currObj == null)
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "ObjectRead unable to retrieve obj for " + md.CurrObj.DiskPath);
@@ -1599,11 +1599,11 @@ namespace Kvpbase
 
                             if (_MaintenanceMgr.IsEnabled())
                             {
-                                urls = _ObjMgr.BuildMaintReadUrls(true, md.CurrHttpReq, md.CurrObj);
+                                urls = _ObjMgr.MaintenanceUrls(true, md.CurrHttpReq, md.CurrObj);
                             }
                             else
                             {
-                                urls = _ObjMgr.BuildReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
+                                urls = _ObjMgr.ReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
                             }
 
                             if (urls == null || urls.Count < 1)
@@ -1641,7 +1641,7 @@ namespace Kvpbase
                         case "redirect":
                             #region redirect
 
-                            redirectUrl = _ObjMgr.BuildRedirectUrl(true, md.CurrHttpReq, md.CurrObj);
+                            redirectUrl = _ObjMgr.RedirectUrl(true, md.CurrHttpReq, md.CurrObj);
                             if (String.IsNullOrEmpty(redirectUrl))
                             {
                                 _Logging.Log(LoggingModule.Severity.Warn, "ObjectRead unable to generate redirect_url, returning 500");
@@ -1955,7 +1955,7 @@ namespace Kvpbase
 
                     #region Read-Original-Object
 
-                    currObj = _ObjMgr.BuildObjFromDisk(diskPathOriginal);
+                    currObj = _ObjMgr.BuildFromDisk(diskPathOriginal);
                     if (currObj == null)
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "ObjectRename unable to retrieve obj for " + md.CurrObj.DiskPath);
@@ -2310,7 +2310,7 @@ namespace Kvpbase
                     case "proxy":
                         #region proxy
 
-                        urls = _ObjMgr.BuildReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
+                        urls = _ObjMgr.ReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
                         if (urls == null || urls.Count < 1)
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "ObjectSearch unable to build replica URL list (null response)");
@@ -2346,7 +2346,7 @@ namespace Kvpbase
                     case "redirect":
                         #region redirect
 
-                        redirectUrl = _ObjMgr.BuildRedirectUrl(true, md.CurrHttpReq, md.CurrObj);
+                        redirectUrl = _ObjMgr.RedirectUrl(true, md.CurrHttpReq, md.CurrObj);
                         if (String.IsNullOrEmpty(redirectUrl))
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "ObjectSearch unable to generate redirect URL, returning 500");
@@ -2483,7 +2483,7 @@ namespace Kvpbase
                             {
                                 #region Amend-Path-Object-With-New-URL
 
-                                md.CurrObj.PrimaryUrlWithQs = _ObjMgr.BuildPrimaryUrl(true, md.CurrHttpReq, md.CurrObj);
+                                md.CurrObj.PrimaryUrlWithQs = _ObjMgr.PrimaryUrl(true, md.CurrHttpReq, md.CurrObj);
                                 if (String.IsNullOrEmpty(md.CurrObj.PrimaryUrlWithQs))
                                 {
                                     _Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to build primary URL for request (with querystring)");
@@ -2491,7 +2491,7 @@ namespace Kvpbase
                                         new ErrorResponse(4, 500, "Unable to build primary URL.", null).ToJson(), true);
                                 }
 
-                                md.CurrObj.PrimaryUrlWithoutQs = _ObjMgr.BuildPrimaryUrl(false, md.CurrHttpReq, md.CurrObj);
+                                md.CurrObj.PrimaryUrlWithoutQs = _ObjMgr.PrimaryUrl(false, md.CurrHttpReq, md.CurrObj);
                                 if (String.IsNullOrEmpty(md.CurrObj.PrimaryUrlWithoutQs))
                                 {
                                     _Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to build primary URL for request (without querystring)");
@@ -2499,7 +2499,7 @@ namespace Kvpbase
                                         new ErrorResponse(4, 500, "Unable to build primary URL.", null).ToJson(), true);
                                 }
 
-                                md.CurrObj.DiskPath = _ObjMgr.BuildDiskPath(md.CurrObj, md.CurrUser);
+                                md.CurrObj.DiskPath = _ObjMgr.DiskPath(md.CurrObj, md.CurrUser);
                                 if (String.IsNullOrEmpty(md.CurrObj.DiskPath))
                                 {
                                     _Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to build disk path for request");
@@ -2742,7 +2742,7 @@ namespace Kvpbase
 
                         #region Read-Original
 
-                        currObj = _ObjMgr.BuildObjFromDisk(md.CurrObj.DiskPath);
+                        currObj = _ObjMgr.BuildFromDisk(md.CurrObj.DiskPath);
                         if (currObj == null)
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "ObjectWrite unable to retrieve obj for " + md.CurrObj.DiskPath);
@@ -3233,7 +3233,7 @@ namespace Kvpbase
 
             #region Retrieve-Object
 
-            currObj = _ObjMgr.BuildObjFromDisk(filename);
+            currObj = _ObjMgr.BuildFromDisk(filename);
             if (currObj == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "RewriteObject unable to build disk obj from file " + filename);

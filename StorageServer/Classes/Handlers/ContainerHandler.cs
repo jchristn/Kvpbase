@@ -405,11 +405,11 @@ namespace Kvpbase
 
                         if (_MaintenanceMgr.IsEnabled())
                         {
-                            urls = _ObjMgr.BuildMaintReadUrls(true, md.CurrHttpReq, md.CurrObj);
+                            urls = _ObjMgr.MaintenanceUrls(true, md.CurrHttpReq, md.CurrObj);
                         }
                         else
                         {
-                            urls = _ObjMgr.BuildReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
+                            urls = _ObjMgr.ReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
                         }
 
                         if (urls == null || urls.Count < 1)
@@ -447,7 +447,7 @@ namespace Kvpbase
                     case "redirect":
                         #region redirect
 
-                        redirectUrl = _ObjMgr.BuildRedirectUrl(true, md.CurrHttpReq, md.CurrObj);
+                        redirectUrl = _ObjMgr.RedirectUrl(true, md.CurrHttpReq, md.CurrObj);
                         if (String.IsNullOrEmpty(redirectUrl))
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "ContainerHead unable to generate redirect URL, returning 500");
@@ -1134,11 +1134,11 @@ namespace Kvpbase
 
                         if (_MaintenanceMgr.IsEnabled())
                         {
-                            urlList = _ObjMgr.BuildMaintReadUrls(true, md.CurrHttpReq, md.CurrObj);
+                            urlList = _ObjMgr.MaintenanceUrls(true, md.CurrHttpReq, md.CurrObj);
                         }
                         else
                         {
-                            urlList = _ObjMgr.BuildReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
+                            urlList = _ObjMgr.ReplicaUrls(true, md.CurrHttpReq, md.CurrObj);
                         }
 
                         if (urlList == null || urlList.Count < 1)
@@ -1176,7 +1176,7 @@ namespace Kvpbase
                     case "redirect":
                         #region redirect
 
-                        redirectUrl = _ObjMgr.BuildRedirectUrl(true, md.CurrHttpReq, md.CurrObj);
+                        redirectUrl = _ObjMgr.RedirectUrl(true, md.CurrHttpReq, md.CurrObj);
                         if (String.IsNullOrEmpty(redirectUrl))
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "ContainerRead unable to generate redirect_url, returning 500");
@@ -1825,7 +1825,7 @@ namespace Kvpbase
 
             #region Retrieve-Object
 
-            currObj = _ObjMgr.BuildObjFromDisk(filename);
+            currObj = _ObjMgr.BuildFromDisk(filename);
             if (currObj == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "RewriteObject unable to build disk obj from file " + filename);

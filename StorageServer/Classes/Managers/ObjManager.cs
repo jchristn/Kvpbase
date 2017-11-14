@@ -46,7 +46,7 @@ namespace Kvpbase
 
         #region Public-Methods
 
-        public Obj BuildObj(RequestMetadata md)
+        public Obj Build(RequestMetadata md)
         {
             #region Check-for-Null-Values
 
@@ -62,8 +62,7 @@ namespace Kvpbase
 
             #region Base-Parameters
 
-            Obj ret = new Obj();
-            ret.ContainerPath = new List<string>();
+            Obj ret = new Obj(); 
 
             int rueCount = 1;
             int expSec = 0;
@@ -207,14 +206,14 @@ namespace Kvpbase
                 return null;
             }
 
-            ret.PrimaryUrlWithQs = BuildPrimaryUrl(true, md.CurrHttpReq, ret);
+            ret.PrimaryUrlWithQs = PrimaryUrl(true, md.CurrHttpReq, ret);
             if (String.IsNullOrEmpty(ret.PrimaryUrlWithQs))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "BuildObj unable to build primary URL for request (with querystring)");
                 return null;
             }
 
-            ret.PrimaryUrlWithoutQs = BuildPrimaryUrl(false, null, ret);
+            ret.PrimaryUrlWithoutQs = PrimaryUrl(false, null, ret);
             if (String.IsNullOrEmpty(ret.PrimaryUrlWithoutQs))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "BuildObj unable to build primary URL for request (without querystring)");
@@ -225,7 +224,7 @@ namespace Kvpbase
 
             #region Build-Disk-Path
 
-            ret.DiskPath = BuildDiskPath(ret, md.CurrUser);
+            ret.DiskPath = DiskPath(ret, md.CurrUser);
             if (String.IsNullOrEmpty(ret.DiskPath))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "BuildObj unable to build disk path for obj");
@@ -249,7 +248,7 @@ namespace Kvpbase
             return ret;
         }
 
-        public Obj BuildObjFromDisk(string path)
+        public Obj BuildFromDisk(string path)
         {
             #region Check-for-Null-Values
 
@@ -262,8 +261,7 @@ namespace Kvpbase
 
             #region Variables
 
-            Obj ret = new Obj();
-            ret.ContainerPath = new List<string>();
+            Obj ret = new Obj(); 
 
             string directoryName = "";
             string filenameWithExtension = "";
@@ -404,8 +402,8 @@ namespace Kvpbase
                 ret.UserGuid = currUser.Guid;
                 ret.Key = key;
                 ret.ContentType = MimeTypes.GetFromExtension(Common.GetFileExtension(ret.DiskPath));
-                ret.PrimaryUrlWithQs = BuildPrimaryUrl(true, null, ret);
-                ret.PrimaryUrlWithoutQs = BuildPrimaryUrl(false, null, ret);
+                ret.PrimaryUrlWithQs = PrimaryUrl(true, null, ret);
+                ret.PrimaryUrlWithoutQs = PrimaryUrl(false, null, ret);
 
                 #endregion
             }
@@ -415,7 +413,7 @@ namespace Kvpbase
             return ret;
         }
 
-        public string BuildPrimaryUrl(bool includeQuery, HttpRequest req, Obj currObj)
+        public string PrimaryUrl(bool includeQuery, HttpRequest req, Obj currObj)
         {
             #region Check-for-Null-Values
 
@@ -489,7 +487,7 @@ namespace Kvpbase
             #endregion
         }
 
-        public string BuildUrlFromFilePath(string filename, Obj obj)
+        public string PrimaryUrlFromDisk(string filename, Obj obj)
         {
             #region Check-for-Null-Values
 
@@ -594,7 +592,7 @@ namespace Kvpbase
             return url;
         }
 
-        public List<string> BuildReplicaUrls(bool includeQuery, HttpRequest req, Obj currObj)
+        public List<string> ReplicaUrls(bool includeQuery, HttpRequest req, Obj currObj)
         {
             #region Check-for-Null-Values
 
@@ -682,7 +680,7 @@ namespace Kvpbase
             return urlList;
         }
 
-        public List<string> BuildMaintReadUrls(bool includeQuery, HttpRequest req, Obj currObj)
+        public List<string> MaintenanceUrls(bool includeQuery, HttpRequest req, Obj currObj)
         {
             #region Check-for-Null-Values
 
@@ -757,7 +755,7 @@ namespace Kvpbase
             return urlList;
         }
 
-        public string BuildRedirectUrl(bool includeQuery, HttpRequest req, Obj currObj)
+        public string RedirectUrl(bool includeQuery, HttpRequest req, Obj currObj)
         {
             #region Check-for-Null-Values
 
@@ -879,7 +877,7 @@ namespace Kvpbase
             #endregion
         }
 
-        public string BuildDiskPath(Obj currObj, UserMaster currUser)
+        public string DiskPath(Obj currObj, UserMaster currUser)
         {
             #region Check-for-Null-Values
 

@@ -495,7 +495,7 @@ namespace Kvpbase
 
                 #region Build-Object
 
-                md.CurrObj = _ObjMgr.BuildObj(md);
+                md.CurrObj = _ObjMgr.Build(md);
                 if (md.CurrObj == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to build payload object from request");

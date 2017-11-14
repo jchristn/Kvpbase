@@ -46,7 +46,8 @@ namespace Kvpbase
 
         public Obj()
         {
-
+            ContainerPath = new List<string>();
+            Tags = new List<string>();
         }
 
         #endregion

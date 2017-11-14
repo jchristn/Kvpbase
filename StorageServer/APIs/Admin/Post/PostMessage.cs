@@ -79,7 +79,7 @@ namespace Kvpbase
                             true);
                     }
 
-                    delContainer.DiskPath = _ObjMgr.BuildDiskPath(delContainer, md.CurrUser);
+                    delContainer.DiskPath = _ObjMgr.DiskPath(delContainer, md.CurrUser);
                     if (String.IsNullOrEmpty(delContainer.DiskPath))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "PostMessage unable to build disk path for delete container operation");
@@ -124,7 +124,7 @@ namespace Kvpbase
                             true);
                     }
 
-                    delObject.DiskPath = _ObjMgr.BuildDiskPath(delObject, md.CurrUser);
+                    delObject.DiskPath = _ObjMgr.DiskPath(delObject, md.CurrUser);
                     if (String.IsNullOrEmpty(delObject.DiskPath))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "PostMessage unable to build disk path for delete object operation");
@@ -169,7 +169,7 @@ namespace Kvpbase
                             true);
                     }
 
-                    createContainer.DiskPath = _ObjMgr.BuildDiskPath(createContainer, md.CurrUser);
+                    createContainer.DiskPath = _ObjMgr.DiskPath(createContainer, md.CurrUser);
                     if (String.IsNullOrEmpty(createContainer.DiskPath))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "PostMessage unable to build disk path for create container operation");
@@ -216,7 +216,7 @@ namespace Kvpbase
                             true);
                     }
 
-                    createObject.DiskPath = _ObjMgr.BuildDiskPath(createObject, md.CurrUser);
+                    createObject.DiskPath = _ObjMgr.DiskPath(createObject, md.CurrUser);
                     if (String.IsNullOrEmpty(createObject.DiskPath))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "PostMessage unable to build disk path for create object operation");
