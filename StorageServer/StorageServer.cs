@@ -380,7 +380,14 @@ namespace Kvpbase
                 md.Params = new RequestMetadata.Parameters();
 
                 if (md.User != null) md.Params.UserGuid = md.User.Guid;
-                else md.Params.UserGuid = "null";
+                else if (req.RawUrlEntries.Count >= 1)
+                {
+                    md.Params.UserGuid = req.RawUrlEntries[0];
+                }
+                else 
+                {
+                    md.Params.UserGuid = "null";
+                }
 
                 if (req.RawUrlEntries.Count > 1) md.Params.Container = req.RawUrlEntries[1];
                 if (req.RawUrlEntries.Count > 2) md.Params.ObjectKey = req.RawUrlEntries[2];
