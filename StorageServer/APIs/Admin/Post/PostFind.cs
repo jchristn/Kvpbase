@@ -72,7 +72,7 @@ namespace Kvpbase
 
             #region Build-Disk-Path
 
-            diskPath = Find.BuildDiskPath(req, _Users, _Settings, _Logging);
+            diskPath = _ObjMgr.BuildDiskPath(req);
 
             #endregion
 

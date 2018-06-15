@@ -624,7 +624,7 @@ namespace Kvpbase
 
                 #region Check-if-Original-Exists
 
-                string diskPathOriginal = MoveRequest.BuildDiskPath(req, true, true, _UserMgr, _Settings, _Logging);
+                string diskPathOriginal = _ObjMgr.BuildDiskPath(req, true, true);
                 if (String.IsNullOrEmpty(diskPathOriginal))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ContainerMove unable to build disk path for original container");
@@ -643,7 +643,7 @@ namespace Kvpbase
 
                 #region Check-if-Target-Parent-Exists
 
-                string diskPathTargetParent = MoveRequest.BuildDiskPath(req, false, false, _UserMgr, _Settings, _Logging);
+                string diskPathTargetParent = _ObjMgr.BuildDiskPath(req, false, false);
                 if (String.IsNullOrEmpty(diskPathTargetParent))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ContainerMove unable to build disk path for target container");
@@ -662,7 +662,7 @@ namespace Kvpbase
 
                 #region Check-if-Target-Child-Exists
 
-                string diskPathTargetChild = MoveRequest.BuildDiskPath(req, false, true, _UserMgr, _Settings, _Logging);
+                string diskPathTargetChild = _ObjMgr.BuildDiskPath(req, false, true);
                 if (String.IsNullOrEmpty(diskPathTargetChild))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ContainerMove unable to build disk path for target container");
@@ -1348,7 +1348,7 @@ namespace Kvpbase
 
                 #region Check-if-Original-Exists
 
-                string diskPathOriginal = RenameRequest.BuildDiskPath(req, true, _UserMgr, _Settings, _Logging);
+                string diskPathOriginal = _ObjMgr.BuildDiskPath(req, true);
                 if (String.IsNullOrEmpty(diskPathOriginal))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ContainerRename unable to build disk path for original container");
@@ -1367,7 +1367,7 @@ namespace Kvpbase
 
                 #region Check-if-Target-Exists
 
-                string diskPathTarget = RenameRequest.BuildDiskPath(req, false, _UserMgr, _Settings, _Logging);
+                string diskPathTarget = _ObjMgr.BuildDiskPath(req, false);
                 if (String.IsNullOrEmpty(diskPathTarget))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ContainerRename unable to build disk path for target container");

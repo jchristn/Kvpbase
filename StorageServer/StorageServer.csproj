@@ -313,11 +313,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>REM These lines are added to support large objects
-REM see http://blogs.msdn.com/b/calvin_hsia/archive/2010/09/27/10068359.aspx
-call "$(DevEnvDir)..\..\vc\auxiliary\build\vcvarsall.bat" x86
-"$(DevEnvDir)..\..\vc\Tools\MSVC\14.10.25017\bin\HostX64\x64\EditBin.exe" "$(TargetPath)"  /LARGEADDRESSAWARE
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

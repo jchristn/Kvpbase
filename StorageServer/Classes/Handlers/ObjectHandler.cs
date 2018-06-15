@@ -868,7 +868,7 @@ namespace Kvpbase
 
                     #region Check-if-Original-Object-Exists
 
-                    diskPathOriginal = MoveRequest.BuildDiskPath(req, true, true, _UserMgr, _Settings, _Logging);
+                    diskPathOriginal = _ObjMgr.BuildDiskPath(req, true, true);
                     if (String.IsNullOrEmpty(diskPathOriginal))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "ObjectMove unable to build disk path for original object");
@@ -899,7 +899,7 @@ namespace Kvpbase
 
                     #region Check-if-Target-Container-Exists
 
-                    string diskPathTargetContainer = MoveRequest.BuildDiskPath(req, false, false, _UserMgr, _Settings, _Logging);
+                    string diskPathTargetContainer = _ObjMgr.BuildDiskPath(req, false, false);
                     if (String.IsNullOrEmpty(diskPathTargetContainer))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "ObjectMove unable to build disk path for target container");
@@ -918,7 +918,7 @@ namespace Kvpbase
 
                     #region Check-if-Target-Object-Exists
 
-                    diskPathTarget = MoveRequest.BuildDiskPath(req, false, true, _UserMgr, _Settings, _Logging);
+                    diskPathTarget = _ObjMgr.BuildDiskPath(req, false, true);
                     if (String.IsNullOrEmpty(diskPathTarget))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "ObjectMove unable to build disk path for target object");
@@ -1388,8 +1388,7 @@ namespace Kvpbase
 
                     currObjInfo = ObjInfo.FromFile(md.CurrObj.DiskPath);
                     if (currObjInfo == null)
-                    {
-                        // EventHandler.Log(LoggingModule.Severity.Warn, "ObjectRead null file info returned for " + md.currObj.disk path);
+                    { 
                         return new HttpResponse(md.CurrHttpReq, false, 404, null, "application/json",
                             new ErrorResponse(5, 404, "Object does not exist.", null).ToJson(), true);
                     }
@@ -1887,7 +1886,7 @@ namespace Kvpbase
 
                     #region Check-if-Original-Exists
 
-                    diskPathOriginal = RenameRequest.BuildDiskPath(req, true, _UserMgr, _Settings, _Logging);
+                    diskPathOriginal = _ObjMgr.BuildDiskPath(req, true);
                     if (String.IsNullOrEmpty(diskPathOriginal))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "ObjectRename unable to build disk path for original object");
@@ -1918,7 +1917,7 @@ namespace Kvpbase
 
                     #region Check-if-Target-Exists
 
-                    diskPathTarget = RenameRequest.BuildDiskPath(req, false, _UserMgr, _Settings, _Logging);
+                    diskPathTarget = _ObjMgr.BuildDiskPath(req, false);
                     if (String.IsNullOrEmpty(diskPathTarget))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "ObjectRename unable to build disk path for target object");
@@ -2208,7 +2207,7 @@ namespace Kvpbase
 
                 #region Process-and-Return
 
-                diskPath = Find.BuildDiskPath(req, _UserMgr, _Settings, _Logging);
+                diskPath = _ObjMgr.BuildDiskPath(req);
                 if (String.IsNullOrEmpty(diskPath))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ObjectSearch unable to build disk path from request body");
@@ -2269,8 +2268,7 @@ namespace Kvpbase
 
                     DirInfo di = new DirInfo(_Settings, _UserMgr, _Logging);
                     ret = di.FromDirectory(
-                        Find.BuildDiskPath(
-                            req, _UserMgr, _Settings, _Logging),
+                        _ObjMgr.BuildDiskPath(req), 
                         md.CurrObj.UserGuid, maxResults, req.Filters, metadataOnly);
 
                     if (ret == null)
@@ -2732,8 +2730,7 @@ namespace Kvpbase
 
                         currObjInfo = ObjInfo.FromFile(md.CurrObj.DiskPath);
                         if (currObjInfo == null)
-                        {
-                            // EventHandler.Log(LoggingModule.Severity.Warn, "ObjectWrite null file info returned for " + md.currObj.disk path);
+                        { 
                             return new HttpResponse(md.CurrHttpReq, false, 404, null, "application/json",
                                 new ErrorResponse(5, 404, "Object does not exist.", null).ToJson(), true);
                         }

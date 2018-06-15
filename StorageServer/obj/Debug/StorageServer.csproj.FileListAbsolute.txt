@@ -53,3 +53,6 @@ D:\Code\KVPbase\storageserver-2.0\StorageServer\bin\Debug\SyslogLogging.pdb
 D:\Code\KVPbase\storageserver-2.0\StorageServer\bin\Debug\Watson.pdb
 D:\Code\KVPbase\storageserver-2.0\StorageServer\obj\Debug\StorageServer.exe
 D:\Code\KVPbase\storageserver-2.0\StorageServer\obj\Debug\StorageServer.pdb
+D:\code\kvpbase\storageserver-2.0\StorageServer\obj\Debug\StorageServer.csprojResolveAssemblyReference.cache
+D:\code\kvpbase\storageserver-2.0\StorageServer\obj\Debug\StorageServer.csproj.CoreCompileInputs.cache
+D:\code\kvpbase\storageserver-2.0\StorageServer\obj\Debug\StorageServer.csproj.CopyComplete

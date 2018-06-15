@@ -1188,7 +1188,7 @@ namespace Kvpbase
 
                 #region Check-if-Original-Object-Exists
 
-                string diskPathOriginalObj = MoveRequest.BuildDiskPath(currMove, true, true, _Users, _Settings, _Logging);
+                string diskPathOriginalObj = _ObjMgr.BuildDiskPath(currMove, true, true);
                 if (String.IsNullOrEmpty(diskPathOriginalObj))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerObjectMoveInternal unable to build disk path for original object");
@@ -1205,7 +1205,7 @@ namespace Kvpbase
 
                 #region Check-if-Target-Container-Exists
 
-                string diskPathTargetContainer = MoveRequest.BuildDiskPath(currMove, false, false, _Users, _Settings, _Logging);
+                string diskPathTargetContainer = _ObjMgr.BuildDiskPath(currMove, false, false);
                 if (String.IsNullOrEmpty(diskPathTargetContainer))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerObjectMoveInternal unable to build disk path for target container");
@@ -1222,7 +1222,7 @@ namespace Kvpbase
 
                 #region Check-if-Target-Object-Exists
 
-                string diskPathTargetObj = MoveRequest.BuildDiskPath(currMove, false, true, _Users, _Settings, _Logging);
+                string diskPathTargetObj = _ObjMgr.BuildDiskPath(currMove, false, true);
                 if (String.IsNullOrEmpty(diskPathTargetObj))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerObjectMoveInternal unable to build disk path for target object");
@@ -1310,7 +1310,7 @@ namespace Kvpbase
 
                 #region Check-if-Original-Exists
 
-                string diskPathOriginal = RenameRequest.BuildDiskPath(currRename, true, _Users, _Settings, _Logging);
+                string diskPathOriginal = _ObjMgr.BuildDiskPath(currRename, true);
                 if (String.IsNullOrEmpty(diskPathOriginal))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerObjectRenameInternal unable to build disk path for original object");
@@ -1327,7 +1327,7 @@ namespace Kvpbase
 
                 #region Check-if-Target-Exists
 
-                string diskPathTarget = RenameRequest.BuildDiskPath(currRename, false, _Users, _Settings, _Logging);
+                string diskPathTarget = _ObjMgr.BuildDiskPath(currRename, false);
                 if (String.IsNullOrEmpty(diskPathTarget))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerObjectRenameInternal unable to build disk path for target object");
@@ -1439,7 +1439,7 @@ namespace Kvpbase
 
                 #region Check-if-Original-Exists
 
-                string diskPathOriginal = MoveRequest.BuildDiskPath(currMove, true, true, _Users, _Settings, _Logging);
+                string diskPathOriginal = _ObjMgr.BuildDiskPath(currMove, true, true);
                 if (String.IsNullOrEmpty(diskPathOriginal))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerContainerMoveInternal unable to build disk path for original container");
@@ -1456,7 +1456,7 @@ namespace Kvpbase
 
                 #region Check-if-Target-Parent-Exists
 
-                string diskPathTargetParent = MoveRequest.BuildDiskPath(currMove, false, false, _Users, _Settings, _Logging);
+                string diskPathTargetParent = _ObjMgr.BuildDiskPath(currMove, false, false);
                 if (String.IsNullOrEmpty(diskPathTargetParent))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerContainerMoveInternal unable to build disk path for target container");
@@ -1473,7 +1473,7 @@ namespace Kvpbase
 
                 #region Check-if-Target-Child-Exists
 
-                string diskPathTargetChild = MoveRequest.BuildDiskPath(currMove, false, true, _Users, _Settings, _Logging);
+                string diskPathTargetChild = _ObjMgr.BuildDiskPath(currMove, false, true);
                 if (String.IsNullOrEmpty(diskPathTargetChild))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerContainerMoveInternal unable to build disk path for target container");
@@ -1574,7 +1574,7 @@ namespace Kvpbase
 
                 #region Check-if-Original-Exists
 
-                string diskPathOriginal = RenameRequest.BuildDiskPath(currRename, true, _Users, _Settings, _Logging);
+                string diskPathOriginal = _ObjMgr.BuildDiskPath(currRename, true);
                 if (String.IsNullOrEmpty(diskPathOriginal))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerContainerRenameInternal unable to build disk path for original container");
@@ -1591,7 +1591,7 @@ namespace Kvpbase
 
                 #region Check-if-Target-Exists
 
-                string diskPathTarget = RenameRequest.BuildDiskPath(currRename, false, _Users, _Settings, _Logging);
+                string diskPathTarget = _ObjMgr.BuildDiskPath(currRename, false);
                 if (String.IsNullOrEmpty(diskPathTarget))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ServerContainerRenameInternal unable to build disk path for target container");

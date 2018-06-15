@@ -552,9 +552,7 @@ namespace Kvpbase
             {
                 relativePath.Add(tempStr);
                 tempStr = "";
-            }
-
-            // EventHandler.Log(LoggingModule.Severity.Debug, " relative path: " + relativePath.Count + " entries");
+            } 
 
             #endregion
 
@@ -563,17 +561,13 @@ namespace Kvpbase
             if (Common.IsTrue(_Node.Ssl)) url += "https://";
             else url += "http://";
 
-            url += _Node.DnsHostname + ":" + _Node.Port;
-            // EventHandler.Log(LoggingModule.Severity.Debug, " url original: " + url);
+            url += _Node.DnsHostname + ":" + _Node.Port; 
 
             foreach (string currStr in relativePath)
             {
-                url += "/" + currStr;
-                // EventHandler.Log(LoggingModule.Severity.Debug, " url amended: " + url);
+                url += "/" + currStr; 
             }
-
-            // EventHandler.Log(LoggingModule.Severity.Debug, " url final: " + url);
-
+             
             #endregion
 
             #region Process-Querystring
@@ -953,6 +947,234 @@ namespace Kvpbase
 
             #endregion
         }
+         
+        public string BuildDiskPath(MoveRequest req, bool useMoveFrom, bool includeObjectName)
+        { 
+            #region Variables
+
+            UserMaster currUser = new UserMaster();
+            string homeDirectory = "";
+            string fullPath = "";
+
+            #endregion
+
+            #region Get-User-Master-and-Home-Directory
+
+            currUser = _Users.GetUserByGuid(req.UserGuid);
+            if (currUser == null)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "BuildDiskPath unable to retrieve user object from GUID " + req.UserGuid);
+                return null;
+            }
+
+            if (String.IsNullOrEmpty(currUser.HomeDirectory))
+            {
+                // global directory
+                homeDirectory = String.Copy(_Settings.Storage.Directory);
+                if (!homeDirectory.EndsWith(Common.GetPathSeparator(_Settings.Environment))) homeDirectory += Common.GetPathSeparator(_Settings.Environment);
+                homeDirectory += currUser.Guid;
+                homeDirectory += Common.GetPathSeparator(_Settings.Environment);
+            }
+            else
+            {
+                // user-specific home directory
+                homeDirectory = String.Copy(currUser.HomeDirectory);
+                if (!homeDirectory.EndsWith(Common.GetPathSeparator(_Settings.Environment))) homeDirectory += Common.GetPathSeparator(_Settings.Environment);
+            }
+
+            #endregion
+
+            #region Process
+
+            fullPath = String.Copy(homeDirectory);
+
+            if (useMoveFrom)
+            {
+                foreach (string currContainer in req.FromContainer)
+                {
+                    if (String.IsNullOrEmpty(currContainer)) continue;
+
+                    if (Common.ContainsUnsafeCharacters(currContainer))
+                    {
+                        _Logging.Log(LoggingModule.Severity.Warn, "BuildDiskPath unsafe characters detected: " + currContainer);
+                        return null;
+                    }
+
+                    fullPath += currContainer + Common.GetPathSeparator(_Settings.Environment);
+                }
+
+                if (includeObjectName) if (!String.IsNullOrEmpty(req.MoveFrom)) fullPath += req.MoveFrom;
+            }
+            else
+            {
+                foreach (string currContainer in req.ToContainer)
+                {
+                    if (String.IsNullOrEmpty(currContainer)) continue;
+
+                    if (Common.ContainsUnsafeCharacters(currContainer))
+                    {
+                        _Logging.Log(LoggingModule.Severity.Warn, "BuildDiskPath unsafe characters detected: " + currContainer);
+                        return null;
+                    }
+
+                    fullPath += currContainer + Common.GetPathSeparator(_Settings.Environment);
+                }
+
+                if (includeObjectName) if (!String.IsNullOrEmpty(req.MoveFrom)) fullPath += req.MoveTo;
+            }
+             
+            return fullPath;
+
+            #endregion
+        }
+
+        public string BuildDiskPath(RenameRequest req, bool useRenameFrom)
+        { 
+            #region Variables
+
+            UserMaster currUser = new UserMaster();
+            string homeDirectory = "";
+            string fullPath = "";
+
+            #endregion
+
+            #region Get-User-Master-and-Home-Directory
+
+            currUser = _Users.GetUserByGuid(req.UserGuid);
+            if (currUser == null)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "BuildDiskPath unable to retrieve user object from GUID " + req.UserGuid);
+                return null;
+            }
+
+            if (String.IsNullOrEmpty(currUser.HomeDirectory))
+            {
+                // global directory
+                homeDirectory = String.Copy(_Settings.Storage.Directory);
+                if (!homeDirectory.EndsWith(Common.GetPathSeparator(_Settings.Environment))) homeDirectory += Common.GetPathSeparator(_Settings.Environment);
+                homeDirectory += currUser.Guid;
+                homeDirectory += Common.GetPathSeparator(_Settings.Environment);
+            }
+            else
+            {
+                // user-specific home directory
+                homeDirectory = String.Copy(currUser.HomeDirectory);
+                if (!homeDirectory.EndsWith(Common.GetPathSeparator(_Settings.Environment))) homeDirectory += Common.GetPathSeparator(_Settings.Environment);
+            }
+
+            #endregion
+
+            #region Process
+
+            fullPath = String.Copy(homeDirectory);
+
+            if (req.ContainerPath != null)
+            {
+                if (req.ContainerPath.Count > 0)
+                {
+                    foreach (string currContainer in req.ContainerPath)
+                    {
+                        if (String.IsNullOrEmpty(currContainer)) continue;
+
+                        if (Common.ContainsUnsafeCharacters(currContainer))
+                        {
+                            _Logging.Log(LoggingModule.Severity.Warn, "BuildDiskPath unsafe characters detected: " + currContainer);
+                            return null;
+                        }
+
+                        fullPath += currContainer + Common.GetPathSeparator(_Settings.Environment);
+                    }
+                }
+            }
+
+            if (useRenameFrom)
+            {
+                if (!String.IsNullOrEmpty(req.RenameFrom)) fullPath += req.RenameFrom;
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(req.RenameTo)) fullPath += req.RenameTo;
+            }
+             
+            return fullPath;
+
+            #endregion
+        }
+
+        public string BuildDiskPath(Find req)
+        {
+            #region Check-for-Null-Values
+
+            if (req == null)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "BuildDiskPath null find object supplied");
+                return null;
+            }
+
+            #endregion
+
+            #region Variables
+
+            UserMaster currUser = new UserMaster();
+            string homeDirectory = "";
+            string fullPath = "";
+
+            #endregion
+
+            #region Get-User-Master-and-Home-Directory
+
+            currUser = _Users.GetUserByGuid(req.UserGuid);
+            if (currUser == null)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "BuildDiskPath unable to retrieve user object from GUID " + req.UserGuid);
+                return null;
+            }
+
+            if (String.IsNullOrEmpty(currUser.HomeDirectory))
+            {
+                // global directory
+                homeDirectory = String.Copy(_Settings.Storage.Directory);
+                if (!homeDirectory.EndsWith(Common.GetPathSeparator(_Settings.Environment))) homeDirectory += Common.GetPathSeparator(_Settings.Environment);
+                homeDirectory += currUser.Guid;
+                homeDirectory += Common.GetPathSeparator(_Settings.Environment);
+            }
+            else
+            {
+                // user-specific home directory
+                homeDirectory = String.Copy(currUser.HomeDirectory);
+                if (!homeDirectory.EndsWith(Common.GetPathSeparator(_Settings.Environment))) homeDirectory += Common.GetPathSeparator(_Settings.Environment);
+            }
+
+            #endregion
+
+            #region Process
+
+            fullPath = String.Copy(homeDirectory);
+
+            if (req.ContainerPath != null)
+            {
+                if (req.ContainerPath.Count > 0)
+                {
+                    foreach (string currContainer in req.ContainerPath)
+                    {
+                        if (String.IsNullOrEmpty(currContainer)) continue;
+
+                        if (Common.ContainsUnsafeCharacters(currContainer))
+                        {
+                            _Logging.Log(LoggingModule.Severity.Warn, "BuildDiskPath unsafe characters detected: " + currContainer);
+                            return null;
+                        }
+
+                        fullPath += currContainer + Common.GetPathSeparator(_Settings.Environment);
+                    }
+                }
+            }
+
+            if (!String.IsNullOrEmpty(req.Key)) fullPath += req.Key;
+            return fullPath;
+
+            #endregion
+        }
 
         #endregion
 
@@ -997,19 +1219,15 @@ namespace Kvpbase
             foreach (char c in reduced)
             {
                 if (String.Compare(c.ToString(), Common.GetPathSeparator(_Settings.Environment)) == 0)
-                {
-                    // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers encountered path separator: " + Common.GetPathSeparator(settings.Environment));
-
+                { 
                     if (!String.IsNullOrEmpty(tempString))
                     {
                         if (String.Compare(tempString, Common.GetPathSeparator(_Settings.Environment)) == 0)
-                        {
-                            // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers encountered path separator in temp string, skipping");
+                        { 
                             tempString = "";
                             continue;
                         }
-
-                        // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers adding " + tempString + " to containerPath");
+                         
                         containers.Add(tempString);
                         tempString = "";
                         continue;
@@ -1018,11 +1236,9 @@ namespace Kvpbase
 
                 tempString += c;
             }
-
-            // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers exiting iterator, tempString is " + tempString);
+             
             if (!String.IsNullOrEmpty(tempString))
-            {
-                // EventHandler.Log(LoggingModule.Severity.Debug, "GetKeyGuidContainers tempString is not null, adding: " + tempString);
+            { 
                 containers.Add(tempString);
                 tempString = "";
             }
