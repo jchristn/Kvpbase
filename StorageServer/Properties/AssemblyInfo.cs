@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Kvpbase Storage Server")]
 [assembly: AssemblyDescription("Kvpbase Storage Server")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Marauder Software, Inc.")]
-[assembly: AssemblyProduct("Storage Server")]
-[assembly: AssemblyCopyright("(c) 2017 Marauder Software Inc")]
+[assembly: AssemblyCompany("Joel Christner")]
+[assembly: AssemblyProduct("Kvpbase Storage Server")]
+[assembly: AssemblyCopyright("(c) 2018 Joel Christner")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.1.0.0")]
-[assembly: AssemblyFileVersion("2.1.0.0")]
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.0")]

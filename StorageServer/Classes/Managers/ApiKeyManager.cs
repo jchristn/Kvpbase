@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SyslogLogging;
 using WatsonWebserver;
 
@@ -15,65 +16,67 @@ namespace Kvpbase
 
         #region Private-Members
 
-        private Events _Logging;
-        private List<ApiKey> _ApiKeys;
-        private List<ApiKeyPermission> _ApiKeyPermissions;
-        private readonly object _ApiKeyLock;
-        private readonly object _ApiKeyPermissionsLock;
+        private Settings _Settings;
+        private LoggingModule _Logging;
+        private UserManager _Users;
 
+        private readonly object _ApiKeyLock;
+        private List<ApiKey> _ApiKeys;
+
+        private readonly object _ApiKeyPermissionsLock;
+        private List<ApiKeyPermission> _ApiKeyPermissions;
+        
         #endregion
 
         #region Constructors-and-Factories
 
-        public ApiKeyManager(Events logging)
+        public ApiKeyManager(Settings settings, LoggingModule logging, UserManager users)
         {
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
-            _Logging = logging;
-            _ApiKeys = new List<ApiKey>();
-            _ApiKeyPermissions = new List<ApiKeyPermission>();
-            _ApiKeyLock = new object();
-            _ApiKeyPermissionsLock = new object();
-        }
+            if (users == null) throw new ArgumentNullException(nameof(users));
 
-        public ApiKeyManager(Events logging, List<ApiKey> keys, List<ApiKeyPermission> perms)
-        {
-            if (logging == null) throw new ArgumentNullException(nameof(logging));
+            _Settings = settings;
             _Logging = logging;
-            _ApiKeys = new List<ApiKey>();
-            _ApiKeyPermissions = new List<ApiKeyPermission>();
-            _ApiKeyLock = new object();
-            _ApiKeyPermissionsLock = new object();
-            if (keys != null && keys.Count > 0)
-            {
-                _ApiKeys = new List<ApiKey>(keys);
-            }
-            if (perms != null && perms.Count > 0)
-            {
-                _ApiKeyPermissions = new List<ApiKeyPermission>(perms);
-            }
-        }
+            _Users = users;
 
+            _ApiKeyLock = new object();
+            _ApiKeys = new List<ApiKey>();
+
+            _ApiKeyPermissionsLock = new object();
+            _ApiKeyPermissions = new List<ApiKeyPermission>();
+
+            LoadApiKeysFile();
+            LoadApiKeyPermissionsFile();
+        }
+         
         #endregion
 
         #region Public-Methods
 
-        public void Add(ApiKey curr)
+        public void Add(ApiKey key)
         {
-            if (curr == null) return;
+            if (key == null) throw new ArgumentNullException(nameof(key));
+
             lock (_ApiKeyLock)
             {
-                _ApiKeys.Add(curr);
+                _ApiKeys.Add(key);
             }
+
+            SaveApiKeysFile();
             return;
         }
 
-        public void Remove(ApiKey curr)
+        public void Remove(ApiKey key)
         {
-            if (curr == null) return;
+            if (key == null) throw new ArgumentNullException(nameof(key));
+
             lock (_ApiKeyLock)
             {
-                if (_ApiKeys.Contains(curr)) _ApiKeys.Remove(curr);
+                if (_ApiKeys.Contains(key)) _ApiKeys.Remove(key);
             }
+
+            SaveApiKeysFile();
             return;
         }
 
@@ -130,49 +133,54 @@ namespace Kvpbase
             return ret;
         }
 
-        public ApiKeyPermission GetEffectiveApiKeyPermissions(int? apiKeyId, int? userMasterId)
+        public ApiKeyPermission GetEffectivePermissions(int? apiKeyId, int? userMasterId)
         {
             ApiKeyPermission ret = new ApiKeyPermission();
             ret.ApiKeyPermissionId = 0;
             ret.ApiKeyId = 0;
             ret.UserMasterId = Convert.ToInt32(userMasterId);
-            ret.AllowReadObject = 0;
-            ret.AllowReadContainer = 0;
-            ret.AllowWriteObject = 0;
-            ret.AllowWriteContainer = 0;
-            ret.AllowDeleteObject = 0;
-            ret.AllowDeleteContainer = 0;
-            ret.AllowSearch = 0;
+            ret.ReadObject = false;
+            ret.ReadContainer = false;
+            ret.WriteObject = false;
+            ret.WriteContainer = false;
+            ret.DeleteObject = false;
+            ret.DeleteContainer = false; 
+            ret.Active = true;
+
+            if (userMasterId != null) ret.UserMasterId = Convert.ToInt32(userMasterId);
 
             if (apiKeyId == null)
             {
-                ret.AllowReadObject = 1;
-                ret.AllowReadContainer = 1;
-                ret.AllowWriteObject = 1;
-                ret.AllowWriteContainer = 1;
-                ret.AllowDeleteObject = 1;
-                ret.AllowDeleteContainer = 1;
-                ret.AllowSearch = 1;
+                ret.ApiKeyId = 0;
+                ret.ReadObject = true;
+                ret.ReadContainer = true;
+                ret.WriteObject = true;
+                ret.WriteContainer = true;
+                ret.DeleteObject = true;
+                ret.DeleteContainer = true; 
+                ret.Active = true;
                 return ret;
             }
             else
             {
+                ret.ApiKeyId = Convert.ToInt32(apiKeyId);
+
                 List<ApiKeyPermission> perms = GetPermissionsByApiKeyId(apiKeyId);
 
                 if (perms != null && perms.Count > 0)
                 {
                     foreach (ApiKeyPermission curr in perms)
                     {
-                        if (!Common.IsTrue(curr.Active)) continue;
+                        if (!curr.Active) continue;
                         if (!Common.IsLaterThanNow(curr.Expiration)) continue;
+                        ret.ApiKeyPermissionId = curr.ApiKeyPermissionId;
 
-                        if (Common.IsTrue(curr.AllowReadObject)) ret.AllowReadObject = 1;
-                        if (Common.IsTrue(curr.AllowReadContainer)) ret.AllowReadContainer = 1;
-                        if (Common.IsTrue(curr.AllowWriteObject)) ret.AllowWriteObject = 1;
-                        if (Common.IsTrue(curr.AllowWriteContainer)) ret.AllowWriteContainer = 1;
-                        if (Common.IsTrue(curr.AllowDeleteObject)) ret.AllowDeleteObject = 1;
-                        if (Common.IsTrue(curr.AllowDeleteContainer)) ret.AllowDeleteContainer = 1;
-                        if (Common.IsTrue(curr.AllowSearch)) ret.AllowSearch = 1;
+                        if (curr.ReadObject) ret.ReadObject = true;
+                        if (curr.ReadContainer) ret.ReadContainer = true;
+                        if (curr.WriteObject) ret.WriteObject = true;
+                        if (curr.WriteContainer) ret.WriteContainer = true;
+                        if (curr.DeleteObject) ret.DeleteObject = true;
+                        if (curr.DeleteContainer) ret.DeleteContainer = true; 
                     }
                 }
 
@@ -181,8 +189,7 @@ namespace Kvpbase
         }
 
         public bool VerifyApiKey(
-            string apiKey,
-            UserManager userManager,
+            string apiKey, 
             out UserMaster currUserMaster,
             out ApiKey currApiKey,
             out ApiKeyPermission currPermission
@@ -199,20 +206,20 @@ namespace Kvpbase
                 return false;
             }
 
-            currPermission = GetEffectiveApiKeyPermissions(currApiKey.ApiKeyId, currUserMaster.UserMasterId);
+            currPermission = GetEffectivePermissions(currApiKey.ApiKeyId, currUserMaster.UserMasterId);
             if (currPermission == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to build ApiKeyPermission object for UserMasterId " + currUserMaster.UserMasterId);
                 return false;
-            }
+            } 
 
-            if (currApiKey.Active == 1)
+            if (currApiKey.Active)
             {
                 #region Check-Key-Expiration
 
                 if (Common.IsLaterThanNow(currApiKey.Expiration))
                 {
-                    currUserMaster = userManager.GetUserById(currApiKey.UserMasterId);
+                    currUserMaster = _Users.GetUserById(currApiKey.UserMasterId);
                     if (currUserMaster == null)
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to find UserMasterId " + currApiKey.UserMasterId);
@@ -225,6 +232,7 @@ namespace Kvpbase
 
                         if (Common.IsLaterThanNow(currUserMaster.Expiration))
                         {
+                            currPermission.UserMasterId = currUserMaster.UserMasterId;
                             return true;
                         }
                         else
@@ -259,6 +267,42 @@ namespace Kvpbase
         #endregion
 
         #region Private-Methods
+
+        private void LoadApiKeysFile()
+        {
+            lock (_ApiKeyLock)
+            {
+                _ApiKeys = Common.DeserializeJson<List<ApiKey>>(Common.ReadBinaryFile(_Settings.Files.ApiKey));
+            }
+        }
+
+        private void SaveApiKeysFile()
+        {
+            lock (_ApiKeyLock)
+            {
+                Common.WriteFile(
+                    _Settings.Files.UserMaster,
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(_ApiKeys, true)));
+            }
+        }
+
+        private void LoadApiKeyPermissionsFile()
+        {
+            lock (_ApiKeyPermissionsLock)
+            {
+                _ApiKeyPermissions = Common.DeserializeJson<List<ApiKeyPermission>>(Common.ReadBinaryFile(_Settings.Files.Permission));
+            }
+        }
+
+        private void SaveApiKeyPermissionsFile()
+        {
+            lock (_ApiKeyPermissionsLock)
+            {
+                Common.WriteFile(
+                    _Settings.Files.Permission,
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(_ApiKeyPermissions, true)));
+            }
+        }
 
         #endregion
     }

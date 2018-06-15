@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SyslogLogging;
 using WatsonWebserver;
 
@@ -15,81 +16,80 @@ namespace Kvpbase
 
         #region Private-Members
 
-        private Events _Logging;
-        private List<UserMaster> _Users;
+        private Settings _Settings;
+        private LoggingModule _Logging;
         private readonly object _UsersLock;
-
+        private List<UserMaster> _Users;
+        
         #endregion
 
         #region Constructors-and-Factories
 
-        public UserManager(Events logging)
+        public UserManager(Settings settings, LoggingModule logging)
         {
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
 
+            _Settings = settings;
             _Logging = logging;
             _Users = new List<UserMaster>();
             _UsersLock = new object();
+
+            LoadUsersFile();
         }
-
-        public UserManager(Events logging, List<UserMaster> curr)
-        {
-            if (logging == null) throw new ArgumentNullException(nameof(logging));
-
-            _Logging = logging;
-            _Users = new List<UserMaster>();
-            _UsersLock = new object();
-            if (curr != null && curr.Count > 0)
-            {
-                _Users = new List<UserMaster>(curr);
-            }
-        }
-
+         
         #endregion
 
         #region Public-Methods
 
-        public void Add(UserMaster curr)
+        public void Add(UserMaster user)
         {
-            if (curr == null) return;
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
             lock (_UsersLock)
             {
-                _Users.Add(curr);
+                _Users.Add(user);
             }
+
+            SaveUsersFile();
             return;
         }
 
-        public void Remove(UserMaster curr)
+        public void Remove(UserMaster user)
         {
-            if (curr == null) return;
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
             lock (_UsersLock)
             {
-                if (_Users.Contains(curr)) _Users.Remove(curr);
+                if (_Users.Contains(user)) _Users.Remove(user);
             }
+
+            SaveUsersFile();
             return;
         }
 
         public List<UserMaster> GetUsers()
         {
-            List<UserMaster> curr = new List<UserMaster>();
+            List<UserMaster> users = new List<UserMaster>();
+
             lock (_UsersLock)
             {
-                curr = new List<UserMaster>(_Users);
+                users = new List<UserMaster>(_Users);
             }
-            return curr;
+
+            return users;
         }
 
         public UserMaster GetUserByGuid(string guid)
         {
-            if (String.IsNullOrEmpty(guid)) return null;
+            if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
+
             lock (_UsersLock)
             {
-                foreach (UserMaster curr in _Users)
-                {
-                    if (String.Compare(curr.Guid, guid) == 0) return curr;
-                }
+                UserMaster user = _Users.Where(u => u.Guid.Equals(guid)).FirstOrDefault();
+                if (user == default(UserMaster)) user = null;
+                return user;
             }
-            return null;
         }
 
         public UserMaster GetUserByEmail(string email)
@@ -97,50 +97,41 @@ namespace Kvpbase
             if (String.IsNullOrEmpty(email)) return null;
             lock (_UsersLock)
             {
-                foreach (UserMaster curr in _Users)
-                {
-                    if (String.Compare(curr.Email, email) == 0) return curr;
-                }
+                UserMaster user = _Users.Where(u => u.Email.Equals(email)).FirstOrDefault();
+                if (user == default(UserMaster)) user = null;
+                return user;
             }
-            return null;
         }
 
         public UserMaster GetUserById(int? id)
         {
-            if (id == null) return null;
-            int idInternal = Convert.ToInt32(id);
+            if (id == null) throw new ArgumentNullException(nameof(id));
+
             lock (_UsersLock)
             {
-                foreach (UserMaster curr in _Users)
-                {
-                    if (curr.UserMasterId == idInternal) return curr;
-                }
+                UserMaster user = _Users.Where(u => u.UserMasterId.Equals(id)).FirstOrDefault();
+                if (user == default(UserMaster)) user = null;
+                return user;
             }
-            return null;
         }
 
         public List<UserMaster> GetUsersByHomeDirectory(string directory)
         {
-            if (String.IsNullOrEmpty(directory)) return null;
+            if (String.IsNullOrEmpty(directory)) throw new ArgumentNullException(nameof(directory));
+
             List<UserMaster> ret = new List<UserMaster>();
             lock (_UsersLock)
             {
-                foreach (UserMaster curr in _Users)
-                {
-                    if (String.Compare(curr.HomeDirectory, directory) == 0)
-                    {
-                        ret.Add(curr);
-                    }
-                }
+                ret = _Users.Where(u => u.HomeDirectory.Equals(directory)).ToList();
+                return ret;
             }
-            return ret;
         }
 
-        public bool AuthenticateCredentials(string email, string password, out UserMaster curr)
+        public bool Authenticate(string email, string password, out UserMaster curr)
         {
             curr = null;
-            if (String.IsNullOrEmpty(email)) return false;
-            if (String.IsNullOrEmpty(password)) return false;
+            if (String.IsNullOrEmpty(email)) throw new ArgumentNullException(nameof(email));
+            if (String.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
             curr = GetUserByEmail(email);
             if (curr == null)
@@ -175,19 +166,10 @@ namespace Kvpbase
                 return false;
             }
         }
-
-        public bool GetGatewayMode(string guid, Settings settings)
+         
+        public string GetHomeDirectory(string guid)
         {
-            if (String.IsNullOrEmpty(guid)) return false;
-            if (settings == null) return false;
-            UserMaster curr = GetUserByGuid(guid);
-            return curr.GetGatewayMode(settings);
-        }
-
-        public string GetHomeDirectory(string guid, Settings settings)
-        {
-            if (String.IsNullOrEmpty(guid)) return null;
-            if (settings == null) return null;
+            if (String.IsNullOrEmpty(guid)) return null; 
 
             UserMaster curr = GetUserByGuid(guid);
             if (curr == null)
@@ -202,14 +184,10 @@ namespace Kvpbase
             }
             else
             {
-                string ret = String.Copy(settings.Storage.Directory);
+                string ret = String.Copy(_Settings.Storage.Directory);
 
-                if (!ret.EndsWith(Common.GetPathSeparator(settings.Environment)))
-                {
-                    ret += Common.GetPathSeparator(settings.Environment);
-                }
-
-                ret += curr.Guid + Common.GetPathSeparator(settings.Environment);
+                if (!ret.EndsWith("/")) ret += "/";
+                ret += curr.Guid + "/";
                 return ret;
             }
         }
@@ -217,6 +195,24 @@ namespace Kvpbase
         #endregion
 
         #region Private-Methods
+
+        private void LoadUsersFile()
+        {
+            lock (_UsersLock)
+            {
+                _Users = Common.DeserializeJson<List<UserMaster>>(Common.ReadBinaryFile(_Settings.Files.UserMaster));
+            }
+        }
+
+        private void SaveUsersFile()
+        {
+            lock (_UsersLock)
+            {
+                Common.WriteFile(
+                    _Settings.Files.UserMaster,
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(_Users, true)));
+            }
+        }
 
         #endregion
     }

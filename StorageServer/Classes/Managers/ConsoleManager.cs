@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SyslogLogging;
 using RestWrapper;
+using WatsonWebserver;
 
 namespace Kvpbase
 {
@@ -18,52 +19,64 @@ namespace Kvpbase
 
         private bool _Enabled { get; set; }
         private Settings _Settings { get; set; }
-        private TopologyManager _Topology { get; set; }
-        private Node _Node { get; set; }
+        private TopologyManager _Topology { get; set; } 
         private UserManager _UserMgr { get; set; }
         private UrlLockManager _UrlLockMgr { get; set; }
-        private EncryptionModule _Encryption { get; set; }
-        private Events _Logging { get; set; }
-        private MaintenanceManager _MaintenanceMgr { get; set; }
-        private ObjManager _ObjMgr { get; set; }
+        private EncryptionManager _Encryption { get; set; }
+        private LoggingModule _Logging { get; set; } 
+        private OutboundMessageHandler _OutboundMessageHandler { get; set; }
+        private ContainerManager _ContainerMgr { get; set; }
+        private ContainerHandler _Containers { get; set; }
+        private ObjectHandler _Objects { get; set; }
+        private ResyncManager _ResyncMgr { get; set; }
         private Func<bool> _ExitDelegate;
+
+        private static string _TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
 
         #endregion
 
         #region Constructors-and-Factories
 
         public ConsoleManager(
-            Settings settings, 
-            MaintenanceManager maintenance, 
-            TopologyManager topology, 
-            Node node, 
+            Settings settings,
+            LoggingModule logging,
+            TopologyManager topology,  
             UserManager users, 
             UrlLockManager locks,
-            EncryptionModule encryption, 
-            Events logging,
-            ObjManager obj,
+            EncryptionManager encryption, 
+            OutboundMessageHandler replication,
+            ContainerManager containerMgr,
+            ContainerHandler containers,
+            ObjectHandler objects,
+            ResyncManager resync,
             Func<bool> exitApplication)
         {
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (maintenance == null) throw new ArgumentNullException(nameof(maintenance));
+            if (settings == null) throw new ArgumentNullException(nameof(settings)); 
             if (logging == null) throw new ArgumentNullException(nameof(logging));
+            if (topology == null) throw new ArgumentNullException(nameof(topology));
             if (users == null) throw new ArgumentNullException(nameof(users));
-            if (locks == null) throw new ArgumentNullException(nameof(locks));
-            if (node == null) throw new ArgumentNullException(nameof(node));
+            if (locks == null) throw new ArgumentNullException(nameof(locks)); 
             if (encryption == null) throw new ArgumentNullException(nameof(encryption));
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (replication == null) throw new ArgumentNullException(nameof(replication));
+            if (containerMgr == null) throw new ArgumentNullException(nameof(containerMgr));
+            if (containers == null) throw new ArgumentNullException(nameof(containers));
+            if (objects == null) throw new ArgumentNullException(nameof(objects));
+            if (resync == null) throw new ArgumentNullException(nameof(resync));
             if (exitApplication == null) throw new ArgumentNullException(nameof(exitApplication));
 
             _Enabled = true;
+
             _Settings = settings;
-            _Topology = topology;
-            _Node = node;
+            _Logging = logging;
+            _Topology = topology; 
             _UserMgr = users;
             _UrlLockMgr = locks;
-            _Logging = logging;
-            _MaintenanceMgr = maintenance;
             _Encryption = encryption;
-            _ObjMgr = obj;
+            _OutboundMessageHandler = replication;
+            _ContainerMgr = containerMgr;
+            _Containers = containers;
+            _Objects = objects;
+            _ResyncMgr = resync;
             _ExitDelegate = exitApplication;
 
             Task.Run(() => ConsoleWorker());
@@ -85,7 +98,8 @@ namespace Kvpbase
 
         private void ConsoleWorker()
         {
-            string userInput = "";
+            string userInput = ""; 
+
             while (_Enabled)
             {
                 Console.Write("Command (? for help) > ");
@@ -110,32 +124,22 @@ namespace Kvpbase
                         _ExitDelegate();
                         break;
                          
-                    case "list_topology":
+                    case "topology":
                         ListTopology();
                         break;
 
-                    case "list_active_urls":
+                    case "hello":
+                        _Topology.SayHello();
+                        break;
+
+                    case "send":
+                        SendConsoleMessage();
+                        break;
+
+                    case "active":
                         ListActiveUrls();
                         break;
-
-                    case "maint_enable":
-                        _MaintenanceMgr.Set();
-                        Console.WriteLine("Maintenance mode enabled");
-                        break;
-
-                    case "maint_disable":
-                        _MaintenanceMgr.Stop();
-                        Console.WriteLine("Maintenance mode disabled");
-                        break;
-
-                    case "maint_status":
-                        Console.WriteLine("Maintenance enabled: " + _MaintenanceMgr.IsEnabled());
-                        break;
-
-                    case "data_validation":
-                        DataValidation();
-                        break;
-
+                         
                     case "version":
                         Console.WriteLine(_Settings.ProductVersion);
                         break;
@@ -146,6 +150,50 @@ namespace Kvpbase
 
                     case "debug_off":
                         _Settings.Syslog.MinimumLevel = 1;
+                        break;
+
+                    case "containers":
+                        ListContainers();
+                        break;
+
+                    case "container_exists":
+                        ContainerExists();
+                        break;
+
+                    case "container_enumerate":
+                        ContainerEnumerate();
+                        break;
+
+                    case "object_read":
+                        ObjectRead();
+                        break;
+
+                    case "object_exists":
+                        ObjectExists();
+                        break;
+
+                    case "object_delete":
+                        ObjectDelete();
+                        break;
+
+                    case "object_metadata":
+                        ObjectMetadata();
+                        break;
+
+                    case "latest":
+                        GetLatestTimestamp();
+                        break;
+
+                    case "sync_add":
+                        SyncAdd();
+                        break;
+
+                    case "sync_tasks":
+                        SyncTasks();
+                        break;
+
+                    case "sync_start":
+                        SyncStart();
                         break;
 
                     default:
@@ -161,37 +209,26 @@ namespace Kvpbase
             Console.WriteLine("  ?                         help / this menu");
             Console.WriteLine("  cls / c                   clear the console");
             Console.WriteLine("  quit / q                  exit the application");  
-            Console.WriteLine("  list_topology             list nodes in the topology");
-            Console.WriteLine("  list_active_urls          list URLs that are locked or being read");
-            Console.WriteLine("  maint_enable              enable read broadcast and maintenance mode");
-            Console.WriteLine("  maint_disable             disable read broadcast and maintenance mode");
-            Console.WriteLine("  maint_status              display maintenance mode status");
-            Console.WriteLine("  data_validation           validate data stored on this node");
+            Console.WriteLine("  topology                  list nodes in the topology");
+            Console.WriteLine("  hello                     say hello to other nodes in the topology");
+            Console.WriteLine("  send                      send message to console of another node");
+            Console.WriteLine("  active                    list URLs that are being read or written");
+            Console.WriteLine("  containers                list available containers");
+            Console.WriteLine("  container_exists          query if a container exists");
+            Console.WriteLine("  container_enumerate       enumerate contents of a container");
+            Console.WriteLine("  object_read               read contents of an object");
+            Console.WriteLine("  object_exists             query if an object exists");
+            Console.WriteLine("  object_delete             delete an object");
+            Console.WriteLine("  object_metadata           retrieve metadata of an object");
+            Console.WriteLine("  latest                    get timestamp of latest entry in a container");
+            Console.WriteLine("  sync_add                  add synchronization task");
+            Console.WriteLine("  sync_tasks                list configured synchronization tasks");
+            Console.WriteLine("  sync_start                start a synchronization task");
             Console.WriteLine("  version                   show the product version");
             Console.WriteLine("");
             return;
         }
-         
-        private bool FindObjectOnPeer(Node curr, Find req)
-        {
-            string url = "";
-            if (Common.IsTrue(curr.Ssl)) url = "https://" + curr.DnsHostname + ":" + curr.Port + "/admin/find";
-            else url = "http://" + curr.DnsHostname + ":" + curr.Port + "/admin/find";
-
-            Dictionary<string, string> headers = Common.AddToDictionary(_Settings.Server.HeaderApiKey, _Settings.Server.AdminApiKey, null);
-            req.QueryTopology = false;
-            
-            RestWrapper.RestResponse resp = RestRequest.SendRequestSafe(
-                url, "application/json", "POST", null, null, false,
-                Common.IsTrue(_Settings.Rest.AcceptInvalidCerts), headers,
-                Encoding.UTF8.GetBytes(Common.SerializeJson(req)));
-
-            if (resp == null) return false;
-            if (resp.StatusCode != 200) return false;
-            
-            return true;
-        }
-
+          
         private void ListTopology()
         {
             if (_Topology == null)
@@ -200,13 +237,27 @@ namespace Kvpbase
             }
             else
             {
-                Console.WriteLine("Nodes in topology:");
+                Console.WriteLine("");
+                Console.WriteLine("Topology");
+                Console.WriteLine("  * represents local node (ID " + _Topology.LocalNode.NodeId + ")");
+                Console.WriteLine("  ! represents failed node"); 
+                Console.WriteLine("");
+                Console.WriteLine("All nodes:");
                 List<Node> nodes = _Topology.GetNodes();
+
                 if (nodes != null && nodes.Count > 0)
                 {
                     foreach (Node curr in _Topology.GetNodes())
-                    {
-                        Console.WriteLine(curr.ToString());
+                    { 
+                        if (_Topology.IsNodeHealthy(curr))
+                        {
+                            if (curr.NodeId == _Topology.LocalNode.NodeId) Console.WriteLine("  * " + curr.ToString());
+                            else Console.WriteLine("  " + curr.ToString());
+                        }
+                        else
+                        {
+                            Console.WriteLine("  ! " + curr.ToString());
+                        }
                     }
                 }
                 else
@@ -215,482 +266,498 @@ namespace Kvpbase
                 }
 
                 Console.WriteLine("");
-                Console.WriteLine("Replica nodes:");
+                Console.WriteLine("Replicas:");
                 List<Node> replicas = _Topology.GetReplicas();
                 if (replicas != null && replicas.Count > 0)
                 {
                     foreach (Node curr in _Topology.GetReplicas())
                     {
-                        Console.WriteLine(curr.ToString());
+                        if (_Topology.IsNodeHealthy(curr))
+                        {
+                            if (curr.NodeId == _Topology.LocalNode.NodeId)
+                                Console.WriteLine("  * " + curr.ToString());
+                            else
+                                Console.WriteLine("  " + curr.ToString());
+                        }
+                        else
+                        {
+                            Console.WriteLine("  ! " + curr.ToString());
+                        }
                     }
                 }
                 else
                 {
                     Console.WriteLine("Topology contains no replicas");
                 }
+
+                Console.WriteLine("");
+                Console.WriteLine("Healthy: " + _Topology.IsNetworkHealthy());
             }
 
             Console.WriteLine("");
         }
 
-        private void ListActiveUrls()
+        private void SendConsoleMessage()
         {
-            Dictionary<string, Tuple<int?, string, string, DateTime>> lockedUrls = _UrlLockMgr.GetLockedUrls();
-            List<string> readUrls = _UrlLockMgr.GetReadUrls();
-
-            if (lockedUrls == null || lockedUrls.Count < 1)
-            {
-                Console.WriteLine("No locked objects");
-            }
-            else
-            {
-                Console.WriteLine("Locked objects: " + lockedUrls.Count);
-                foreach (KeyValuePair<string, Tuple<int?, string, string, DateTime>> curr in lockedUrls)
-                {
-                    // UserMasterId, SourceIp, verb, established
-                    Console.WriteLine("  " + curr.Key + " user " + curr.Value.Item1 + " " + curr.Value.Item2 + " " + curr.Value.Item3);
-                }
-                Console.WriteLine("");
-            }
-            if (lockedUrls == null || lockedUrls.Count < 1)
-            {
-                Console.WriteLine("No locked URLs");
-            }
-
-            if (readUrls == null || readUrls.Count < 1)
-            {
-                Console.WriteLine("No objects being read");
-            }
-            else
-            {
-                Console.WriteLine("Read objects: " + readUrls.Count);
-                foreach (string curr in readUrls)
-                {
-                    Console.WriteLine("  " + curr);
-                }
-                Console.WriteLine("");
-            }
+            ListTopology();
+            int nodeId = Common.InputInteger("Node ID:", 0, true, false);
+            string msg = Common.InputString("Message:", "Hello, world!", false);
+            _Topology.SendAsyncMessage(MessageType.Console, nodeId, Encoding.UTF8.GetBytes(msg));
         }
 
-        private void DataValidation()
+        private void ListActiveUrls()
         {
-            DateTime startTime = DateTime.Now;
-            int usersProcessed = 0;
-            int usersMoved = 0;
-            int subdirsMoved = 0;
-            int filesMoved = 0;
+            Dictionary<string, LockedResource> writeLocked = _UrlLockMgr.GetWriteLockedUrls();
+            List<string> readLocked = _UrlLockMgr.GetReadLockedUrls();
 
-            try
+            Console.WriteLine("Write locks:");
+            if (writeLocked == null || writeLocked.Count < 1)
             {
-                #region Check-for-Maintenance-Mode
-
-                if (!_MaintenanceMgr.IsEnabled())
+                Console.WriteLine("  None");
+            }
+            else
+            {
+                foreach (KeyValuePair<string, LockedResource> currLock in writeLocked)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "DataValidation cannot begin, maintenance mode not enabled");
-                    return;
+                    Console.WriteLine("  " + currLock.Value.ToString());
                 }
+            }
 
-                #endregion
-
-                #region Enumerate
-
-                _Logging.Log(LoggingModule.Severity.Debug, "DataValidation starting at " + DateTime.Now);
-
-                #endregion
-
-                #region Variables
-
-                string currUserGuid = "";
-                UserMaster currUser = new UserMaster();
-                Node currOwner = new Node();
-                List<string> userDirs = new List<string>();
-                List<string> userSubdirs = new List<string>();
-                List<string> userFiles = new List<string>();
-                bool errorDetected = false;
-
-                Dictionary<string, string> headers = new Dictionary<string, string>();
-                string subdirUrl = "";
-                RestResponse createSubdirResp = new RestResponse();
-                bool deleteDirSuccess = false;
-
-                Obj currObj = new Obj();
-                string fileUrl = "";
-                RestResponse createFileResp = new RestResponse();
-                bool deleteFileSuccess = false;
-
-                #endregion
-
-                #region Gather-Local-User-GUIDs
-
-                userDirs = Common.GetSubdirectoryList(_Settings.Storage.Directory, false);
-                if (userDirs == null)
+            Console.WriteLine("Read locks:");
+            if (readLocked == null || readLocked.Count < 1)
+            {
+                Console.WriteLine("  None");
+            }
+            else
+            {
+                foreach (string currLock in readLocked)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "DataValidation no subdirectories found (null) in " + _Settings.Storage.Directory);
-                    return;
+                    Console.WriteLine("  " + currLock);
                 }
+            } 
+        }
 
-                if (userDirs.Count < 1)
+        private void ListContainers()
+        {
+            List<ContainerSettings> containers = new List<ContainerSettings>();
+
+            int nodeId = Common.InputInteger("Node ID [0 for local]:", 0, true, true);
+            if (nodeId == 0)
+            {
+                if (!_ContainerMgr.GetContainers(out containers))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "DataValidation no subdirectories found (empty) in " + _Settings.Storage.Directory);
-                    return;
+                    Console.WriteLine("Failed");
                 }
-
-                #endregion
-
-                #region Process
-
-                foreach (string currUserDir in userDirs)
+                else
                 {
-                    #region Reset-Variables
-
-                    currUserGuid = "";
-                    currUser = null;
-                    currOwner = new Node();
-                    userSubdirs = new List<string>();
-                    userFiles = new List<string>();
-                    headers = new Dictionary<string, string>();
-                    errorDetected = false;
-                    deleteDirSuccess = false;
-
-                    usersProcessed++;
-
-                    #endregion
-
-                    #region Derive-User-GUID
-
-                    currUserGuid = currUserDir.Replace(_Settings.Storage.Directory, "");
-                    if (String.IsNullOrEmpty(currUserGuid))
+                    Console.WriteLine("Containers:");
+                    if (containers == null || containers.Count < 1)
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "DataValidation skipping subdirectory " + currUserDir + " (unable to derive user GUID");
-                        continue;
-                    }
-
-                    _Logging.Log(LoggingModule.Severity.Info, "DataValidation processing " + currUserDir + " (user GUID " + currUserGuid + ")");
-
-                    #endregion
-
-                    #region Retrieve-User-Record
-
-                    currUser = _UserMgr.GetUserByGuid(currUserGuid);
-                    if (currUser == null)
-                    {
-                        _Logging.Log(LoggingModule.Severity.Warn, "DataValidation found user GUID " + currUserGuid + " on disk but no matching user record");
-                        continue;
-                    }
-
-                    #endregion
-
-                    #region Determine-Owning-Node
-
-                    if (currUser.NodeId != null)
-                    {
-                        if (currUser.NodeId == _Node.NodeId)
-                        {
-                            _Logging.Log(LoggingModule.Severity.Debug, "DataValidation user GUID " + currUserGuid + " remains on this node (pinned)");
-                            continue;
-                        }
-                    }
-
-                    currOwner = _Topology.DetermineOwner(currUserGuid);
-                    if (currOwner == null)
-                    {
-                        _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to calculate primary for user GUID " + currUserGuid);
-                        continue;
-                    }
-
-                    if (currOwner.NodeId == _Node.NodeId)
-                    {
-                        // we are the primary
-                        _Logging.Log(LoggingModule.Severity.Debug, "DataValidation user GUID " + currUserGuid + " remains on this node (calculated)");
-                        continue;
+                        Console.WriteLine("None");
                     }
                     else
                     {
-                        bool isNeighbor = false;
-                        foreach (Node currNode in _Topology.GetNodes())
+                        foreach (ContainerSettings currSettings in containers)
                         {
-                            if (currNode.NodeId == currOwner.NodeId)
-                            {
-                                // check the neighbor list to see if we are a neighbor
-                                foreach (int currNodeId in currNode.Neighbors)
-                                {
-                                    if (currNodeId == _Node.NodeId)
-                                    {
-                                        // we are a neighbor
-                                        isNeighbor = true;
-                                        break;
-                                    }
-                                }
-
-                                if (isNeighbor) break;
-                            }
-                        }
-
-                        if (isNeighbor)
-                        {
-                            _Logging.Log(LoggingModule.Severity.Debug, "DataValidation user GUID " + currUserGuid + " remains on this node (local copy is replica)");
-                            continue;
+                            Console.WriteLine("  " + currSettings.User + "/" + currSettings.Name);
                         }
                     }
-
-                    #endregion
-
-                    #region Retrieve-Subdirectory-List
-
-                    userSubdirs = Common.GetSubdirectoryList(_Settings.Storage.Directory + currUserGuid, true);
-                    if (userSubdirs == null) userSubdirs = new List<string>();
-                    userSubdirs.Add(_Settings.Storage.Directory + currUserGuid);
-
-                    #endregion
-
-                    #region Create-User-Headers
-
-                    headers = Common.AddToDictionary("x-email", currUser.Email, headers);
-                    headers = Common.AddToDictionary("x-password", currUser.Password, headers);
-
-                    #endregion
-
-                    #region Process-Each-Subdirectory
-
-                    foreach (string currUserSubdir in userSubdirs)
-                    {
-                        #region Reset-Variables
-
-                        subdirUrl = "";
-                        createSubdirResp = new RestResponse();
-
-                        #endregion
-
-                        #region Build-Subdirectory-URL
-
-                        subdirUrl = _ObjMgr.PrimaryUrlFromDisk(currUserSubdir, null);
-                        _Logging.Log(LoggingModule.Severity.Debug, "DataValidation processing subdirectory path " + currUserSubdir);
-                        _Logging.Log(LoggingModule.Severity.Debug, "DataValidation processing subdirectory URL " + subdirUrl);
-
-                        if (String.IsNullOrEmpty(subdirUrl))
-                        {
-                            _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to build URL for subdirectory " + currUserSubdir);
-                            continue;
-                        }
-
-                        #endregion
-
-                        #region Create-New-Subdirectory
-
-                        createSubdirResp = RestRequest.SendRequestSafe(
-                            subdirUrl + "&container=true", null, "PUT", null, null, false,
-                            Common.IsTrue(_Settings.Rest.AcceptInvalidCerts),
-                            headers,
-                            null);
-
-                        if (createSubdirResp == null)
-                        {
-                            _Logging.Log(LoggingModule.Severity.Warn, "DataValidation null REST response for user GUID " + currUserGuid + " while creating subdirectory " + subdirUrl);
-                            errorDetected = true;
-                            continue;
-                        }
-
-                        if (createSubdirResp.StatusCode != 200 && createSubdirResp.StatusCode != 201)
-                        {
-                            _Logging.Log(LoggingModule.Severity.Warn, "DataValidation non-200/201 REST response for user GUID " + currUserGuid + " while creating subdirectory " + subdirUrl);
-                            errorDetected = true;
-                            continue;
-                        }
-
-                        _Logging.Log(LoggingModule.Severity.Debug, "DataValidation successfully created user GUID " + currUserGuid + " subdirectory " + subdirUrl);
-
-                        #endregion
-
-                        #region Get-File-List
-
-                        userFiles = Common.GetFileList(_Settings.Environment, currUserSubdir, true);
-                        if (userFiles == null)
-                        {
-                            _Logging.Log(LoggingModule.Severity.Debug, "DataValidation null file list for user GUID " + currUserGuid + " in directory " + currUserSubdir);
-                            continue;
-                        }
-
-                        if (userFiles.Count < 1)
-                        {
-                            _Logging.Log(LoggingModule.Severity.Debug, "DataValidation empty file list for user GUID " + currUserGuid + " in directory " + currUserSubdir);
-                            continue;
-                        }
-
-                        #endregion
-
-                        #region Process-Each-File
-
-                        foreach (string currUserFile in userFiles)
-                        {
-                            #region Reset-Variables
-
-                            currObj = new Obj();
-                            fileUrl = "";
-                            createFileResp = new RestResponse();
-                            deleteFileSuccess = false;
-
-                            #endregion
-
-                            #region Build-Object
-
-                            currObj = _ObjMgr.BuildFromDisk(currUserFile);
-                            if (currObj == null)
-                            {
-                                _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to retrieve obj for " + currUserFile);
-                                continue;
-                            }
-
-                            #endregion
-
-                            #region Build-File-URL
-
-                            fileUrl = _ObjMgr.PrimaryUrlFromDisk(currUserFile, currObj);
-                            if (String.IsNullOrEmpty(fileUrl))
-                            {
-                                _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to build file URL for user GUID " + currUserGuid + " file " + currUserFile);
-                                continue;
-                            }
-
-                            #endregion
-
-                            #region Decrypt-to-Compressed-Value
-
-                            if (Common.IsTrue(currObj.IsEncrypted))
-                            {
-                                byte[] cleartext;
-
-                                if (String.IsNullOrEmpty(currObj.EncryptionKsn))
-                                {
-                                    // server encryption
-                                    if (!_Encryption.ServerDecrypt(currObj.Value, currObj.EncryptionKsn, out cleartext))
-                                    {
-                                        _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to decrypt file for user GUID " + currUserGuid + " file " + currUserFile);
-                                        continue;
-                                    }
-
-                                    if (cleartext == null)
-                                    {
-                                        _Logging.Log(LoggingModule.Severity.Warn, "DataValidation null value after server decryption for user GUID " + currUserGuid + " file " + currUserFile);
-                                        continue;
-                                    }
-                                }
-                                else
-                                {
-                                    cleartext = _Encryption.LocalDecrypt(currObj.Value);
-                                    if (cleartext == null)
-                                    {
-                                        _Logging.Log(LoggingModule.Severity.Warn, "DataValidation null value after local decryption for user GUID " + currUserGuid + " file " + currUserFile);
-                                        continue;
-                                    }
-                                }
-
-                                currObj.Value = cleartext;
-                            }
-
-                            #endregion
-
-                            #region Decompress-to-Base64-Encoded-Value
-
-                            if (Common.IsTrue(currObj.IsCompressed))
-                            {
-                                currObj.Value = Common.GzipDecompress(currObj.Value);
-                            }
-
-                            #endregion
-
-                            #region Write-File
-
-                            createFileResp = RestRequest.SendRequestSafe(
-                                subdirUrl + "&encoded=true", currObj.ContentType, "PUT", null, null, false,
-                                Common.IsTrue(_Settings.Rest.AcceptInvalidCerts),
-                                headers,
-                                currObj.Value);
-
-                            if (createFileResp == null)
-                            {
-                                _Logging.Log(LoggingModule.Severity.Warn, "DataValidation null REST response for user GUID " + currUserGuid + " while creating file " + fileUrl);
-                                errorDetected = true;
-                                continue;
-                            }
-
-                            if (createFileResp.StatusCode != 200 && createFileResp.StatusCode != 201)
-                            {
-                                _Logging.Log(LoggingModule.Severity.Warn, "DataValidation non-200/201 REST response for user GUID " + currUserGuid + " while creating file " + fileUrl);
-                                errorDetected = true;
-                                continue;
-                            }
-
-                            _Logging.Log(LoggingModule.Severity.Debug, "DataValidation successfully created user GUID " + currUserGuid + " file " + fileUrl);
-
-                            #endregion
-
-                            #region Delete-Local-Copy
-
-                            deleteFileSuccess = Common.DeleteFile(currUserFile);
-                            if (!deleteFileSuccess)
-                            {
-                                _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to delete user GUID " + currUserGuid + " file " + currUserFile);
-                                continue;
-                            }
-
-                            #endregion
-
-                            filesMoved++;
-                        }
-
-                        #endregion
-
-                        subdirsMoved++;
-                    }
-
-                    #endregion
-
-                    #region Delete-User-Directory
-
-                    //
-                    // IMPORTANT: since the order of subdirectories returned cannot be guaranteed
-                    // and we can't be sure that deepest paths will be processed first, subdirectories
-                    // should not be deleted until finished.  Instead, the user directory itself
-                    // should be deleted recursively and only when no failure has been detected
-                    //
-                    // the 'error_detected' variable should be set to true to indicate when an 
-                    // attempt to write data to the target machine has failed (and only used for this
-                    // specific case).  The local copy should only be deleted when this variable is
-                    // set to false.  The variable should be reset to false on each user_guid
-                    //
-                    if (!errorDetected)
-                    {
-                        deleteDirSuccess = Common.DeleteDirectory(currUserDir, true);
-                        if (!deleteDirSuccess)
-                        {
-                            _Logging.Log(LoggingModule.Severity.Warn, "DataValidation unable to delete user directory " + currUserDir);
-                            continue;
-                        }
-                    }
-
-                    #endregion
-
-                    usersMoved++;
+                }
+            }
+            else
+            {
+                Node node = _Topology.GetNodeById(nodeId);
+                if (node == null)
+                {
+                    Console.WriteLine("Unknown node");
+                    return;
                 }
 
-                #endregion
+                RequestMetadata md = BuildMetadata(null, null, null, "get");
+                if (!_OutboundMessageHandler.ContainerList(md, node, out containers))
+                {
+                    Console.WriteLine("Request to node ID " + nodeId + " failed");
+                }
+                else
+                {
+                    Console.WriteLine(Common.SerializeJson(containers, true));
+                }
             }
-            catch (Exception e)
+        }
+
+        private void ContainerExists()
+        {
+            int nodeId = Common.InputInteger("Node ID [0 for local]:", 0, true, true);
+            Node node = null;
+
+            string userGuid = Common.InputString("User GUID:", "default", false);
+            string containerName = Common.InputString("Container name:", "default", false);
+            RequestMetadata md = BuildMetadata(userGuid, containerName, null, "get");
+
+            if (nodeId > 0)
             {
-                _Logging.Exception("DataValidation", "Outer exception", e);
-                Common.ExitApplication("DataValidation", "Outer exception", -1);
+                node = _Topology.GetNodeById(nodeId);
+                if (node == null)
+                {
+                    Console.WriteLine("Unknown node");
+                    return;
+                }
+            }
+
+            if (nodeId == 0)
+            {
+                Console.WriteLine(_Containers.Exists(md, userGuid, containerName));
+            }
+            else
+            {
+                Console.WriteLine(_OutboundMessageHandler.ContainerExists(md, node));
+            }
+        }
+
+        private void ContainerEnumerate()
+        {
+            int nodeId = Common.InputInteger("Node ID [0 for local]:", 0, true, true);
+            Node node = null;
+
+            string userGuid = Common.InputString("User GUID:", "default", false);
+            string containerName = Common.InputString("Container name:", "default", false);
+            RequestMetadata md = BuildMetadata(userGuid, containerName, null, "get");
+
+            if (nodeId > 0)
+            {
+                node = _Topology.GetNodeById(nodeId);
+                if (node == null)
+                {
+                    Console.WriteLine("Unknown node");
+                    return;
+                }
+            }
+
+            Container container = null;
+            ContainerMetadata metadata = null;
+            if (nodeId == 0)
+            {
+                if (!_ContainerMgr.GetContainer(userGuid, containerName, out container))
+                {
+                    Console.WriteLine("Unknown container");
+                    return;
+                }
+
+                metadata = container.Enumerate(null, null, null, null);
+                Console.WriteLine(Common.SerializeJson(metadata, true));
+            }
+            else
+            {
+                if (!_OutboundMessageHandler.ContainerEnumerate(md, node, out metadata))
+                {
+                    Console.WriteLine("Unable to query node ID " + nodeId);
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine(Common.SerializeJson(metadata, true));
+                }
+            }
+        }
+
+        private void ObjectRead()
+        {
+            int nodeId = Common.InputInteger("Node ID [0 for local]:", 0, true, true);
+            Node node = null;
+
+            string userGuid = Common.InputString("User GUID:", "default", false);
+            string containerName = Common.InputString("Container name:", "default", false);
+            string objectKey = Common.InputString("Object key:", "hello.txt", false);
+            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, "get");
+
+            if (nodeId > 0)
+            {
+                node = _Topology.GetNodeById(nodeId);
+                if (node == null)
+                {
+                    Console.WriteLine("Unknown node");
+                    return;
+                }
+            }
+
+            byte[] data = null;
+            string contentType;
+            ErrorCode error;
+
+            if (nodeId == 0)
+            {
+                Container container = null;
+                if (!_ContainerMgr.GetContainer(userGuid, containerName, out container))
+                {
+                    Console.WriteLine("Unknown container");
+                    return;
+                }
+
+                if (!container.ReadObject(objectKey, out contentType, out data, out error))
+                {
+                    Console.WriteLine("Failed (" + error.ToString() + ")");
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine(Encoding.UTF8.GetString(data));
+                    Console.WriteLine(data.Length + " bytes, content type: " + contentType);
+                    return;
+                } 
+            }
+            else
+            {
+                if (!_OutboundMessageHandler.ObjectRead(md, node, out data))
+                {
+                    Console.WriteLine("Request failed to node ID " + node.NodeId);
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine(Encoding.UTF8.GetString(data));
+                    Console.WriteLine(data.Length + " bytes");
+                    return;
+                }
+            }
+        }
+
+        private void ObjectExists()
+        {
+            int nodeId = Common.InputInteger("Node ID [0 for local]:", 0, true, true);
+            Node node = null;
+
+            string userGuid = Common.InputString("User GUID:", "default", false);
+            string containerName = Common.InputString("Container name:", "default", false);
+            string objectKey = Common.InputString("Object key:", "hello.txt", false);
+            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, "get");
+
+            if (nodeId > 0)
+            {
+                node = _Topology.GetNodeById(nodeId);
+                if (node == null)
+                {
+                    Console.WriteLine("Unknown node");
+                    return;
+                }
+            }
+
+            if (nodeId == 0)
+            {
+                Container container = null;
+                if (!_ContainerMgr.GetContainer(userGuid, containerName, out container))
+                {
+                    Console.WriteLine("Unknown container");
+                    return;
+                }
+
+                Console.WriteLine(_Objects.Exists(md, container, objectKey));
+            }
+            else
+            {
+                Console.WriteLine(_OutboundMessageHandler.ObjectExists(md, node));
+            }
+        }
+
+        private void ObjectDelete()
+        {
+            int nodeId = Common.InputInteger("Node ID [0 for local]:", 0, true, true);
+            Node node = null;
+
+            string userGuid = Common.InputString("User GUID:", "default", false);
+            string containerName = Common.InputString("Container name:", "default", false);
+            string objectKey = Common.InputString("Object key:", "hello.txt", false);
+            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, "delete");
+
+            if (nodeId > 0)
+            {
+                node = _Topology.GetNodeById(nodeId);
+                if (node == null)
+                {
+                    Console.WriteLine("Unknown node");
+                    return;
+                }
+            }
+
+            Container container = null;
+            ContainerSettings settings = null;
+            ErrorCode error;
+
+            if (nodeId == 0)
+            {
+                if (!_ContainerMgr.GetContainer(userGuid, containerName, out container))
+                {
+                    Console.WriteLine("Unknown container");
+                    return;
+                }
+
+                Console.WriteLine(container.RemoveObject(objectKey, out error)); 
+            }
+            else
+            {
+                if (!_ContainerMgr.GetContainerSettings(userGuid, containerName, out settings))
+                {
+                    Console.WriteLine("Unknown container");
+                    return;
+                }
+
+                bool disableReplication = Common.InputBoolean("Disable replication:", false);
+                if (disableReplication) settings.Replication = ReplicationMode.None;
+
+                Console.WriteLine(_OutboundMessageHandler.ObjectDelete(md, node));
+            }
+        }
+
+        private void ObjectMetadata()
+        {
+            int nodeId = Common.InputInteger("Node ID [0 for local]:", 0, true, true);
+            Node node = null; 
+            ObjectMetadata metadata = null;
+
+            string userGuid = Common.InputString("User GUID:", "default", false);
+            string containerName = Common.InputString("Container name:", "default", false);
+            string objectKey = Common.InputString("Object key:", "hello.txt", false);
+            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, "get");
+            md.Params.Metadata = true;
+
+            if (nodeId > 0)
+            {
+                node = _Topology.GetNodeById(nodeId);
+                if (node == null)
+                {
+                    Console.WriteLine("Unknown node");
+                    return;
+                }
+            }
+
+            if (nodeId == 0)
+            {
+                Container container = null;
+                if (!_ContainerMgr.GetContainer(userGuid, containerName, out container))
+                {
+                    Console.WriteLine("Unknown container");
+                    return;
+                }
+
+                if (!container.ReadObjectMetadata(objectKey, out metadata))
+                {
+                    Console.WriteLine("Not found");
+                }
+                else
+                {
+                    Console.WriteLine(Common.SerializeJson(metadata, true));
+                }
+            }
+            else
+            {
+                if (!_OutboundMessageHandler.ObjectMetadata(md, node, out metadata))
+                {
+                    Console.WriteLine("Not found");
+                }
+                else
+                {
+                    Console.WriteLine(Common.SerializeJson(metadata, true));
+                } 
+            }
+        }
+
+        private void GetLatestTimestamp()
+        { 
+            string userGuid = Common.InputString("User GUID:", "default", false);
+            string containerName = Common.InputString("Container name:", "default", false);
+
+            Container currContainer = null;
+            if (!_ContainerMgr.GetContainer(userGuid, containerName, out currContainer))
+            {
+                Console.WriteLine("Unknown container");
+            }
+            else
+            {
+                DateTime? ts = currContainer.LatestEntry();
+                if (ts == null)
+                {
+                    Console.WriteLine("None");
+                }
+                else
+                {
+                    Console.WriteLine(Convert.ToDateTime(ts).ToString(_TimestampFormat));
+                }
+            }
+        }
+
+        private void SyncAdd()
+        {
+            int nodeId = Common.InputInteger("Node ID:", 1, true, false);
+            Node node = null;
+
+            string userGuid = Common.InputString("User GUID:", "default", true);
+            string containerName = Common.InputString("Container name:", "default", true);
+
+            DateTime? startTime = null;
+            string startTimeStr = Common.InputString("Start timestamp:", DateTime.Now.ToString(_TimestampFormat), true);
+            if (!String.IsNullOrEmpty(startTimeStr)) startTime = Convert.ToDateTime(startTimeStr);
+
+            node = _Topology.GetNodeById(nodeId);
+            if (node == null)
+            {
+                Console.WriteLine("Unknown node");
                 return;
             }
-            finally
+
+            string workerGuid = null;
+            _ResyncMgr.Add(node, userGuid, containerName, startTime, out workerGuid);  
+        }
+
+        private void SyncTasks()
+        {
+            List<ResyncWorker> workers = _ResyncMgr.GetTasks();
+            if (workers == null || workers.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, Common.Line(79, "-"));
-                _Logging.Log(LoggingModule.Severity.Debug, "DataValidation finished after " + Common.TotalMsFrom(startTime) + "ms");
-                _Logging.Log(LoggingModule.Severity.Debug, "  " + usersProcessed + " user GUIDs processed");
-                _Logging.Log(LoggingModule.Severity.Debug, "  " + usersMoved + " user GUIDs moved");
-                _Logging.Log(LoggingModule.Severity.Debug, "  " + subdirsMoved + " subdirectorectories moved");
-                _Logging.Log(LoggingModule.Severity.Debug, "  " + filesMoved + " files moved");
-                _Logging.Log(LoggingModule.Severity.Debug, Common.Line(79, "-"));
+                Console.WriteLine("None");
             }
+            else
+            {
+                Console.WriteLine(Common.SerializeJson(workers, true));
+            }
+        }
+
+        private void SyncStart()
+        {
+            SyncTasks();
+            string workerGuid = Common.InputString("Worker GUID:", null, true);
+            if (String.IsNullOrEmpty(workerGuid)) return;
+
+            _ResyncMgr.Start(workerGuid);
+        }
+
+        private RequestMetadata BuildMetadata(string userGuid, string container, string objectKey, string method)
+        {
+            RequestMetadata ret = new RequestMetadata();
+            ret.Params = new RequestMetadata.Parameters();
+            ret.Params.UserGuid = userGuid;
+            ret.Params.Container = container;
+            ret.Params.ObjectKey = objectKey;
+
+            ret.Http = new HttpRequest();
+            ret.Http.SourceIp = "127.0.0.1";
+            ret.Http.SourcePort = 0;
+            ret.Http.Method = method;
+
+            ret.Http.RawUrlWithoutQuery = "/";
+            if (!String.IsNullOrEmpty(userGuid))
+            {
+                ret.Http.RawUrlWithoutQuery += userGuid + "/";
+                if (!String.IsNullOrEmpty(container))
+                {
+                    ret.Http.RawUrlWithoutQuery += container + "/";
+                    if (!String.IsNullOrEmpty(objectKey))
+                    {
+                        ret.Http.RawUrlWithoutQuery += objectKey;
+                    }
+                }
+            }
+
+            ret.Http.TimestampUtc = DateTime.Now.ToUniversalTime();
+            return ret;
         }
 
         #endregion 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using SyslogLogging;
 
@@ -36,8 +37,7 @@ namespace Kvpbase
             #region Variables
 
             DateTime timestamp = DateTime.Now;
-            Settings currSettings = new Settings();
-            string separator = "";
+            Settings currSettings = new Settings(); 
 
             ApiKey currApiKey = new ApiKey();
             List<ApiKey> apiKeys = new List<ApiKey>();
@@ -88,9 +88,7 @@ namespace Kvpbase
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
             currSettings.ProductVersion = fvi.FileVersion; 
-
-            currSettings.DocumentationUrl = "http://www.kvpbase.com/docs/";
-            currSettings.LogoUrl = "http://kvpbase.com/Content/Images/cloud-only_25px.png";
+             
             currSettings.HomepageUrl = "http://www.kvpbase.com";
             currSettings.SupportEmail = "support@maraudersoftware.com";
 
@@ -104,26 +102,19 @@ namespace Kvpbase
                 currSettings.Environment = "windows";
             }
 
-            currSettings.EnableConsole = 1;
+            currSettings.EnableConsole = true;
 
             #endregion
 
-            #region Set-Defaults-for-Config-Sections
-
-            separator = Common.GetPathSeparator(currSettings.Environment);
-
-            #region Files
-
+            #region Set-Defaults
+              
             currSettings.Files = new Settings.SettingsFiles();
-            currSettings.Files.ApiKey = "." + separator + "ApiKey.json";
-            currSettings.Files.Permission = "." + separator + "ApiKeyPermission.json";
-            currSettings.Files.Topology = "." + separator + "Topology.json";
-            currSettings.Files.UserMaster = "." + separator + "UserMaster.json";
-
-            #endregion
-
-            #region Server
-
+            currSettings.Files.ApiKey = "./ApiKey.json";
+            currSettings.Files.Permission = "./ApiKeyPermission.json";
+            currSettings.Files.Topology = "./Topology.json";
+            currSettings.Files.UserMaster = "./UserMaster.json";
+            currSettings.Files.Container = "./Container.json";
+             
             currSettings.Server = new Settings.SettingsServer();
             currSettings.Server.HeaderApiKey = "x-api-key";
             currSettings.Server.HeaderEmail = "x-email";
@@ -133,737 +124,255 @@ namespace Kvpbase
             currSettings.Server.AdminApiKey = "kvpbaseadmin";
             currSettings.Server.TokenExpirationSec = 86400;
             currSettings.Server.FailedRequestsIntervalSec = 60;
-
-            #endregion
-
-            #region Redirection
+            currSettings.Server.MaxTransferSize = 536870912;
 
             currSettings.Redirection = new Settings.SettingsRedirection();
-            currSettings.Redirection.DeleteRedirectHttpStatus = 301;
-            currSettings.Redirection.DeleteRedirectString = "Moved Permanently";
-            currSettings.Redirection.DeleteRedirectionMode = "proxy";
-            currSettings.Redirection.ReadRedirectHttpStatus = 301;
-            currSettings.Redirection.ReadRedirectString = "Moved Permanently";
-            currSettings.Redirection.ReadRedirectionMode = "proxy";
-            currSettings.Redirection.WriteRedirectHttpStatus = 301;
-            currSettings.Redirection.WriteRedirectString = "Moved Permanently";
-            currSettings.Redirection.WriteRedirectionMode = "proxy";
-            currSettings.Redirection.SearchRedirectHttpStatus = 301;
-            currSettings.Redirection.SearchRedirectString = "Moved Permanently";
-            currSettings.Redirection.SearchRedirectionMode = "proxy";
-
-            #endregion
-
-            #region Topology
-
-            currSettings.Topology = new Settings.SettingsTopology();
-            currSettings.Topology.RefreshSec = 10;
-
-            #endregion
-
-            #region Perfmon
-
-            currSettings.Perfmon = new Settings.SettingsPerfmon();
-            currSettings.Perfmon.Enable = 1;
-            currSettings.Perfmon.RefreshSec = 10;
-            currSettings.Perfmon.Syslog = 0;
-
-            #endregion
-
-            #region Storage
+            currSettings.Redirection.Mode = RedirectMode.PermanentRedirect; 
+             
+            currSettings.Topology = new Settings.SettingsTopology(); 
+            currSettings.Topology.DebugMeshNetworking = false;
+            currSettings.Topology.DebugMeshNetworking = false;
 
             currSettings.Storage = new Settings.SettingsStorage();
-            currSettings.Storage.Directory = "." + separator + "storage" + separator;
-            currSettings.Storage.MaxObjectSize = 512000000;
-            Console.WriteLine("");
-            //          1         2         3         4         5         6         7
-            // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-            Console.WriteLine("Is this a gateway-mode kvpbase node (true)?  Gateway-mode is used when the node");
-            Console.WriteLine("uses storage directories that live on other systems or contain data that can");
-            Console.WriteLine("be accessed through means other than kvpbase, such as a file share.  Enabling");
-            Console.WriteLine("gateway mode allows accessing the data through means outside of kvpbase by");
-            Console.WriteLine("disabling encryption and compression.");
-            Console.WriteLine("");
-            bool isGatewayMode = Common.InputBoolean("Configure this node for gateway-mode", true);
-            Console.WriteLine("");
-
-            if (isGatewayMode)
-            {
-                currSettings.Storage.GatewayMode = 1;
-                currSettings.Storage.DefaultCompress = 0;
-                currSettings.Storage.DefaultEncrypt = 0;
-            }
-            else
-            {
-                currSettings.Storage.GatewayMode = 0;
-                currSettings.Storage.DefaultCompress = 1;
-                currSettings.Storage.DefaultEncrypt = 1;
-            }
-
-            #endregion
-
-            #region Messages
+            currSettings.Storage.Directory = "./Storage/"; 
+             
+            currSettings.Container = new Settings.SettingsContainer();
+            currSettings.Container.CacheSize = 100;
+            currSettings.Container.EvictSize = 10;
+            currSettings.Container.DefaultReplicationMode = ReplicationMode.Async;
 
             currSettings.Messages = new Settings.SettingsMessages();
-            currSettings.Messages.Directory = "." + separator + "Messages" + separator;
+            currSettings.Messages.Directory = "./Messages/";
             currSettings.Messages.RefreshSec = 10;
-
-            #endregion
-
-            #region Expiration
-
+             
             currSettings.Expiration = new Settings.SettingsExpiration();
-            currSettings.Expiration.Directory = "." + separator + "Expiration" + separator;
+            currSettings.Expiration.Directory = "./Expiration/";
             currSettings.Expiration.RefreshSec = 10;
             currSettings.Expiration.DefaultExpirationSec = 0;
-
-            #endregion
-
-            #region Replication
-
+             
             currSettings.Replication = new Settings.SettingsReplication();
-            currSettings.Replication.Directory = "." + separator + "Replication" + separator;
+            currSettings.Replication.Directory = "./Replication/";
             currSettings.Replication.RefreshSec = 10;
             currSettings.Replication.ReplicationMode = "sync";
-
-            #endregion
-
-            #region Bunker
-
-            currSettings.Bunker = new Settings.SettingsBunker();
-            currSettings.Bunker.Directory = "." + separator + "Bunker" + separator;
-            currSettings.Bunker.Enable = 0;
-            currSettings.Bunker.RefreshSec = 30;
-            currSettings.Bunker.Nodes = null;
-
-            #endregion
-
-            #region Pubfiles
-
-            currSettings.PublicObj = new Settings.SettingsPublicObj();
-            currSettings.PublicObj.Directory = "." + separator + "Pubfiles" + separator;
-            currSettings.PublicObj.RefreshSec = 600;
-            currSettings.PublicObj.DefaultExpirationSec = 7776000;
-
-            #endregion
-
-            #region Tasks
-
+             
             currSettings.Tasks = new Settings.SettingsTasks();
-            currSettings.Tasks.Directory = "." + separator + "Tasks" + separator;
+            currSettings.Tasks.Directory = "./Tasks/";
             currSettings.Tasks.RefreshSec = 10;
-
-            #endregion
-
-            #region Logger
-
-            currSettings.Logger = new Settings.SettingsLogger();
-            currSettings.Logger.RefreshSec = 10;
-
-            #endregion
-
-            #region Syslog
-
+             
             currSettings.Syslog = new Settings.SettingsSyslog();
-            currSettings.Syslog.ConsoleLogging = 1;
+            currSettings.Syslog.ConsoleLogging = true;
             currSettings.Syslog.Header = "kvpbase";
             currSettings.Syslog.ServerIp = "127.0.0.1";
             currSettings.Syslog.ServerPort = 514;
-            currSettings.Syslog.LogHttpRequests = 0;
-            currSettings.Syslog.LogHttpResponses = 0;
+            currSettings.Syslog.LogHttpRequests = false;
+            currSettings.Syslog.LogHttpResponses = false;
             currSettings.Syslog.MinimumLevel = 1;
-
-            #endregion
-
-            #region Email
-
+             
             currSettings.Email = new Settings.SettingsEmail();
-
-            #endregion
-
-            #region Encryption
-
+             
             currSettings.Encryption = new Settings.SettingsEncryption();
             currSettings.Encryption.Mode = "local";
             currSettings.Encryption.Iv = "0000000000000000";
             currSettings.Encryption.Passphrase = "0000000000000000";
             currSettings.Encryption.Salt = "0000000000000000";
-
-            #endregion
-
-            #region REST
-
+             
             currSettings.Rest = new Settings.SettingsRest();
-            currSettings.Rest.AcceptInvalidCerts = 0;
-            currSettings.Rest.UseWebProxy = 0;
-
-            #endregion
-
-            #region Debug
-
-            currSettings.Debug = new Settings.SettingsDebug();
-            currSettings.Debug.DebugCompression = 0;
-            currSettings.Debug.DebugEncryption = 0;
-
-            #endregion
-
-            #region Mailgun
-
+            currSettings.Rest.AcceptInvalidCerts = true;
+            currSettings.Rest.UseWebProxy = false;
+             
             currSettings.Mailgun = new Settings.SettingsMailgun();
-
-            #endregion
-
-            #endregion
-
-            #region System-Config
-
-            if (
-                Common.FileExists("System.json")
-                )
+              
+            if (!Common.WriteFile("System.json", Common.SerializeJson(currSettings, true), false))
             {
-                Console.WriteLine("System configuration file already exists.");
-                if (Common.InputBoolean("Do you wish to overwrite this file", true))
-                {
-                    Common.DeleteFile("System.json");
-                    if (!Common.WriteFile("System.json", Common.SerializeJson(currSettings), false))
-                    {
-                        Common.ExitApplication("setup", "Unable to write System.json", -1);
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                if (!Common.WriteFile("System.json", Common.SerializeJson(currSettings), false))
-                {
-                    Common.ExitApplication("setup", "Unable to write System.json", -1);
-                    return;
-                }
-            }
+                Common.ExitApplication("setup", "Unable to write System.json", -1);
+                return;
+            } 
 
             #endregion
 
             #region Users-API-Keys-and-Permissions
+             
+            currApiKey = new ApiKey();
+            currApiKey.Active = true;
+            currApiKey.ApiKeyId = 1;
+            currApiKey.Created = timestamp;
+            currApiKey.LastUpdate = timestamp;
+            currApiKey.Expiration = timestamp.AddYears(100);
+            currApiKey.Guid = "default";
+            currApiKey.Notes = "Created by setup script";
+            currApiKey.UserMasterId = 1;
+            apiKeys.Add(currApiKey);
 
-            if (
-                Common.FileExists(currSettings.Files.ApiKey)
-                || Common.FileExists(currSettings.Files.Permission)
-                || Common.FileExists(currSettings.Files.UserMaster)
-                )
+            currPerm = new ApiKeyPermission();
+            currPerm.Active = true;
+            currPerm.DeleteContainer = true;
+            currPerm.DeleteObject = true;
+            currPerm.ReadContainer = true;
+            currPerm.ReadObject = true; 
+            currPerm.WriteContainer = true;
+            currPerm.WriteObject = true;
+            currPerm.ApiKeyId = 1;
+            currPerm.ApiKeyPermissionId = 1;
+            currPerm.Created = timestamp;
+            currPerm.LastUpdate = timestamp;
+            currPerm.Expiration = timestamp.AddYears(100);
+            currPerm.Guid = "default";
+            currPerm.Notes = "Created by setup script";
+            currPerm.UserMasterId = 1;
+            permissions.Add(currPerm);
+
+            currUser = new UserMaster();
+            currUser.Active = 1;
+            currUser.Address1 = "123 Some Street";
+            currUser.Cellphone = "408-555-1212";
+            currUser.City = "San Jose";
+            currUser.CompanyName = "Default Company";
+            currUser.Country = "USA";
+            currUser.FirstName = "First";
+            currUser.LastName = "Last";
+            currUser.Email = "default@default.com"; 
+            currUser.NodeId = 0;
+            currUser.Password = "default";
+            currUser.PostalCode = "95128";
+            currUser.State = "CA";
+            currUser.UserMasterId = 1;
+            currUser.Guid = "default";
+            currUser.Created = timestamp;
+            currUser.LastUpdate = timestamp;
+            currUser.Expiration = timestamp.AddYears(100);
+            users.Add(currUser);
+
+            if (!Common.WriteFile(currSettings.Files.ApiKey, Common.SerializeJson(apiKeys, true), false))
             {
-                Console.WriteLine("Configuration files already exist for API keys, users, and/or permissions.");
-                if (Common.InputBoolean("Do you wish to overwrite these files", true))
-                {
-                    Common.DeleteFile(currSettings.Files.ApiKey);
-                    Common.DeleteFile(currSettings.Files.Permission);
-                    Common.DeleteFile(currSettings.Files.UserMaster);
-
-                    Console.WriteLine("Creating new configuration files for API keys, users, and permissions.");
-
-                    currApiKey = new ApiKey();
-                    currApiKey.Active = 1;
-                    currApiKey.ApiKeyId = 1;
-                    currApiKey.Created = timestamp;
-                    currApiKey.LastUpdate = timestamp;
-                    currApiKey.Expiration = timestamp.AddYears(100);
-                    currApiKey.Guid = "default";
-                    currApiKey.Notes = "Created by setup script";
-                    currApiKey.UserMasterId = 1;
-                    apiKeys.Add(currApiKey);
-
-                    currPerm = new ApiKeyPermission();
-                    currPerm.Active = 1;
-                    currPerm.AllowDeleteContainer = 1;
-                    currPerm.AllowDeleteObject = 1;
-                    currPerm.AllowReadContainer = 1;
-                    currPerm.AllowReadObject = 1;
-                    currPerm.AllowSearch = 1;
-                    currPerm.AllowWriteContainer = 1;
-                    currPerm.AllowWriteObject = 1;
-                    currPerm.ApiKeyId = 1;
-                    currPerm.ApiKeyPermissionId = 1;
-                    currPerm.Created = timestamp;
-                    currPerm.LastUpdate = timestamp;
-                    currPerm.Expiration = timestamp.AddYears(100);
-                    currPerm.Guid = "default";
-                    currPerm.Notes = "Created by setup script";
-                    currPerm.UserMasterId = 1;
-                    permissions.Add(currPerm);
-
-                    currUser = new UserMaster();
-                    currUser.Active = 1;
-                    currUser.Address1 = "123 Some Street";
-                    currUser.Cellphone = "408-555-1212";
-                    currUser.City = "San Jose";
-                    currUser.CompanyName = "Default Company";
-                    currUser.Country = "USA";
-                    currUser.FirstName = "First";
-                    currUser.LastName = "Last";
-                    currUser.Email = "default@default.com";
-                    currUser.IsAdmin = 1;
-                    currUser.NodeId = 0;
-                    currUser.Password = "default";
-                    currUser.PostalCode = "95128";
-                    currUser.State = "CA";
-                    currUser.UserMasterId = 1;
-                    currUser.Guid = "default";
-                    currUser.Created = timestamp;
-                    currUser.LastUpdate = timestamp;
-                    currUser.Expiration = timestamp.AddYears(100);
-                    users.Add(currUser);
-
-                    if (!Common.WriteFile(currSettings.Files.ApiKey, Common.SerializeJson(apiKeys), false))
-                    {
-                        Common.ExitApplication("setup", "Unable to write " + currSettings.Files.ApiKey, -1);
-                        return;
-                    }
-
-                    if (!Common.WriteFile(currSettings.Files.Permission, Common.SerializeJson(permissions), false))
-                    {
-                        Common.ExitApplication("setup", "Unable to write " + currSettings.Files.Permission, -1);
-                        return;
-                    }
-
-                    if (!Common.WriteFile(currSettings.Files.UserMaster, Common.SerializeJson(users), false))
-                    {
-                        Common.ExitApplication("setup", "Unable to write " + currSettings.Files.UserMaster, -1);
-                        return;
-                    }
-
-                    Console.WriteLine("We have created your first user account and permissions.");
-                    Console.WriteLine("  Email    : " + currUser.Email);
-                    Console.WriteLine("  Password : " + currUser.Password);
-                    Console.WriteLine("  GUID     : " + currUser.Guid);
-                    Console.WriteLine("  API Key  : " + currApiKey.Guid);
-                    Console.WriteLine("");
-                    Console.WriteLine("This was done by creating the following files:");
-                    Console.WriteLine("  " + currSettings.Files.UserMaster);
-                    Console.WriteLine("  " + currSettings.Files.ApiKey);
-                    Console.WriteLine("  " + currSettings.Files.Permission);
-                    Console.WriteLine("");
-                }
-                else
-                {
-                    Console.WriteLine("Existing files were left in tact.");
-                }
+                Common.ExitApplication("Setup", "Unable to write " + currSettings.Files.ApiKey, -1);
+                return;
             }
-            else
+
+            if (!Common.WriteFile(currSettings.Files.Permission, Common.SerializeJson(permissions, true), false))
             {
-                currApiKey = new ApiKey();
-                currApiKey.Active = 1;
-                currApiKey.ApiKeyId = 1;
-                currApiKey.Created = timestamp;
-                currApiKey.LastUpdate = timestamp;
-                currApiKey.Expiration = timestamp.AddYears(100);
-                currApiKey.Guid = "default";
-                currApiKey.Notes = "Created by setup script";
-                currApiKey.UserMasterId = 1;
-                apiKeys.Add(currApiKey);
-
-                currPerm = new ApiKeyPermission();
-                currPerm.Active = 1;
-                currPerm.AllowDeleteContainer = 1;
-                currPerm.AllowDeleteObject = 1;
-                currPerm.AllowReadContainer = 1;
-                currPerm.AllowReadObject = 1;
-                currPerm.AllowSearch = 1;
-                currPerm.AllowWriteContainer = 1;
-                currPerm.AllowWriteObject = 1;
-                currPerm.ApiKeyId = 1;
-                currPerm.ApiKeyPermissionId = 1;
-                currPerm.Created = timestamp;
-                currPerm.LastUpdate = timestamp;
-                currPerm.Expiration = timestamp.AddYears(100);
-                currPerm.Guid = "default";
-                currPerm.Notes = "Created by setup script";
-                currPerm.UserMasterId = 1;
-                permissions.Add(currPerm);
-
-                currUser = new UserMaster();
-                currUser.Active = 1;
-                currUser.Address1 = "123 Some Street";
-                currUser.Cellphone = "408-555-1212";
-                currUser.City = "San Jose";
-                currUser.CompanyName = "Default Company";
-                currUser.Country = "USA";
-                currUser.FirstName = "First";
-                currUser.LastName = "Last";
-                currUser.Email = "default@default.com";
-                currUser.IsAdmin = 1;
-                currUser.NodeId = 0;
-                currUser.Password = "default";
-                currUser.PostalCode = "95128";
-                currUser.State = "CA";
-                currUser.UserMasterId = 1;
-                currUser.Guid = "default";
-                currUser.Created = timestamp;
-                currUser.LastUpdate = timestamp;
-                currUser.Expiration = timestamp.AddYears(100);
-                users.Add(currUser);
-
-                if (!Common.WriteFile(currSettings.Files.ApiKey, Common.SerializeJson(apiKeys), false))
-                {
-                    Common.ExitApplication("setup", "Unable to write " + currSettings.Files.ApiKey, -1);
-                    return;
-                }
-
-                if (!Common.WriteFile(currSettings.Files.Permission, Common.SerializeJson(permissions), false))
-                {
-                    Common.ExitApplication("setup", "Unable to write " + currSettings.Files.Permission, -1);
-                    return;
-                }
-
-                if (!Common.WriteFile(currSettings.Files.UserMaster, Common.SerializeJson(users), false))
-                {
-                    Common.ExitApplication("setup", "Unable to write " + currSettings.Files.UserMaster, -1);
-                    return;
-                }
-
-                Console.WriteLine("We have created your first user account and permissions.");
-                Console.WriteLine("  Email    : " + currUser.Email);
-                Console.WriteLine("  Password : " + currUser.Password);
-                Console.WriteLine("  GUID     : " + currUser.Guid);
-                Console.WriteLine("  API Key  : " + currApiKey.Guid);
-                Console.WriteLine("");
-                Console.WriteLine("This was done by creating the following files:");
-                Console.WriteLine("  " + currSettings.Files.UserMaster);
-                Console.WriteLine("  " + currSettings.Files.ApiKey);
-                Console.WriteLine("  " + currSettings.Files.Permission);
-                Console.WriteLine("");
+                Common.ExitApplication("Setup", "Unable to write " + currSettings.Files.Permission, -1);
+                return;
             }
+
+            if (!Common.WriteFile(currSettings.Files.UserMaster, Common.SerializeJson(users, true), false))
+            {
+                Common.ExitApplication("Setup", "Unable to write " + currSettings.Files.UserMaster, -1);
+                return;
+            }
+
+            Console.WriteLine("We have created your first user account and permissions.");
+            Console.WriteLine("  Email    : " + currUser.Email);
+            Console.WriteLine("  Password : " + currUser.Password);
+            Console.WriteLine("  GUID     : " + currUser.Guid);
+            Console.WriteLine("  API Key  : " + currApiKey.Guid);
+            Console.WriteLine("");
+            Console.WriteLine("This was done by creating the following files:");
+            Console.WriteLine("  " + currSettings.Files.UserMaster);
+            Console.WriteLine("  " + currSettings.Files.ApiKey);
+            Console.WriteLine("  " + currSettings.Files.Permission);
+            Console.WriteLine(""); 
 
             #endregion
 
             #region Topology
+             
+            currTopology = new Topology();
+            currTopology.NodeId = 1;
 
-            if (Common.FileExists(currSettings.Files.Topology))
+            currTopology.Nodes = new List<Node>();
+            currNode = new Node();
+            currNode.NodeId = 1;
+            currNode.Name = "localhost"; 
+            currNode.NodeId = 1;
+
+            currNode.Http = new Node.HttpSettings();
+            currNode.Http.DnsHostname = "localhost";
+            currNode.Http.Port = 8000;
+            currNode.Http.Ssl = false;
+
+            currNode.Tcp = new Node.TcpSettings();
+            currNode.Tcp.IpAddress = "127.0.0.1";
+            currNode.Tcp.Port = 9000;
+            currNode.Tcp.Ssl = false;
+
+            //          1         2         3         4         5         6         7
+            // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+            Console.WriteLine("IMPORTANT: Kvpbase can only receive requests on the hostname you set.");
+            Console.WriteLine("If you set the hostname to 'localhost', this node will ONLY receive and handle");
+            Console.WriteLine("requests destined to 'localhost', i.e. it will only handle local requests.");
+            Console.WriteLine("");
+            currNode.Http.DnsHostname = Common.InputString("On which hostname shall this node listen?", "localhost", false); 
+
+            Console.WriteLine("");
+            currNode.Http.Port = Common.InputInteger("HTTP port for API requests?", 8000, true, false);
+            currNode.Tcp.Port = Common.InputInteger("TCP port for management requests?", 9000, true, false);
+            Console.WriteLine("");
+
+            currTopology.Nodes = new List<Node>();
+            currTopology.Nodes.Add(currNode);
+            currTopology.Replicas = null;
+
+            if (!Common.WriteFile(currSettings.Files.Topology, Common.SerializeJson(currTopology, true), false))
             {
-                #region File-Exists
-
-                Console.WriteLine("Configuration file already exists for topology.");
-                if (Common.InputBoolean("Do you wish to overwrite this file", true))
-                {
-                    #region Overwrite
-
-                    Common.DeleteFile(currSettings.Files.Topology);
-
-                    currTopology = new Topology();
-                    currTopology.CurrNodeId = 1;
-
-                    currTopology.Nodes = new List<Node>();
-                    currNode = new Node();
-                    currNode.DnsHostname = "localhost";
-                    currNode.Name = "localhost";
-                    currNode.Neighbors = null;
-                    currNode.NodeId = 1;
-                    currNode.Port = 8080;
-                    currNode.Ssl = 0;
-
-                    switch (currSettings.Environment)
-                    {
-                        case "linux":
-                            Console.WriteLine("");
-                            //          1         2         3         4         5         6         7
-                            // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-                            Console.WriteLine("IMPORTANT: for Linux and Mac environments, kvpbase can only receive requests on");
-                            Console.WriteLine("one hostname.  The hostname you set here must either be the hostname in the URL");
-                            Console.WriteLine("used by the requestor, or, set in the HOST header of each request.");
-                            Console.WriteLine("");
-                            Console.WriteLine("If you set the hostname to 'localhost', this node will ONLY receive and handle");
-                            Console.WriteLine("requests destined to 'localhost', i.e. it will only handle local requests.");
-                            Console.WriteLine("");
-
-                            currNode.DnsHostname = Common.InputString("On which hostname shall this node listen?", "localhost", false);
-                            break;
-
-                        case "windows":
-                            currNode.DnsHostname = "+";
-                            break;
-                    }
-
-                    Console.WriteLine("");
-                    currNode.Port = Common.InputInteger("On which port should this node listen?", 8080, true, false);
-                    Console.WriteLine("");
-
-                    currTopology.Nodes = new List<Node>();
-                    currTopology.Nodes.Add(currNode);
-                    currTopology.Replicas = null;
-
-                    if (!Common.WriteFile(currSettings.Files.Topology, Common.SerializeJson(currTopology), false))
-                    {
-                        Common.ExitApplication("setup", "Unable to write " + currSettings.Files.Topology, -1);
-                        return;
-                    }
-                    //          1         2         3         4         5         6         7
-                    // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-                    Console.WriteLine("We've created your topology file.  This node is configured to");
-                    Console.WriteLine("use HTTP (not HTTPS) and is accessible at the following URL:");
-                    Console.WriteLine("");
-                    Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port);
-
-                    if (String.Compare(currSettings.Environment, "windows") == 0)
-                        Console.WriteLine("  Windows: '+' indicates accessibility on any IP or hostname");
-
-                    Console.WriteLine("");
-                    Console.WriteLine("Be sure to install an SSL certificate and modify your Topology.json file to");
-                    Console.WriteLine("use SSL to maximize security and set the correct hostname.");
-                    Console.WriteLine("");
-
-                    #endregion
-                }
-
-                #endregion
+                Common.ExitApplication("Setup", "Unable to write " + currSettings.Files.Topology, -1);
+                return;
             }
-            else
-            {
-                #region New-File
 
-                currTopology = new Topology();
-                currTopology.CurrNodeId = 1;
+            //          1         2         3         4         5         6         7
+            // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+            Console.WriteLine("We've created your topology file.  This node is configured to");
+            Console.WriteLine("use HTTP (not HTTPS) and is accessible at the following URL:");
+            Console.WriteLine("");
+            Console.WriteLine("  http://" + currNode.Http.DnsHostname + ":" + currNode.Http.Port);
+                 
+            Console.WriteLine("");
+            Console.WriteLine("Be sure to install an SSL certificate and modify your Topology.json file to");
+            Console.WriteLine("use SSL to maximize security and set the correct hostname.");
+            Console.WriteLine("");
+            Console.WriteLine("Also, be sure to configure your firewall to allow inbound requests on both");
+            Console.WriteLine("HTTP port " + currNode.Http.Port + " and TCP port " + currNode.Tcp.Port + ".");
+            Console.WriteLine("");
 
-                currTopology.Nodes = new List<Node>();
-                currNode = new Node();
-                currNode.DnsHostname = "localhost";
-                currNode.Name = "localhost";
-                currNode.Neighbors = null;
-                currNode.NodeId = 1;
-                currNode.Port = 8080;
-                currNode.Ssl = 0;
-
-                switch (currSettings.Environment)
-                {
-                    case "linux":
-                        Console.WriteLine("");
-                        //          1         2         3         4         5         6         7
-                        // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-                        Console.WriteLine("IMPORTANT: for Linux and Mac environments, kvpbase can only receive requests on");
-                        Console.WriteLine("one hostname.  The hostname you set here must either be the hostname in the URL");
-                        Console.WriteLine("used by the requestor, or, set in the HOST header of each request.");
-                        Console.WriteLine("");
-                        Console.WriteLine("If you set the hostname to 'localhost', this node will ONLY receive and handle");
-                        Console.WriteLine("requests destined to 'localhost', i.e. it will only handle local requests.");
-                        Console.WriteLine("");
-
-                        currNode.DnsHostname = Common.InputString("On which hostname shall this node listen?", "localhost", false);
-                        break;
-
-                    case "windows":
-                        currNode.DnsHostname = "+";
-                        break;
-                }
-
-                Console.WriteLine("");
-                currNode.Port = Common.InputInteger("On which port should this node listen?", 8080, true, false);
-                Console.WriteLine("");
-
-                currTopology.Nodes = new List<Node>();
-                currTopology.Nodes.Add(currNode);
-                currTopology.Replicas = null;
-
-                if (!Common.WriteFile(currSettings.Files.Topology, Common.SerializeJson(currTopology), false))
-                {
-                    Common.ExitApplication("setup", "Unable to write " + currSettings.Files.Topology, -1);
-                    return;
-                }
-
-                //          1         2         3         4         5         6         7
-                // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-                Console.WriteLine("We've created your topology file.  This node is configured to");
-                Console.WriteLine("use HTTP (not HTTPS) and is accessible at the following URL:");
-                Console.WriteLine("");
-                Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port);
-
-                if (String.Compare(currSettings.Environment, "windows") == 0)
-                    Console.WriteLine("  Windows: '+' indicates accessibility on any IP or hostname");
-
-                Console.WriteLine("");
-                Console.WriteLine("Be sure to install an SSL certificate and modify your Topology.json file to");
-                Console.WriteLine("use SSL to maximize security and set the correct hostname.");
-                Console.WriteLine("");
-
-                #endregion
-            }
 
             #endregion
 
             #region Create-Directories
 
-            currSettings.Storage.Directory = "." + separator + "storage" + separator;
-            currSettings.Messages.Directory = "." + separator + "messages" + separator;
-            currSettings.Expiration.Directory = "." + separator + "expiration" + separator;
-            currSettings.Replication.Directory = "." + separator + "replication" + separator;
-            currSettings.Bunker.Directory = "." + separator + "bunker" + separator;
-            currSettings.PublicObj.Directory = "." + separator + "pubfiles" + separator;
-            currSettings.Tasks.Directory = "." + separator + "tasks" + separator;
+            currSettings.Storage.Directory = "./Storage/";
+            currSettings.Messages.Directory = "./Messages/";
+            currSettings.Expiration.Directory = "./Expiration/";
+            currSettings.Replication.Directory = "./Replication/"; 
+            currSettings.Tasks.Directory = "./Tasks/";
 
-            if (!Common.CreateDirectory(currSettings.Storage.Directory))
-            {
-                Common.ExitApplication("setup", "Unable to create directory " + currSettings.Storage.Directory, -1);
-                return;
-            }
-
-            if (!Common.CreateDirectory(currSettings.Messages.Directory))
-            {
-                Common.ExitApplication("setup", "Unable to create directory " + currSettings.Messages.Directory, -1);
-                return;
-            }
-
-            if (!Common.CreateDirectory(currSettings.Expiration.Directory))
-            {
-                Common.ExitApplication("setup", "Unable to create directory " + currSettings.Expiration.Directory, -1);
-                return;
-            }
-
-            if (!Common.CreateDirectory(currSettings.Replication.Directory))
-            {
-                Common.ExitApplication("setup", "Unable to create directory " + currSettings.Replication.Directory, -1);
-                return;
-            }
-
-            if (!Common.CreateDirectory(currSettings.Bunker.Directory))
-            {
-                Common.ExitApplication("setup", "Unable to create directory " + currSettings.Bunker.Directory, -1);
-                return;
-            }
-
-            if (!Common.CreateDirectory(currSettings.PublicObj.Directory))
-            {
-                Common.ExitApplication("setup", "Unable to create directory " + currSettings.PublicObj.Directory, -1);
-                return;
-            }
-
-            if (!Common.CreateDirectory(currSettings.Tasks.Directory))
-            {
-                Common.ExitApplication("setup", "Unable to create directory " + currSettings.Tasks.Directory, -1);
-                return;
-            }
-
-            if (!Common.CreateDirectory("." + separator + "actions" + separator))
-            {
-                Common.ExitApplication("setup", "Unable to create directory actions subdirectory", -1);
-                return;
-            }
+            Directory.CreateDirectory(currSettings.Storage.Directory);
+            Directory.CreateDirectory(currSettings.Messages.Directory);
+            Directory.CreateDirectory(currSettings.Expiration.Directory);
+            Directory.CreateDirectory(currSettings.Replication.Directory);
+            Directory.CreateDirectory(currSettings.Tasks.Directory);
 
             #endregion
 
-            #region Create-Sample-Objects
+            #region Create-First-Container
 
-            string htmlFile = SampleHtmlFile("http://www.kvpbase.com/", currSettings.DocumentationUrl, "http://github.com/kvpbase");
-            string textFile = SampleTextFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/", "http://github.com/kvpbase");
-            string jsonFile = SampleJsonFile(currSettings.DocumentationUrl, "http://www.kvpbase.com/", "http://github.com/kvpbase");
+            string htmlFile = SampleHtmlFile("http://github.com/kvpbase");
+            string textFile = SampleTextFile("http://github.com/kvpbase");
+            string jsonFile = SampleJsonFile("http://github.com/kvpbase");
 
-            if (!Common.CreateDirectory(currSettings.Storage.Directory + "default"))
-            {
-                Common.ExitApplication("setup", "Unable to create directory " + currSettings.Storage.Directory + "default", -1);
-                return;
-            }
+            ContainerManager containerManager = new ContainerManager(currSettings.Files.Container, 10, 1);
+            ContainerSettings containerSettings = new ContainerSettings("default", "default", currSettings.Storage.Directory + "default");
+            containerSettings.EnableAuditLogging = true;
+            containerManager.Add(containerSettings);
 
-            Obj htmlObj = new Obj();
-            htmlObj.IsCompressed = 0;
-            htmlObj.IsContainer = 0;
-            htmlObj.ContainerPath = null;
-            htmlObj.ContentType = "text/html";
-            htmlObj.Created = DateTime.Now;
-            htmlObj.IsEncrypted = 0;
-            htmlObj.Key = "hello.html";
-            htmlObj.LastAccess = DateTime.Now;
-            htmlObj.LastUpdate = DateTime.Now;
-            htmlObj.PrimaryNode = currNode;
-            htmlObj.PrimaryUrlWithQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.html?x-api-key=default";
-            htmlObj.PrimaryUrlWithoutQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.html";
-            htmlObj.Replicas = null;
-            htmlObj.ReplicationMode = "none";
-            htmlObj.Tags = null;
-            htmlObj.UserGuid = "default";
-            htmlObj.Value = Encoding.UTF8.GetBytes(htmlFile);
-            htmlObj.Md5Hash = Common.Md5(htmlObj.Value);
-            htmlObj.DiskPath = currSettings.Storage.Directory + "default" + separator + "hello.html";
+            Container defaultContainer = null;
+            containerManager.GetContainer("default", "default", out defaultContainer);
 
-            Obj textObj = new Obj();
-            textObj.IsCompressed = 0;
-            textObj.IsContainer = 0;
-            textObj.ContainerPath = null;
-            textObj.ContentType = "text/plain";
-            textObj.Created = DateTime.Now;
-            textObj.IsEncrypted = 0;
-            textObj.Key = "hello.txt";
-            textObj.LastAccess = DateTime.Now;
-            textObj.LastUpdate = DateTime.Now;
-            textObj.PrimaryNode = currNode;
-            textObj.PrimaryUrlWithQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.txt?x-api-key=default";
-            textObj.PrimaryUrlWithoutQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.txt";
-            textObj.Replicas = null;
-            textObj.ReplicationMode = "none";
-            textObj.Tags = null;
-            textObj.UserGuid = "default";
-            textObj.Value = Encoding.UTF8.GetBytes(textFile);
-            textObj.Md5Hash = Common.Md5(textObj.Value);
-            textObj.DiskPath = currSettings.Storage.Directory + "default" + separator + "hello.txt";
-
-            Obj jsonObj = new Obj();
-            jsonObj.IsCompressed = 0;
-            jsonObj.IsContainer = 0;
-            jsonObj.ContainerPath = null;
-            jsonObj.ContentType = "application/json";
-            jsonObj.Created = DateTime.Now;
-            jsonObj.IsEncrypted = 0;
-            jsonObj.Key = "hello.json";
-            jsonObj.LastAccess = DateTime.Now;
-            jsonObj.LastUpdate = DateTime.Now;
-            jsonObj.PrimaryNode = currNode;
-            jsonObj.PrimaryUrlWithQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.json?x-api-key=default";
-            jsonObj.PrimaryUrlWithoutQs = "http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.json";
-            jsonObj.Replicas = null;
-            jsonObj.ReplicationMode = "none";
-            jsonObj.Tags = null;
-            jsonObj.UserGuid = "default";
-            jsonObj.Value = Encoding.UTF8.GetBytes(jsonFile);
-            jsonObj.Md5Hash = Common.Md5(jsonObj.Value);
-            jsonObj.DiskPath = currSettings.Storage.Directory + "default" + separator + "hello.json";
-
-            if (Common.IsTrue(currSettings.Storage.GatewayMode))
-            {
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.html", htmlFile, false))
-                {
-                    Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.html", -1);
-                    return;
-                }
-
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.txt", textFile, false))
-                {
-                    Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.txt", -1);
-                    return;
-                }
-
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.json", jsonFile, false))
-                {
-                    Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.json", -1);
-                    return;
-                }
-            }
-            else
-            {
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.html", Common.SerializeJson(htmlObj), false))
-                {
-                    Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.html", -1);
-                    return;
-                }
-
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.txt", Common.SerializeJson(textObj), false))
-                {
-                    Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.txt", -1);
-                    return;
-                }
-
-                if (!Common.WriteFile(currSettings.Storage.Directory + "default" + separator + "hello.json", Common.SerializeJson(jsonObj), false))
-                {
-                    Common.ExitApplication("setup", "Unable to create sample file storage/default/hello.json", -1);
-                    return;
-                }
-            }
+            ErrorCode error;
+            defaultContainer.WriteObject("hello.html", "text/html", Encoding.UTF8.GetBytes(htmlFile), out error);
+            defaultContainer.WriteObject("hello.txt", "text/plain", Encoding.UTF8.GetBytes(textFile), out error);
+            defaultContainer.WriteObject("hello.json", "application/json", Encoding.UTF8.GetBytes(jsonFile), out error);
 
             #endregion
-
+             
             #region Wrap-Up
 
             //          1         2         3         4         5         6         7
@@ -875,6 +384,7 @@ namespace Kvpbase
             Console.WriteLine("If you ever want to return to this setup wizard, just re-run the application");
             Console.WriteLine("from the terminal with the 'setup' argument.");
             Console.WriteLine("");
+
             Console.WriteLine("Press ENTER to start.");
             Console.WriteLine("");
             Console.ReadLine();
@@ -884,32 +394,17 @@ namespace Kvpbase
             Console.WriteLine("We created a couple of sample files for you so that you can see your node in");
             Console.WriteLine("action.  Go to the following URLs in your browser and see what happens!");
             Console.WriteLine("");
-
-            switch (currSettings.Environment)
-            {
-                case "linux":
-                    Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port + "/");
-                    Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.html?x-api-key=default");
-                    Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.html?x-api-key=default&metadata=true");
-                    Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.txt?x-api-key=default");
-                    Console.WriteLine("  http://" + currNode.DnsHostname + ":" + currNode.Port + "/default/hello.json?x-api-key=default");
-                    break;
-
-                case "windows":
-                    Console.WriteLine("  http://localhost:" + currNode.Port + "/");
-                    Console.WriteLine("  http://localhost:" + currNode.Port + "/default/hello.html?x-api-key=default");
-                    Console.WriteLine("  http://localhost:" + currNode.Port + "/default/hello.html?x-api-key=default&metadata=true");
-                    Console.WriteLine("  http://localhost:" + currNode.Port + "/default/hello.txt?x-api-key=default");
-                    Console.WriteLine("  http://localhost:" + currNode.Port + "/default/hello.json?x-api-key=default");
-                    break;
-            }
-
+            Console.WriteLine("  http://" + currNode.Http.DnsHostname + ":" + currNode.Http.Port + "/");
+            Console.WriteLine("  http://" + currNode.Http.DnsHostname + ":" + currNode.Http.Port + "/default/default/hello.html?x-api-key=default");
+            Console.WriteLine("  http://" + currNode.Http.DnsHostname + ":" + currNode.Http.Port + "/default/default/hello.html?x-api-key=default&metadata=true");
+            Console.WriteLine("  http://" + currNode.Http.DnsHostname + ":" + currNode.Http.Port + "/default/default/hello.txt?x-api-key=default");
+            Console.WriteLine("  http://" + currNode.Http.DnsHostname + ":" + currNode.Http.Port + "/default/default/hello.json?x-api-key=default"); 
             Console.WriteLine("");
 
             #endregion
         }
 
-        private string SampleHtmlFile(string homepageLink, string docsLink, string sdkLink)
+        private string SampleHtmlFile(string link)
         {
             string html =
                 "<html>" + Environment.NewLine +
@@ -946,10 +441,8 @@ namespace Kvpbase
                 "   <body>" + Environment.NewLine +
                 "      <h3>Kvpbase Storage Server</h3>" + Environment.NewLine +
                 "      <p>Congratulations, your Kvpbase Storage Server node is running!</p>" + Environment.NewLine +
-                "      <p>" + Environment.NewLine +
-                "        <a href='" + docsLink + "' target='_blank'>API Documentation</a>&nbsp;&nbsp;" + Environment.NewLine +
-                "        <a href='" + homepageLink + "' target='_blank'>Homepage</a>&nbsp;&nbsp;" + Environment.NewLine +
-                "        <a href='" + sdkLink + "' target='_blank'>SDKs and Source Code</a>" + Environment.NewLine +
+                "      <p>" + Environment.NewLine + 
+                "        <a href='" + link + "' target='_blank'>SDKs and Source Code</a>" + Environment.NewLine +
                 "      </p>" + Environment.NewLine +
                 "   </body>" + Environment.NewLine +
                 "</html>";
@@ -957,34 +450,22 @@ namespace Kvpbase
             return html;
         }
 
-        private string SampleJsonFile(string docLink, string supportLink, string sdkLink)
+        private string SampleJsonFile(string link)
         {
-            string json =
-                "{" + Environment.NewLine +
-                "  \"title\": \"Welcome to kvpbase!\", " + Environment.NewLine +
-                "  \"data\": \"If you can see this file, your kvpbase node is running!\", " + Environment.NewLine +
-                "  \"other_urls\": [" + Environment.NewLine +
-                "    \"http://localhost:8080/default/hello.html?x-api-key=default\", " + Environment.NewLine +
-                "    \"http://localhost:8080/default/hello.html?x-api-key=default&metadata=true\", " + Environment.NewLine +
-                "    \"http://localhost:8080/default/hello.txt?x-api-key=default\" " + Environment.NewLine +
-                "  ]," + Environment.NewLine +
-                "  \"documentation\": \"" + docLink + "\"," + Environment.NewLine +
-                "  \"support\": \"" + supportLink + "\"," + Environment.NewLine +
-                "  \"sdks\": \"" + sdkLink + "\"" + Environment.NewLine +
-                "}";
-
-            return json;
+            Dictionary<string, object> ret = new Dictionary<string, object>();
+            ret.Add("Title", "Welcome to Kvpbase");
+            ret.Add("Body", "If you can see this file, your Kvpbase node is running!");
+            ret.Add("Github", link);
+            return Common.SerializeJson(ret, true);
         }
 
-        private string SampleTextFile(string docLink, string supportLink, string sdkLink)
+        private string SampleTextFile(string link)
         {
             string text =
-                "Welcome to kvpbase!" + Environment.NewLine + Environment.NewLine +
-                "If you can see this file, your kvpbase node is running!  Now try " +
+                "Welcome to Kvpbase!" + Environment.NewLine + Environment.NewLine +
+                "If you can see this file, your Kvpbase node is running!  Now try " +
                 "accessing this same URL in your browser, but use the .html extension!" + Environment.NewLine + Environment.NewLine +
-                "Remember - documentation is available here: " + docLink + Environment.NewLine + Environment.NewLine +
-                "And, our support portal is available here: " + supportLink + Environment.NewLine + Environment.NewLine +
-                "Finally, download SDKs here: " + sdkLink + Environment.NewLine + Environment.NewLine;
+                "Find us on Github here: " + link + Environment.NewLine + Environment.NewLine;
 
             return text;
         }

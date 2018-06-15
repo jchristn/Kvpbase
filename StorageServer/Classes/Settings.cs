@@ -10,33 +10,27 @@ namespace Kvpbase
         #region Public-Members-and-Nested-Classes
 
         public string ProductName;
-        public string ProductVersion;
-        public string DocumentationUrl;
-        public string Environment;
-        public string LogoUrl;
+        public string ProductVersion; 
+        public string Environment; 
         public string HomepageUrl;
         public string SupportEmail;
-        public int EnableConsole;
+        public bool EnableConsole;
 
         public SettingsFiles Files;
-        public SettingsServer Server;
+        public SettingsServer Server; 
         public SettingsRedirection Redirection;
-        public SettingsTopology Topology;
-        public SettingsPerfmon Perfmon;
+        public SettingsTopology Topology; 
         public SettingsStorage Storage;
+        public SettingsContainer Container;
         public SettingsMessages Messages;
         public SettingsExpiration Expiration;
-        public SettingsReplication Replication;
-        public SettingsBunker Bunker;
-        public SettingsPublicObj PublicObj;
-        public SettingsTasks Tasks;
-        public SettingsLogger Logger;
+        public SettingsReplication Replication; 
+        public SettingsTasks Tasks; 
         public SettingsSyslog Syslog;
         public SettingsEmail Email;
         public SettingsEncryption Encryption;
         public SettingsRest Rest;
-        public SettingsMailgun Mailgun;
-        public SettingsDebug Debug;
+        public SettingsMailgun Mailgun; 
 
         public class SettingsFiles
         {
@@ -44,6 +38,7 @@ namespace Kvpbase
             public string UserMaster;
             public string ApiKey;
             public string Permission;
+            public string Container;
         }
 
         public class SettingsServer
@@ -57,27 +52,25 @@ namespace Kvpbase
             public string AdminApiKey;
             public int TokenExpirationSec;
             public int FailedRequestsIntervalSec;
+            public int MaxTransferSize;
         }
 
         public class SettingsTopology
-        {
-            public int RefreshSec;
-        }
-
-        public class SettingsPerfmon
-        {
-            public int Enable;
-            public int RefreshSec;
-            public int Syslog;
+        { 
+            public bool DebugMeshNetworking;
+            public bool DebugMessages;
         }
 
         public class SettingsStorage
         {
-            public string Directory;
-            public int MaxObjectSize;
-            public int GatewayMode;
-            public int DefaultCompress;
-            public int DefaultEncrypt;
+            public string Directory; 
+        }
+
+        public class SettingsContainer
+        {
+            public int CacheSize;
+            public int EvictSize;
+            public ReplicationMode DefaultReplicationMode;
         }
 
         public class SettingsMessages
@@ -99,58 +92,16 @@ namespace Kvpbase
             public string ReplicationMode;
             public int RefreshSec;
         }
-
-        public class SettingsBunker
-        {
-            public int Enable;
-            public string Directory;
-            public int RefreshSec;
-            public List<BunkerNode> Nodes;
-        }
-
-        public class SettingsPublicObj
-        {
-            public string Directory;
-            public int RefreshSec;
-            public int DefaultExpirationSec;
-        }
-
-        public class BunkerNode
-        {
-            public int Enable;
-            public string Name;
-            public string Vendor;
-            public string Version;
-            public string UserGuid;
-            public string Url;
-            public string ApiKey;
-        }
-
+         
         public class SettingsTasks
         {
             public string Directory;
             public int RefreshSec;
         }
-
-        public class SettingsLogger
-        {
-            public int RefreshSec;
-        }
-
+ 
         public class SettingsRedirection
         {
-            public string ReadRedirectionMode;
-            public int ReadRedirectHttpStatus;
-            public string ReadRedirectString;
-            public string SearchRedirectionMode;
-            public int SearchRedirectHttpStatus;
-            public string SearchRedirectString;
-            public string WriteRedirectionMode;
-            public int WriteRedirectHttpStatus;
-            public string WriteRedirectString;
-            public string DeleteRedirectionMode;
-            public int DeleteRedirectHttpStatus;
-            public string DeleteRedirectString;
+            public RedirectMode Mode; 
         }
 
         public class SettingsSyslog
@@ -159,9 +110,9 @@ namespace Kvpbase
             public int ServerPort;
             public string Header;
             public int MinimumLevel;
-            public int LogHttpRequests;
-            public int LogHttpResponses;
-            public int ConsoleLogging;
+            public bool LogHttpRequests;
+            public bool LogHttpResponses;
+            public bool ConsoleLogging;
         }
 
         public class SettingsEmail
@@ -171,7 +122,7 @@ namespace Kvpbase
             public int SmtpPort;
             public string SmtpUsername;
             public string SmtpPassword;
-            public int SmtpSsl;
+            public bool SmtpSsl;
 
             public int EmailExceptions;
             public string EmailExceptionsTo;
@@ -188,7 +139,7 @@ namespace Kvpbase
 
             public string Server;
             public int Port;
-            public int Ssl;
+            public bool Ssl;
             public string ApiKeyHeader;
             public string ApiKeyValue;
 
@@ -199,23 +150,18 @@ namespace Kvpbase
 
         public class SettingsRest
         {
-            public int UseWebProxy;
+            public bool UseWebProxy;
             public string WebProxyUrl;
-            public int AcceptInvalidCerts;
+            public bool AcceptInvalidCerts;
         }
 
         public class SettingsMailgun
         {
             public string ApiKey;
             public string Domain;
+            public string ResourceSendmessage;
         }
-
-        public class SettingsDebug
-        {
-            public int DebugCompression;
-            public int DebugEncryption;
-        }
-
+         
         #endregion
 
         #region Constructors-and-Factories
@@ -229,18 +175,14 @@ namespace Kvpbase
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
             if (!Common.FileExists(filename)) throw new FileNotFoundException(nameof(filename));
-            
-            Console.WriteLine(Common.Line(79, "-"));
-            Console.WriteLine("Reading " + filename);
-            string contents = Common.ReadTextFile(@filename);
 
+            string contents = Common.ReadTextFile(@filename);
             if (String.IsNullOrEmpty(contents))
             {
                 Common.ExitApplication("Settings", "Unable to read contents of " + filename, -1);
                 return null;
             }
-
-            Console.WriteLine("Deserializing System.json");
+             
             Settings ret = null;
 
             try
@@ -252,9 +194,8 @@ namespace Kvpbase
                     return null;
                 }
             }
-            catch (Exception e)
-            {
-                Events.ExceptionConsole("Settings", "Deserialization issue with " + filename, e);
+            catch (Exception)
+            { 
                 Common.ExitApplication("Settings", "Unable to deserialize " + filename + " (exception)", -1);
                 return null;
             }

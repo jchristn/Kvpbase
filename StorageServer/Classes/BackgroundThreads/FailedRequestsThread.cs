@@ -20,14 +20,14 @@ namespace Kvpbase
         #region Private-Members
 
         private Settings _Settings;
-        private Events _Logging;
+        private LoggingModule _Logging;
         private ConcurrentQueue<Dictionary<string, object>> _Queue;
 
         #endregion
 
         #region Constructors-and-Factories
 
-        public FailedRequestsThread(Settings settings, Events logging, ConcurrentQueue<Dictionary<string, object>> queue)
+        public FailedRequestsThread(Settings settings, LoggingModule logging, ConcurrentQueue<Dictionary<string, object>> queue)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
@@ -96,7 +96,8 @@ namespace Kvpbase
                     email.BccAddress = "";
                     email.CcAddress = "";
                     email.IsHtml = true;
-                    _Logging.SendEmail(email);
+
+                    StorageServer.SendEmail(email);
 
                     #endregion
                 }
@@ -192,7 +193,7 @@ namespace Kvpbase
                 }
             }
 
-            ret += EmailBuilder.Bottom(true, settings.LogoUrl, settings.HomepageUrl, false, null);
+            ret += EmailBuilder.Bottom(settings.HomepageUrl, false, null);
 
             return ret;
         }

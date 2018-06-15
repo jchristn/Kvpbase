@@ -7,58 +7,81 @@ using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
+using Watson;
 
 namespace Kvpbase
 {
+    /// <summary>
+    /// Maintains and manages connectivity amongst nodes.  Relies on MessageManager to handle incoming messages.
+    /// </summary>
     public class TopologyManager
     {
         #region Public-Members
+
+        public Node LocalNode { get; private set; }
 
         #endregion
 
         #region Private-Members
 
         private Settings _Settings;
-        private Events _Logging;
-        private Topology _Topology;
-        private Node _Node;
-        private UserManager _Users;
+        private LoggingModule _Logging;
+        private Topology _Topology; 
+        private UserManager _UserMgr; 
+        private MessageManager _MessageMgr;
 
-        private readonly object _Lock;
+        private readonly object _TopologyLock;
+
+        private MeshSettings _MeshSettings;
+        private Peer _Self;
+        private WatsonMesh _Mesh;
 
         #endregion
 
         #region Constructors-and-Factories
 
-        public TopologyManager(Settings settings, Events logging, Topology topology, Node node, UserManager users)
+        public TopologyManager(Settings settings, LoggingModule logging, UserManager users, MessageManager messages)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (logging == null) throw new ArgumentNullException(nameof(logging));
-            if (topology == null) throw new ArgumentNullException(nameof(topology));
-            if (node == null) throw new ArgumentNullException(nameof(node));
-            if (users == null) throw new ArgumentNullException(nameof(users));
+            if (logging == null) throw new ArgumentNullException(nameof(logging)); 
+            if (users == null) throw new ArgumentNullException(nameof(users)); 
+            if (messages == null) throw new ArgumentNullException(nameof(messages));
 
             _Settings = settings;
-            _Logging = logging;
-            _Topology = topology;
-            _Node = node;
-            _Users = users;
+            _Logging = logging; 
+            _UserMgr = users; 
+            _MessageMgr = messages;
 
-            _Lock = new object();
+            _TopologyLock = new object();
 
-            if (_Topology.Nodes.Count > 0)
-            {
-                Task.Run(() => Worker());
-            }
+            LoadTopologyFile();
+            SetLocalNode();
+
+            string error;
+            if (!ValidateTopology(out error)) throw new Exception("Unable to validate topology: " + error);
+             
+            InitializeMeshNetwork(); 
+
+            if (_Settings.Topology.DebugMeshNetworking) _Logging.Log(LoggingModule.Severity.Info, "TopologyManager debugging enabled, disable to reduce log verbocity");
+            SayHello();
         }
 
         #endregion
 
         #region Public-Methods
 
+        public bool IsEmpty()
+        {
+            if (_Topology.Nodes == null || _Topology.Nodes.Count < 2)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public List<Node> GetNodes()
         {
-            lock (_Lock)
+            lock (_TopologyLock)
             {
                 return _Topology.Nodes;
             }
@@ -66,90 +89,63 @@ namespace Kvpbase
 
         public List<Node> GetReplicas()
         {
-            lock (_Lock)
-            {
-                return _Topology.Replicas;
-            }
-        }
+            List<Node> ret = new List<Node>();
 
-        public bool IsNeighbor(int nodeId)
-        {
-            if (_Node.Neighbors == null) return false;
-
-            lock (_Lock)
+            lock (_TopologyLock)
             {
-                foreach (int currId in _Node.Neighbors)
+                if (_Topology.Nodes == null || _Topology.Nodes.Count < 1) return null;
+
+                foreach (Node curr in _Topology.Nodes)
                 {
-                    if (currId == nodeId) return true;
+                    if (_Topology.Replicas.Contains(curr.NodeId))
+                    {
+                        ret.Add(curr);
+                    }
                 }
             }
 
-            return false;
+            return ret;
         }
-
-        public bool IsNeighbor(Node node)
-        {
-            if (node == null) return false;
-
-            lock (_Lock)
-            {
-                foreach (int currId in _Node.Neighbors)
-                {
-                    if (currId == node.NodeId) return true;
-                }
-            }
-
-            return false;
-        }
-
+         
         public Node DetermineOwner(string userGuid)
         {
-            #region Check-for-Null-Values
-
-            if (String.IsNullOrEmpty(userGuid))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "DetermineOwner null user GUID supplied");
-                return null;
-            }
+            if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
 
             if ((_Topology == null)
                 || (_Topology.Nodes == null)
                 || (_Topology.Nodes.Count < 1))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "DetermineOwner null topology or no nodes in topology");
-                return null;
+                return LocalNode;
             }
 
-            #endregion
+            #region Check-Static-Map
 
-            #region Find-if-Static-Map
-
-            UserMaster currUser = _Users.GetUserByGuid(userGuid);
+            UserMaster currUser = _UserMgr.GetUserByGuid(userGuid);
             if (currUser != null)
             {
                 if (currUser.NodeId > 0)
-                {
-                    #region Static-Map
-
-                    if (currUser.NodeId == _Node.NodeId)
+                { 
+                    if (currUser.NodeId == LocalNode.NodeId)
                     {
-                        _Logging.Log(LoggingModule.Severity.Debug, "DetermineOwner GUID " + userGuid + " statically mapped to self (NodeId " + _Node.NodeId + ")");
-                        return _Node;
+                        _Logging.Log(LoggingModule.Severity.Debug, "DetermineOwner GUID " + userGuid + " statically mapped to self (NodeId " + LocalNode.NodeId + ")");
+                        return LocalNode;
                     }
 
-                    lock (_Lock)
+                    Node currNode = null;
+
+                    lock (_TopologyLock)
                     {
-                        foreach (Node curr in _Topology.Nodes)
-                        {
-                            if (curr.NodeId == currUser.NodeId)
-                            {
-                                _Logging.Log(LoggingModule.Severity.Debug, "DetermineOwner GUID " + userGuid + " statically mapped to NodeId " + curr.NodeId);
-                                return curr;
-                            }
-                        }
+                        currNode = _Topology.Nodes.Where(n => n.NodeId == currUser.NodeId).FirstOrDefault();
                     }
 
-                    #endregion
+                    if (currNode == default(Node))
+                    {
+                        _Logging.Log(LoggingModule.Severity.Warn, "DetermineOwner unable to find node ID " + currUser.NodeId + " for user GUID " + userGuid);
+                        return null;
+                    }
+
+                    return currNode; 
                 }
             }
 
@@ -162,7 +158,7 @@ namespace Kvpbase
 
             // sort the list by name
             List<Node> sortedList = null;
-            lock (_Lock)
+            lock (_TopologyLock)
             {
                  sortedList = _Topology.Nodes.OrderBy(o => o.Name).ToList();
             }
@@ -174,7 +170,7 @@ namespace Kvpbase
             {
                 if (currPos == matchPos)
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "DetermineOwner primary for user GUID " + userGuid + " is " + curr.Name + " (" + curr.DnsHostname + ":" + curr.Port + ":" + curr.Ssl + ")");
+                    _Logging.Log(LoggingModule.Severity.Debug, "DetermineOwner primary for user GUID " + userGuid + " is " + curr.Name + " (" + curr.Http.DnsHostname + ":" + curr.Http.Port + ")");
                     return curr;
                 }
 
@@ -187,45 +183,243 @@ namespace Kvpbase
             #endregion
         }
 
-        public bool FindObject(Find req)
+        public Node GetNodeById(int nodeId)
         {
-            #region Set-URL
+            Node ret = null;
 
-            string url = "";
-            if (Common.IsTrue(_Node.Ssl))
+            lock (_TopologyLock)
             {
-                url = "https://" + _Node.DnsHostname + ":" + _Node.Port + "/admin/find";
-            }
-            else
-            {
-                url = "http://" + _Node.DnsHostname + ":" + _Node.Port + "/admin/find";
+                ret = _Topology.Nodes.Where(n => n.NodeId.Equals(nodeId)).FirstOrDefault();
             }
 
-            #endregion
+            if (ret == default(Node)) return null;
+            return ret;
+        }
 
-            #region Headers
+        public void AddNode(Node node)
+        {
+            if (node == null) throw new ArgumentNullException(nameof(node));
 
-            Dictionary<string, string> headers = Common.AddToDictionary(_Settings.Server.HeaderApiKey, _Settings.Server.AdminApiKey, null);
+            if (NodeExists(node)) return;
 
-            #endregion
+            lock (_TopologyLock)
+            {
+                _Topology.Nodes.Add(node);
+            }
 
-            #region Override-Query-Topology
+            Peer peer = BuildPeerFromNode(node);
+            if (!_Mesh.Exists(peer)) _Mesh.Add(peer);
+        }
 
-            req.QueryTopology = false;
+        public void RemoveNode(Node node)
+        {
+            if (node == null) throw new ArgumentNullException(nameof(node));
 
-            #endregion
+            if (!NodeExists(node)) return;
 
-            #region Process-Request
+            lock (_TopologyLock)
+            {
+                _Topology.Nodes = _Topology.Nodes.Where(n => !n.Equals(node)).ToList();
+                _Topology.Replicas = _Topology.Replicas.Where(n => !n.Equals(node)).ToList();
+            }
 
-            RestWrapper.RestResponse resp = RestRequest.SendRequestSafe(
-                url, "application/json", "POST", null, null, false,
-                Common.IsTrue(_Settings.Rest.AcceptInvalidCerts), headers,
-                Encoding.UTF8.GetBytes(Common.SerializeJson(req)));
+            Peer peer = BuildPeerFromNode(node);
+            _Mesh.Remove(peer);
+        }
 
-            if (resp == null) return false;
-            if (resp.StatusCode != 200) return false;
+        public bool NodeExists(Node node)
+        {
+            if (node == null) throw new ArgumentNullException(nameof(node));
 
-            #endregion
+            lock (_TopologyLock)
+            {
+                return _Topology.Nodes.Any(n => n.Equals(node));
+            }
+        }
+         
+        public bool AddReplica(int nodeId)
+        {
+            Node node = GetNodeById(nodeId);
+            if (node == null)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "AddReplica unable to find node ID " + nodeId);
+                return false;
+            }
+             
+            lock (_TopologyLock)
+            {
+                if (!_Topology.Replicas.Contains(nodeId))
+                {
+                    _Topology.Replicas.Add(nodeId);
+                }
+            }
+
+            Peer peer = BuildPeerFromNode(node);
+            if (!_Mesh.Exists(peer)) _Mesh.Add(peer);
+
+            return true;
+        }
+
+        public void RemoveReplica(int nodeId)
+        {
+            Node node = GetNodeById(nodeId);
+            if (node == null) return;
+
+            lock (_TopologyLock)
+            {
+                if (_Topology.Replicas.Contains(nodeId))
+                {
+                    _Topology.Replicas.Remove(nodeId);
+                }
+            } 
+        }
+
+        public bool ReplicaExists(int nodeId)
+        {
+            lock (_TopologyLock)
+            {
+                return _Topology.Replicas.Contains(nodeId);
+            }
+        }
+         
+        public bool SendAsyncMessage(MessageType msgType, int nodeId, byte[] data)
+        {
+            Node rcpt = GetNodeById(nodeId);
+            if (rcpt == null || rcpt == default(Node)) return false;
+
+            Message msg = new Message(LocalNode, rcpt, msgType, null, data);
+            return SendAsyncMessage(msg);
+        }
+
+        public bool SendAsyncMessage(Message msg)
+        { 
+            if (msg == null) throw new ArgumentNullException(nameof(msg));
+            if (msg.To == null) throw new ArgumentException("Message does not contain 'To' node.");
+
+            msg.From = LocalNode;
+
+            if (_Settings.Topology.DebugMessages)
+            {
+                _Logging.Log(LoggingModule.Severity.Info, 
+                    "SendAsyncMessage sending: " + 
+                    Environment.NewLine + 
+                    Common.SerializeJson(msg, true));
+            }
+
+            return _Mesh.SendAsync(
+                msg.To.Tcp.IpAddress,
+                msg.To.Tcp.Port,
+                Encoding.UTF8.GetBytes(Common.SerializeJson(msg, false)));
+        }
+
+        public Message SendSyncMessage(MessageType msgType, int nodeId, byte[] data, int timeoutMs)
+        {
+            Node rcpt = GetNodeById(nodeId);
+            if (rcpt == null || rcpt == default(Node)) return null;
+
+            Message msg = new Message(LocalNode, rcpt, msgType, null, data);
+            return SendSyncMessage(msg, timeoutMs);
+        }
+
+        public Message SendSyncMessage(Message msg, int timeoutMs)
+        {
+            if (msg == null) throw new ArgumentNullException(nameof(msg));
+            if (msg.To == null) throw new ArgumentException("Message does not contain 'To' node.");
+
+            msg.From = LocalNode;
+
+            if (_Settings.Topology.DebugMessages)
+            {
+                _Logging.Log(LoggingModule.Severity.Info,
+                    "SendSyncMessage sending: " +
+                    Environment.NewLine +
+                    Common.SerializeJson(msg, true));
+            }
+
+            byte[] response;
+            if (!_Mesh.SendSync(
+                msg.To.Tcp.IpAddress, 
+                msg.To.Tcp.Port, 
+                timeoutMs, 
+                Encoding.UTF8.GetBytes(Common.SerializeJson(msg, false)),
+                out response))
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage unable to send message to node ID " + msg.To.NodeId);
+                return null;
+            }
+             
+            if (response == null || response.Length < 1)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage no data returned from node ID " + msg.To.NodeId);
+                return null;
+            }
+
+            try
+            {
+                Message resp = Common.DeserializeJson<Message>(response);
+
+                if (_Settings.Topology.DebugMessages)
+                {
+                    _Logging.Log(LoggingModule.Severity.Info,
+                        "SendSyncMessage received: " +
+                        Environment.NewLine +
+                        Common.SerializeJson(resp, true));
+                }
+
+                return resp;
+            }
+            catch (Exception e)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage exception while deserializing response: " + e.Message);
+                _Logging.Log(LoggingModule.Severity.Warn, Encoding.UTF8.GetString(response));
+                return null;
+            }
+        }
+
+        public void SayHello()
+        {
+            List<Node> nodes = null;
+            lock (_TopologyLock)
+            {
+                nodes = new List<Node>(_Topology.Nodes);
+            }
+
+            if (nodes != null && nodes.Count > 0)
+            {
+                foreach (Node node in nodes)
+                {
+                    Message msg = new Message(LocalNode, node, MessageType.Hello, null, Encoding.UTF8.GetBytes("Hello")); 
+                    SendAsyncMessage(msg);
+                }
+            }
+        }
+
+        public bool IsNetworkHealthy()
+        {
+            return _Mesh.IsHealthy();
+        }
+
+        public bool IsNodeHealthy(int nodeId)
+        {
+            Node currNode = GetNodeById(nodeId);
+            return IsNodeHealthy(currNode);
+        }
+
+        public bool IsNodeHealthy(Node node)
+        {
+            if (node == null) return false;
+            if (node.Tcp.IpAddress.Equals(LocalNode.Tcp.IpAddress) && node.Tcp.Port.Equals(LocalNode.Tcp.Port)) return true;
+            return _Mesh.IsHealthy(node.Tcp.IpAddress, node.Tcp.Port);
+        }
+
+        public bool AreReplicasHealthy()
+        {
+            if (_Topology.Replicas == null || _Topology.Replicas.Count < 1) return true;
+            
+            foreach (int curr in _Topology.Replicas)
+            {
+                if (!IsNodeHealthy(curr)) return false;
+            }
 
             return true;
         }
@@ -234,128 +428,315 @@ namespace Kvpbase
 
         #region Private-Methods
 
-        private void Worker()
+        private void LoadTopologyFile()
         {
-            #region Process
-
-            while (true)
+            lock (_TopologyLock)
             {
-                #region Wait
+                _Topology = Common.DeserializeJson<Topology>(Common.ReadBinaryFile(_Settings.Files.Topology));
+            } 
+        }
 
-                Task.Delay(_Settings.Topology.RefreshSec * 1000).Wait();
+        private void SetLocalNode()
+        {
+            LocalNode = null;
 
-                #endregion
-
-                #region Session-Variables
-
-                List<Node> sourceNodeList = new List<Node>();
-                List<Node> updatedNodeList = new List<Node>();
-                List<Node> updatedNeighborList = new List<Node>();
-
-                #endregion
-
-                #region Process-the-List
-                
-                lock (_Lock)
+            lock (_TopologyLock)
+            {
+                foreach (Node curr in _Topology.Nodes)
                 {
-                    sourceNodeList = new List<Node>(GetNodes());
+                    if (_Topology.NodeId == curr.NodeId)
+                    {
+                        LocalNode = curr;
+                        break;
+                    }
                 }
+            }
 
-                foreach (Node curr in sourceNodeList)
-                {
-                    #region Skip-if-Self
+            if (LocalNode == null) throw new Exception("Unable to find local node in topology.");
+        }
 
-                    if (_Node.NodeId == curr.NodeId)
-                    {
-                        updatedNodeList.Add(curr);
-                        continue;
-                    }
+        private void SaveTopologyFile()
+        {
+            lock (_TopologyLock)
+            {
+                Common.WriteFile(
+                    _Settings.Files.Topology,
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(_Topology, true)));
+            }
+        }
 
-                    #endregion
+        private bool ValidateTopology(out string error)
+        { 
+            error = null;
+            LocalNode = null;
+            List<int> allNodeIds = new List<int>();
 
-                    #region Set-URL
+            #region Build-All-Node-ID-List
 
-                    string url = "";
-                    if (Common.IsTrue(curr.Ssl))
-                    {
-                        url = "https://" + curr.DnsHostname + ":" + curr.Port + "/admin/heartbeat";
-                    }
-                    else
-                    {
-                        url = "http://" + curr.DnsHostname + ":" + curr.Port + "/admin/heartbeat";
-                    }
+            if (_Topology.Nodes == null || _Topology.Nodes.Count < 1)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ValidateTopology no nodes in topology");
+                error = "No nodes in topology";
+                return false;
+            }
 
-                    #endregion
+            if (_Topology.Replicas == null || _Topology.Replicas.Count < 1)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ValidateTopology no node IDs in replica list");
+                error = "No replica node IDs specified";
+                return false;
+            }
 
-                    #region Process-REST-Request
-
-                    RestWrapper.RestResponse resp = RestRequest.SendRequestSafe(
-                        url, "application/json", "GET", null, null, false,
-                        Common.IsTrue(_Settings.Rest.AcceptInvalidCerts),
-                        Common.AddToDictionary(_Settings.Server.HeaderApiKey, _Settings.Server.AdminApiKey, null),
-                        null);
-
-                    if (resp == null)
-                    {
-                        #region No-REST-Response
-
-                        curr.NumFailures++;
-                        curr.LastAttempt = DateTime.Now;
-                        _Logging.Log(LoggingModule.Severity.Warn, "PeerManagerWorker null response connecting to " + url + " (" + curr.NumFailures + " failed attempts)");
-                        updatedNodeList.Add(curr);
-                        if (IsNeighbor(curr)) updatedNeighborList.Add(curr);
-                        continue;
-
-                        #endregion
-                    }
-                    else
-                    {
-                        if (resp.StatusCode != 200)
-                        {
-                            #region Failed-Heartbeat
-
-                            curr.NumFailures++;
-                            curr.LastAttempt = DateTime.Now;
-                            _Logging.Log(LoggingModule.Severity.Warn, "PeerManagerWorker non-200 (" + resp.StatusCode + ") response connecting to " + url + " (" + curr.NumFailures + " failed attempts)");
-                            updatedNodeList.Add(curr);
-                            if (IsNeighbor(curr)) updatedNeighborList.Add(curr);
-                            continue;
-
-                            #endregion
-                        }
-                        else
-                        {
-                            #region Successful-Heartbeat
-
-                            curr.NumFailures = 0;
-                            curr.LastAttempt = DateTime.Now;
-                            curr.LastSuccess = DateTime.Now;
-                            updatedNodeList.Add(curr);
-                            if (IsNeighbor(curr)) updatedNeighborList.Add(curr);
-                            continue;
-
-                            #endregion
-                        }
-                    }
-
-                    #endregion
-                }
-
-                #endregion
-
-                #region Update-the-Lists
-
-                lock (_Lock)
-                {
-                    _Topology.Nodes = updatedNodeList;
-                    _Topology.Replicas = updatedNeighborList;
-                    _Topology.LastProcessed = DateTime.Now;
-                }
-
-                #endregion
+            foreach (Node curr in _Topology.Nodes)
+            {
+                allNodeIds.Add(curr.NodeId);
             }
 
             #endregion
+
+            #region Find-Current-Node
+
+            bool currentNodeFound = false;
+
+            foreach (Node curr in _Topology.Nodes)
+            {
+                if (_Topology.NodeId == curr.NodeId)
+                {
+                    LocalNode = curr;
+                    currentNodeFound = true;
+                    break;
+                }
+            }
+
+            if (!currentNodeFound)
+            {
+                error = "Unable to find local node ID in topology.";
+                return false;
+            }
+
+            #endregion
+
+            #region Verify-Replicas-Exit
+
+            foreach (int currNodeId in _Topology.Replicas)
+            { 
+                if (!allNodeIds.Contains(currNodeId))
+                { 
+                    error = "Replica node ID " + currNodeId + " not found in node list.";
+                    return false;
+                }
+            }
+
+            #endregion
+
+            return true;
+        }
+        
+        private void InitializeMeshNetwork()
+        { 
+            _MeshSettings = new MeshSettings();
+            _MeshSettings.DebugNetworking = _Settings.Topology.DebugMeshNetworking;
+
+            _Self = BuildPeerFromNode(LocalNode);
+            
+            _Mesh = new WatsonMesh(_MeshSettings, _Self);
+
+            if (_Topology == null || _Topology.Nodes.Count < 2)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "InitializeMeshNetworks fewer than two nodes exists, exiting");
+                return;
+            }
+            else
+            { 
+                foreach (Node currNode in _Topology.Nodes)
+                {
+                    if (currNode.NodeId == LocalNode.NodeId) continue;
+                    Peer currPeer = BuildPeerFromNode(currNode);
+                    _Logging.Log(LoggingModule.Severity.Info, "InitializeMeshNetwork adding peer " + currNode.ToString());
+                    _Mesh.Add(currPeer);
+                }
+            }
+
+            _Mesh.PeerConnected = MeshPeerConnected;
+            _Mesh.PeerDisconnected = MeshPeerDisconnected;
+            _Mesh.AsyncMessageReceived = MeshAsyncMessageReceived;
+            _Mesh.SyncMessageReceived = MeshSyncMessageReceived;
+            _Mesh.StartServer(); 
+        }
+
+        private Peer BuildPeerFromNode(Node node)
+        {
+            Peer peer = null;
+
+            if (node.Tcp.Ssl)
+            {
+                if (!String.IsNullOrEmpty(node.Tcp.PfxCertificateFile) && !String.IsNullOrEmpty(node.Tcp.PfxCertificatePass))
+                {
+                    peer = new Peer(
+                        node.Tcp.IpAddress, 
+                        node.Tcp.Port, 
+                        true, 
+                        node.Tcp.PfxCertificateFile, 
+                        node.Tcp.PfxCertificatePass);
+                }
+                else
+                {
+                    peer = new Peer(
+                        node.Tcp.IpAddress,
+                        node.Tcp.Port, 
+                        true);
+                }
+            }
+            else
+            {
+                peer = new Peer(
+                    node.Tcp.IpAddress,
+                    node.Tcp.Port, 
+                    false);
+            }
+
+            return peer;
+        }
+
+        #endregion
+
+        #region Private-Mesh-Networking-Callbacks
+
+        private bool MeshAsyncMessageReceived(Peer peer, byte[] data)
+        {
+            #region Check-for-Null-Values
+
+            if (peer == null)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "MeshAsyncMessageReceived message received without peer defined");
+                return false;
+            }
+
+            if (data == null || data.Length < 1)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "MeshAsyncMessageReceived no data received in message from peer " + peer.ToString());
+                return false;
+            }
+
+            #endregion
+
+            #region Deserialize
+
+            Message msg = null;
+             
+            try
+            {
+                msg = Common.DeserializeJson<Message>(data);
+            }
+            catch (Exception)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "MeshAsyncMessageReceived unable to deserialize message data");
+                return false;
+            }
+
+            #endregion
+
+            #region Debug-Enumerate
+
+            if (_Settings.Topology.DebugMeshNetworking)
+            {
+                int dataLen = 0;
+                if (msg.Data != null && msg.Data.Length > 0) dataLen = msg.Data.Length;
+                _Logging.Log(LoggingModule.Severity.Info, "MeshAsyncMessageReceived from node ID " + msg.From.NodeId + ": " + dataLen + " bytes");
+            }
+
+            if (_Settings.Topology.DebugMessages)
+            {
+                _Logging.Log(LoggingModule.Severity.Info,
+                    "MeshAsyncMessageReceived received: " +
+                    Environment.NewLine +
+                    Common.SerializeJson(msg, true));
+            }
+
+            #endregion
+
+            return _MessageMgr.ProcessAsyncMessage(msg);
+        }
+
+        private byte[] MeshSyncMessageReceived(Peer peer, byte[] data)
+        {
+            #region Check-for-Null-Values
+
+            if (peer == null)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "MeshSyncMessageReceived message received without peer defined");
+                return null;
+            }
+
+            if (data == null || data.Length < 1)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "MeshSyncMessageReceived no data received in message from peer " + peer.ToString());
+                return null;
+            }
+
+            #endregion
+
+            #region Deserialize
+
+            Message msg = null;
+
+            try
+            {
+                msg = Common.DeserializeJson<Message>(data);
+            }
+            catch (Exception)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "MeshSyncMessageReceived unable to deserialize message data");
+                return null;
+            }
+
+            #endregion
+
+            #region Debug-Enumerate
+
+            if (_Settings.Topology.DebugMeshNetworking)
+            {
+                int dataLen = 0;
+                if (msg.Data != null && msg.Data.Length > 0) dataLen = msg.Data.Length;
+                _Logging.Log(LoggingModule.Severity.Info, "MeshSyncMessageReceived from node ID " + msg.From.NodeId + ": " + dataLen + " bytes");
+            }
+
+            if (_Settings.Topology.DebugMessages)
+            {
+                _Logging.Log(LoggingModule.Severity.Info,
+                    "MeshSyncMessageReceived received: " +
+                    Environment.NewLine +
+                    Common.SerializeJson(msg, true));
+            }
+
+            #endregion
+
+            #region Process
+
+            Message resp = _MessageMgr.ProcessSyncMessage(msg);
+            if (resp != null)
+            { 
+                return Encoding.UTF8.GetBytes(Common.SerializeJson(resp, false));
+            }
+            else
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "MeshSyncMessageReceived unable to retrieve response message");
+                return null;
+            }
+
+            #endregion 
+        }
+
+        private bool MeshPeerConnected(Peer peer)
+        {
+            _Logging.Log(LoggingModule.Severity.Info, "MeshPeerConnected " + peer.ToString());
+            return true;
+        }
+
+        private bool MeshPeerDisconnected(Peer peer)
+        {
+            _Logging.Log(LoggingModule.Severity.Info, "MeshPeerDisconnected " + peer.ToString());
+            return true;
         }
 
         #endregion

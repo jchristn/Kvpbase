@@ -64,11 +64,10 @@ namespace Kvpbase
             }
         }
 
-        public void Update(int threadId, int userMasterId, string email)
+        public void Update(int threadId, UserMaster user)
         {
             if (threadId <= 0) return;
-            if (userMasterId <= 0) return;
-            if (String.IsNullOrEmpty(email)) return;
+            if (user == null) return;
 
             List<Connection> tempList = new List<Connection>();
 
@@ -82,8 +81,8 @@ namespace Kvpbase
                     }
                     else
                     {
-                        curr.UserMasterId = userMasterId;
-                        curr.Email = email;
+                        curr.UserMasterId = user.UserMasterId;
+                        curr.Email = user.Email;
                         tempList.Add(curr);
                     }
                 }

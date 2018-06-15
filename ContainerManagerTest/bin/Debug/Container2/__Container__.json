@@ -1,0 +1,11 @@
+{
+  "Name": "Container2",
+  "RootDirectory": "Container2\\",
+  "DatabaseFilename": "Container2\\__Container__.db",
+  "ObjectsDirectory": "Container2\\__Objects__\\",
+  "HandlerType": "Disk",
+  "EnableAuditLogging": false,
+  "IsPublicRead": true,
+  "IsPublicWrite": false,
+  "DatabaseDebug": false
+}

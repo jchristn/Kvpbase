@@ -16,15 +16,15 @@ namespace Kvpbase
         #region Private-Members
 
         private Settings _Settings;
-        private Events _Logging;
-        private EncryptionModule _Encryption;
+        private LoggingModule _Logging;
+        private EncryptionManager _Encryption;
         private UserManager _Users;
 
         #endregion
 
         #region Constructors-and-Factories
 
-        public TokenManager(Settings settings, Events logging, EncryptionModule encryption, UserManager users)
+        public TokenManager(Settings settings, LoggingModule logging, EncryptionManager encryption, UserManager users)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
@@ -53,7 +53,7 @@ namespace Kvpbase
             ret.Random = Common.RandomString(8);
             ret.Expiration = DateTime.Now.AddSeconds(_Settings.Server.TokenExpirationSec);
 
-            string json = Common.SerializeJson(ret);
+            string json = Common.SerializeJson(ret, false);
             return _Encryption.LocalEncrypt(json);
         }
 

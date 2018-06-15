@@ -15,156 +15,137 @@ namespace Kvpbase
 
         #region Private-Members
 
-        private Events _Logging;
-        private Dictionary<string, Tuple<int?, string, string, DateTime>> _LockedObjects;            // UserMasterId, SourceIp, verb, established
-        private List<string> _ReadObjects;                                                           // URL
-        private readonly object _Lock;
+        private LoggingModule _Logging;
+
+        private readonly object _WriteLock;
+        private readonly object _ReadLock;
+        private Dictionary<string, LockedResource> _WriteLockResources;
+        private List<string> _ReadLockResources;
+
+        private static string _TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
 
         #endregion
 
         #region Constructors-and-Factories
 
-        public UrlLockManager(Events logging)
+        public UrlLockManager(LoggingModule logging)
         {
             if (logging == null) throw new ArgumentNullException(nameof(logging));
+
             _Logging = logging;
-            _LockedObjects = new Dictionary<string, Tuple<int?, string, string, DateTime>>();
-            _ReadObjects = new List<string>();
-            _Lock = new object();
+
+            _WriteLock = new object();
+            _ReadLock = new object();
+
+            _WriteLockResources = new Dictionary<string, LockedResource>();
+            _ReadLockResources = new List<string>();
         }
 
         #endregion
 
         #region Public-Methods
 
-        public Dictionary<string, Tuple<int?, string, string, DateTime>> GetLockedUrls()
+        public Dictionary<string, LockedResource> GetWriteLockedUrls()
         {
-            lock (_Lock)
+            lock (_WriteLock)
             {
-                return _LockedObjects;
+                return new Dictionary<string, LockedResource>(_WriteLockResources);
             }
         }
 
-        public List<string> GetReadUrls()
+        public List<string> GetReadLockedUrls()
         {
-            lock (_Lock)
+            lock (_ReadLock)
             {
-                return _ReadObjects;
+                return new List<string>(_ReadLockResources);
             }
         }
-
-        public bool LockUrl(RequestMetadata md)
+         
+        public bool AddWriteLock(RequestMetadata md)
         {
-            lock (_Lock)
+            string key = KeyFromMetadata(md);
+
+            lock (_WriteLock)
             {
-                if (_LockedObjects.ContainsKey(md.CurrObj.DiskPath))
+                if (_WriteLockResources.ContainsKey(key))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "LockUrl resource currently locked: " + md.CurrObj.DiskPath);
+                    _Logging.Log(LoggingModule.Severity.Warn, "AddWriteLock resource currently locked for writing: " + key);
                     return false;
                 }
 
-                if (_ReadObjects.Contains(md.CurrObj.DiskPath))
+                lock (_ReadLock)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "LockUrl resource currently being read: " + md.CurrObj.DiskPath);
+                    if (_ReadLockResources.Contains(key))
+                    {
+                        _Logging.Log(LoggingModule.Severity.Warn, "AddWriteLock resource currently being read: " + key);
+                        return false;
+                    }
+                }
+
+                _WriteLockResources.Add(key, new LockedResource(md.User, md.Http.Method, md.Http.RawUrlWithoutQuery));
+                return true;
+            }
+        }
+
+        public void RemoveWriteLock(RequestMetadata md)
+        {
+            string key = KeyFromMetadata(md);
+
+            lock (_WriteLock)
+            {
+                if (_WriteLockResources.ContainsKey(key)) _WriteLockResources.Remove(key);
+            }
+
+            return;
+        }
+
+        public bool AddReadLock(RequestMetadata md)
+        {
+            string key = KeyFromMetadata(md);
+
+            lock (_WriteLock)
+            {
+                if (_WriteLockResources.ContainsKey(key))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "AddReadLock resource currently locked for writing: " + key);
                     return false;
                 }
 
-                _LockedObjects.Add(md.CurrObj.DiskPath,
-                    new Tuple<int?, string, string, DateTime>(
-                        md.CurrUser.UserMasterId,
-                        md.CurrHttpReq.SourceIp,
-                        md.CurrHttpReq.Method,
-                        DateTime.Now));
+                lock (_ReadLock)
+                {
+                    if (!_ReadLockResources.Contains(key)) _ReadLockResources.Add(key);
+                }
+                 
+                return true;
             }
-
-            return true;
         }
 
-        public bool LockResource(RequestMetadata md, string resource)
+        public void RemoveReadLock(RequestMetadata md)
         {
-            lock (_Lock)
+            string key = KeyFromMetadata(md);
+
+            lock (_ReadLock)
             {
-                if (_LockedObjects.ContainsKey(md.CurrObj.DiskPath))
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "LockResource resource currently locked: " + md.CurrObj.DiskPath);
-                    return false;
-                }
-
-                if (_ReadObjects.Contains(md.CurrObj.DiskPath))
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "LockResource resource currently being read: " + md.CurrObj.DiskPath);
-                    return false;
-                }
-
-                _LockedObjects.Add(resource,
-                    new Tuple<int?, string, string, DateTime>(
-                        md.CurrUser.UserMasterId,
-                        md.CurrHttpReq.SourceIp,
-                        md.CurrHttpReq.Method,
-                        DateTime.Now));
+                if (_ReadLockResources.Contains(key)) _ReadLockResources.Remove(key);
             }
 
-            return true;
-        }
-
-        public bool UnlockUrl(RequestMetadata md)
-        {
-            lock (_Lock)
-            {
-                if (_LockedObjects.ContainsKey(md.CurrObj.DiskPath))
-                {
-                    _LockedObjects.Remove(md.CurrObj.DiskPath);
-                }
-            }
-
-            return true;
-        }
-
-        public bool UnlockResource(RequestMetadata md, string resource)
-        {
-            lock (_Lock)
-            {
-                if (_LockedObjects.ContainsKey(resource))
-                {
-                    _LockedObjects.Remove(resource);
-                }
-            }
-
-            return true;
-        }
-
-        public bool AddReadResource(string resource)
-        {
-            lock (_Lock)
-            {
-                if (_LockedObjects.ContainsKey(resource))
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "AddReadResource resource currently being read: " + resource);
-                    return false;
-                }
-
-                _ReadObjects.Add(resource);
-            }
-
-            return true;
-        }
-
-        public bool RemoveReadResource(string resource)
-        {
-            lock (_Lock)
-            {
-                if (_ReadObjects.Contains(resource))
-                {
-                    _ReadObjects.Remove(resource);
-                }
-            }
-
-            return true;
+            return;
         }
 
         #endregion
 
         #region Private-Methods
+
+        private string KeyFromMetadata(RequestMetadata md)
+        {
+            string ret = "";
+            ret += md.Http.Method.ToLower();
+            ret += " ";
+            ret += md.Http.RawUrlWithoutQuery.ToLower();
+            ret += " ";
+            ret += md.Http.TimestampUtc.ToString(_TimestampFormat);
+            return ret;
+        }
 
         #endregion
     }
