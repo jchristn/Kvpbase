@@ -12,9 +12,9 @@ First things first - do you need help or have feedback?  Contact me at joel dot 
 
 ## Initial Setup
 
-The binaries for Kvpbase can be created by compiling from source or using the pre-compiled binaries found in StorageServer\bin\release (I intentionally did not .gitignore these files).
+The binaries for Kvpbase can be created by compiling from source or using the pre-compiled binaries found in ```StorageServer\bin\release``` (I intentionally did not ```.gitignore``` these files).
 
-In Windows environments, run StorageServer.exe to create the requisite JSON configuration files.
+In Windows environments, run ```StorageServer.exe``` to create the requisite JSON configuration files.
 
 In Linux and Mac environments, first run the Mono AOT prior to running StorageServer.exe in Mono.  It is recommended that you use the ```--server``` flag for both the AOT and while running under Mono.
 ```
@@ -90,6 +90,7 @@ Please read our documentation on Github [https://github.com/kvpbase/storage-serv
 - Support for larger number of objects per container
 - Better support for public containers (read, write)
 - Streamlined replication and messaging based on persistent TCP sockets amongst nodes (instead of using HTTP APIs)
+- Container resync support (useful when replacing failed node or populating container contents on another node)
 
 ## Compatibility with 2.x.x
 
