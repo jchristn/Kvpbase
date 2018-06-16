@@ -138,12 +138,17 @@ namespace Kvpbase
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None) return true;
+            if (settings.Replication == ReplicationMode.None)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ContainerCreate replication mode set to none");
+                return true;
+            }
 
             List<Node> nodes = _Topology.GetReplicas();
-            if (nodes == null || nodes.Count < 2)
+            if (nodes == null || nodes.Count < 1)
             {
-                return true;    // no replicas
+                _Logging.Log(LoggingModule.Severity.Debug, "ContainerCreate no replicas found in topology");
+                return true;   
             }
 
             md.Http.Data = Encoding.UTF8.GetBytes(Common.SerializeJson(settings, false));
@@ -166,12 +171,17 @@ namespace Kvpbase
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None) return true;
+            if (settings.Replication == ReplicationMode.None)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ContainerDelete replication mode set to none");
+                return true;
+            }
 
             List<Node> nodes = _Topology.GetReplicas();
-            if (nodes == null || nodes.Count < 2)
+            if (nodes == null || nodes.Count < 1)
             {
-                return true;    // no replicas
+                _Logging.Log(LoggingModule.Severity.Debug, "ContainerDelete no replicas found in topologyy");
+                return true;
             }
 
             bool success = true;
@@ -192,12 +202,17 @@ namespace Kvpbase
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None) return true;
+            if (settings.Replication == ReplicationMode.None)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ContainerUpdate replication mode set to none");
+                return true;
+            }
 
             List<Node> nodes = _Topology.GetReplicas();
-            if (nodes == null || nodes.Count < 2)
+            if (nodes == null || nodes.Count < 1)
             {
-                return true;    // no replicas
+                _Logging.Log(LoggingModule.Severity.Debug, "ContainerUpdate no replicas found in topology");
+                return true;
             }
 
             md.Http.Data = Encoding.UTF8.GetBytes(Common.SerializeJson(settings, false));
@@ -235,12 +250,17 @@ namespace Kvpbase
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None) return true;
+            if (settings.Replication == ReplicationMode.None)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ContainerClearAuditLog replication mode set to none");
+                return true;
+            }
 
             List<Node> nodes = _Topology.GetReplicas();
-            if (nodes == null || nodes.Count < 2)
+            if (nodes == null || nodes.Count < 1)
             {
-                return true;    // no replicas
+                _Logging.Log(LoggingModule.Severity.Debug, "ContainerClearAuditLog no replicas found in topology");
+                return true;
             }
 
             bool success = true;
@@ -265,12 +285,17 @@ namespace Kvpbase
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None) return true;
+            if (settings.Replication == ReplicationMode.None)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ObjectCreate replication mode set to none");
+                return true;
+            }
 
             List<Node> nodes = _Topology.GetReplicas();
-            if (nodes == null || nodes.Count < 2)
+            if (nodes == null || nodes.Count < 1)
             {
-                return true;    // no replicas
+                _Logging.Log(LoggingModule.Severity.Debug, "ObjectCreate no replicas found in topology");
+                return true;
             }
 
             bool success = true;
@@ -291,12 +316,17 @@ namespace Kvpbase
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None) return true;
+            if (settings.Replication == ReplicationMode.None)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ObjectDelete replication mode set to none");
+                return true;
+            }
 
             List<Node> nodes = _Topology.GetReplicas();
-            if (nodes == null || nodes.Count < 2)
+            if (nodes == null || nodes.Count < 1)
             {
-                return true;    // no replicas
+                _Logging.Log(LoggingModule.Severity.Debug, "ObjectDelete no replicas found in topology");
+                return true;
             }
 
             bool success = true;
@@ -331,12 +361,17 @@ namespace Kvpbase
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None) return true;
+            if (settings.Replication == ReplicationMode.None)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ObjectWriteRange replication mode set to none");
+                return true;
+            }
 
             List<Node> nodes = _Topology.GetReplicas();
-            if (nodes == null || nodes.Count < 2)
+            if (nodes == null || nodes.Count < 1)
             {
-                return true;    // no replicas
+                _Logging.Log(LoggingModule.Severity.Debug, "ObjectWriteRange no replicas found in topology");
+                return true;
             }
 
             bool success = true;
@@ -357,12 +392,17 @@ namespace Kvpbase
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None) return true;
+            if (settings.Replication == ReplicationMode.None)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ObjectRename replication mode set to none");
+                return true;
+            }
 
             List<Node> nodes = _Topology.GetReplicas();
-            if (nodes == null || nodes.Count < 2)
+            if (nodes == null || nodes.Count < 1)
             {
-                return true;    // no replicas
+                _Logging.Log(LoggingModule.Severity.Debug, "ObjectRename no replicas found in topology");
+                return true;
             }
 
             bool success = true;
