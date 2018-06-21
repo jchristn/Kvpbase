@@ -18,6 +18,7 @@ namespace Kvpbase
                 ret.Add("Key", md.Key);
                 ret.Add("Perm", md.Perm);
                 ret.Add("Node", md.Node);
+                ret.Add("Params", md.Params);
                 return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(ret, true), true);
             }
               
