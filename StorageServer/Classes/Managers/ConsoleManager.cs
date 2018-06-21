@@ -132,8 +132,12 @@ namespace Kvpbase
                         _Topology.SayHello();
                         break;
 
-                    case "send":
-                        SendConsoleMessage();
+                    case "send async":
+                        SendAsyncConsoleMessage();
+                        break;
+
+                    case "send sync":
+                        SendSyncConsoleMessage();
                         break;
 
                     case "active":
@@ -211,7 +215,8 @@ namespace Kvpbase
             Console.WriteLine("  quit / q                  exit the application");  
             Console.WriteLine("  topology                  list nodes in the topology");
             Console.WriteLine("  hello                     say hello to other nodes in the topology");
-            Console.WriteLine("  send                      send message to console of another node");
+            Console.WriteLine("  send async                send async message to another node");
+            Console.WriteLine("  send sync                 send sync message to another node which will echo back");
             Console.WriteLine("  active                    list URLs that are being read or written");
             Console.WriteLine("  containers                list available containers");
             Console.WriteLine("  container_exists          query if a container exists");
@@ -297,12 +302,29 @@ namespace Kvpbase
             Console.WriteLine("");
         }
 
-        private void SendConsoleMessage()
+        private void SendAsyncConsoleMessage()
         {
             ListTopology();
             int nodeId = Common.InputInteger("Node ID:", 0, true, false);
             string msg = Common.InputString("Message:", "Hello, world!", false);
             _Topology.SendAsyncMessage(MessageType.Console, nodeId, Encoding.UTF8.GetBytes(msg));
+        }
+
+        private void SendSyncConsoleMessage()
+        {
+            ListTopology();
+            int nodeId = Common.InputInteger("Node ID:", 0, true, false);
+            string msg = Common.InputString("Message:", "Hello, world!", false);
+            Message resp = _Topology.SendSyncMessage(MessageType.Echo, nodeId, Encoding.UTF8.GetBytes(msg), 5000);
+            if (resp == null)
+            {
+                Console.WriteLine("Failed");
+            }
+            else
+            {
+                Console.WriteLine("Success");
+                Console.WriteLine(Encoding.UTF8.GetString(resp.Data));
+            }
         }
 
         private void ListActiveUrls()

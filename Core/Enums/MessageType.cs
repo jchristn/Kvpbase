@@ -20,6 +20,8 @@ namespace Kvpbase
         Hello,
         [EnumMember(Value = "Console")]
         Console,
+        [EnumMember(Value = "Echo")]
+        Echo,
         [EnumMember(Value = "ContainerExists")]
         ContainerExists,
         [EnumMember(Value = "ContainerEnumerate")]

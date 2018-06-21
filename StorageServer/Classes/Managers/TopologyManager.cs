@@ -698,7 +698,7 @@ namespace Kvpbase
             {
                 int dataLen = 0;
                 if (msg.Data != null && msg.Data.Length > 0) dataLen = msg.Data.Length;
-                _Logging.Log(LoggingModule.Severity.Info, "MeshSyncMessageReceived from node ID " + msg.From.NodeId + ": " + dataLen + " bytes");
+                _Logging.Log(LoggingModule.Severity.Info, "MeshSyncMessageReceived from node ID " + msg.From.NodeId + " [" + msg.Type.ToString() + "]: " + dataLen + " bytes");
             }
 
             if (_Settings.Topology.DebugMessages)
@@ -715,7 +715,8 @@ namespace Kvpbase
 
             Message resp = _MessageMgr.ProcessSyncMessage(msg);
             if (resp != null)
-            { 
+            {
+                _Logging.Log(LoggingModule.Severity.Info, "MeshSyncMessageReceived responding to node ID " + msg.From.NodeId + " [" + msg.Type.ToString() + "]: " + resp.Success);
                 return Encoding.UTF8.GetBytes(Common.SerializeJson(resp, false));
             }
             else

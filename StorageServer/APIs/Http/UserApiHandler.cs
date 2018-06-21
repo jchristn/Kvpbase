@@ -13,13 +13,8 @@ namespace Kvpbase
         {  
             if (Common.IsTrue(md.Http.RetrieveHeaderValue("_metadata")))
             {
-                Dictionary<string, object> ret = new Dictionary<string, object>();
-                ret.Add("User", md.User);
-                ret.Add("Key", md.Key);
-                ret.Add("Perm", md.Perm);
-                ret.Add("Node", md.Node);
-                ret.Add("Params", md.Params);
-                return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(ret, true), true);
+                RequestMetadata respMetadata = md.Sanitized();
+                return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(respMetadata, true), true);
             }
               
             switch (md.Http.Method.ToLower())

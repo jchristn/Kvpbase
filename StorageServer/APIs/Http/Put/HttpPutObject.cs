@@ -110,12 +110,22 @@ namespace Kvpbase
                 }
                 finally
                 {
-                    _ObjectHandler.Rename(md, currContainer, md.Params.Rename, md.Params.ObjectKey, out error);
+                    if (cleanupRequired)
+                    {
+                        #region Rename-to-Orginal
 
-                    md.Params.ObjectKey = md.Params.Rename;
-                    md.Params.Rename = md.Params.ObjectKey;
+                        _ObjectHandler.Rename(md, currContainer, md.Params.Rename, md.Params.ObjectKey, out error);
 
-                    _OutboundMessageHandler.ObjectRename(md, currContainer.Settings);
+                        string renameKey = String.Copy(md.Params.Rename);
+                        string originalKey = String.Copy(md.Params.ObjectKey);
+
+                        md.Params.ObjectKey = renameKey;
+                        md.Params.Rename = originalKey;
+
+                        _OutboundMessageHandler.ObjectRename(md, currContainer.Settings);
+
+                        #endregion
+                    }
                 }
 
                 #endregion

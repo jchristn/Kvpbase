@@ -57,6 +57,11 @@ namespace Kvpbase
                         resp.Success = true;
                         break;
 
+                    case MessageType.Echo:
+                        resp.Success = true;
+                        resp.Data = msg.Data;
+                        break;
+
                     case MessageType.Console:
                         if (Environment.UserInteractive) Console.WriteLine(Encoding.UTF8.GetString(msg.Data));
                         resp.Success = true;
@@ -144,7 +149,12 @@ namespace Kvpbase
                         resp.Data = Encoding.UTF8.GetBytes("Hello");
                         resp.Success = true;
                         break;
-                        
+
+                    case MessageType.Echo:
+                        resp.Data = msg.Data;
+                        resp.Success = true;
+                        break;
+
                     case MessageType.Console:
                         if (Environment.UserInteractive) Console.WriteLine(Encoding.UTF8.GetString(msg.Data));
                         resp.Data = Encoding.UTF8.GetBytes("Received");
