@@ -51,20 +51,13 @@ namespace Kvpbase
                 }
                 else
                 {
-                    List<Dictionary<string, object>> ret = new List<Dictionary<string, object>>();
-
+                    List<ContainerMetadata> ret = new List<ContainerMetadata>();
                     foreach (string containerName in containers)
                     {
                         Container currContainer = null;
                         if (_ContainerMgr.GetContainer(md.Params.UserGuid, containerName, out currContainer))
                         {
-                            Dictionary<string, object> currStats = new Dictionary<string, object>();
-                            currStats.Add("Name", currContainer.Name);
-                            currStats.Add("PublicRead", currContainer.IsPublicRead());
-                            currStats.Add("PublicWrite", currContainer.IsPublicWrite());
-                            currStats.Add("Count", currContainer.ObjectCount());
-                            currStats.Add("TotalBytes", currContainer.BytesConsumed());
-                            ret.Add(currStats);
+                            ret.Add(currContainer.GetStatistics());
                         }
                     }
 

@@ -59,7 +59,7 @@ $ curl http://localhost:8000/default/default/firstfile.txt
 
 The result is a 200/OK with your data:
 ```
-My first file!
+My first object!
 ```
 
 ## Enumerate the Container

@@ -879,13 +879,34 @@ namespace Kvpbase
         }
 
         /// <summary>
+        /// Retrieve statistics from the container.
+        /// </summary> 
+        /// <returns>ContainerMetadata.</returns>
+        public ContainerMetadata GetStatistics()
+        { 
+            ContainerMetadata meta = new ContainerMetadata();
+            meta.IndexStart = null;
+            meta.MaxResults = null;
+            meta.Filter = null;
+            meta.Objects = null;
+
+            meta.TotalCount = ObjectCount();
+            meta.TotalBytes = BytesConsumed();
+
+            meta.PublicRead = IsPublicRead();
+            meta.PublicWrite = IsPublicWrite();
+            meta.LatestEntry = LatestEntry(); 
+            return meta;
+        }
+
+        /// <summary>
         /// List the metadata of objects in the container.
         /// </summary>
         /// <param name="indexStart">The row index from which to start returning metadata.</param>
         /// <param name="maxResults">The maximum number of results to return.</param>
-        /// <returns>List of ObjectMetadata.</returns>
+        /// <returns>ContainerMetadata.</returns>
         public ContainerMetadata Enumerate(int? indexStart, int? maxResults, EnumerationFilter filter, string orderByClause)
-        { 
+        {
             string query = ContainerQueries.Enumerate(indexStart, maxResults, filter, orderByClause);
             DataTable result = _Database.Query(query);
             List<ObjectMetadata> objects = ObjectMetadata.FromDataTable(result);
