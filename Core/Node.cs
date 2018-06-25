@@ -155,6 +155,32 @@ namespace Kvpbase
             /// Password for the PFX certificate file.
             /// </summary>
             public string PfxCertificatePass { get; set; }
+
+            /// <summary>
+            /// Timeout settings for mesh networking exchanges.
+            /// </summary>
+            public TimeoutSettings Timeout { get; set; }
+
+            /// <summary>
+            /// Timeout settings for mesh networking exchanges.
+            /// </summary>
+            public class TimeoutSettings
+            {
+                /// <summary>
+                /// Minimum timeout for synchronous messages.  Also used for simple messages with no data payload.
+                /// </summary>
+                public int MinTimeoutSec { get; set; }
+
+                /// <summary>
+                /// Maximum timeout for synchronous messages.  Messages with data payload will have a timeout set no higher than this value.
+                /// </summary>
+                public int MaxTimeoutSec { get; set; }
+
+                /// <summary>
+                /// Expected data transfer rate in bytes per second.  Messages with data payload will calculate a timeout based on this value, and be bounded by MinTimeoutSec and MaxTimeoutSec.
+                /// </summary>
+                public int ExpectedXferRateBytesPerSec { get; set; }
+            }
         }
 
         #endregion

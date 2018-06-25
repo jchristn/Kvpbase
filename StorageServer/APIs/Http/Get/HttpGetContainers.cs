@@ -51,13 +51,13 @@ namespace Kvpbase
                 }
                 else
                 {
-                    List<ContainerMetadata> ret = new List<ContainerMetadata>();
+                    List<ContainerSettings> ret = new List<ContainerSettings>();
                     foreach (string containerName in containers)
                     {
-                        Container currContainer = null;
-                        if (_ContainerMgr.GetContainer(md.Params.UserGuid, containerName, out currContainer))
+                        ContainerSettings currSettings = null;
+                        if (_ContainerMgr.GetContainerSettings(md.Params.UserGuid, containerName, out currSettings))
                         {
-                            ret.Add(currContainer.GetStatistics());
+                            ret.Add(currSettings);
                         }
                     }
 

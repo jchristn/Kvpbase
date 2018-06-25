@@ -65,7 +65,11 @@ namespace Kvpbase
                     case MessageType.Console:
                         if (Environment.UserInteractive) Console.WriteLine(Encoding.UTF8.GetString(msg.Data));
                         resp.Success = true;
-                        break; 
+                        break;
+
+                    case MessageType.Heartbeat:
+                        resp.Success = true; 
+                        break;
 
                     case MessageType.ContainerExists:
                         _InboundMessageHandler.ContainerExists(msg, out resp);

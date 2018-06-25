@@ -22,6 +22,8 @@ namespace Kvpbase
         Console,
         [EnumMember(Value = "Echo")]
         Echo,
+        [EnumMember(Value = "Heartbeat")]
+        Heartbeat,
         [EnumMember(Value = "ContainerExists")]
         ContainerExists,
         [EnumMember(Value = "ContainerEnumerate")]

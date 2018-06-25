@@ -160,27 +160,31 @@ namespace Kvpbase
                         ListContainers();
                         break;
 
-                    case "container_exists":
+                    case "container exists":
                         ContainerExists();
                         break;
 
-                    case "container_enumerate":
+                    case "container delete":
+                        ContainerDelete();
+                        break;
+
+                    case "container enumerate":
                         ContainerEnumerate();
                         break;
 
-                    case "object_read":
+                    case "object read":
                         ObjectRead();
                         break;
 
-                    case "object_exists":
+                    case "object exists":
                         ObjectExists();
                         break;
 
-                    case "object_delete":
+                    case "object delete":
                         ObjectDelete();
                         break;
 
-                    case "object_metadata":
+                    case "object metadata":
                         ObjectMetadata();
                         break;
 
@@ -188,15 +192,15 @@ namespace Kvpbase
                         GetLatestTimestamp();
                         break;
 
-                    case "sync_add":
+                    case "sync add":
                         SyncAdd();
                         break;
 
-                    case "sync_tasks":
+                    case "sync tasks":
                         SyncTasks();
                         break;
 
-                    case "sync_start":
+                    case "sync start":
                         SyncStart();
                         break;
 
@@ -219,16 +223,17 @@ namespace Kvpbase
             Console.WriteLine("  send sync                 send sync message to another node which will echo back");
             Console.WriteLine("  active                    list URLs that are being read or written");
             Console.WriteLine("  containers                list available containers");
-            Console.WriteLine("  container_exists          query if a container exists");
-            Console.WriteLine("  container_enumerate       enumerate contents of a container");
-            Console.WriteLine("  object_read               read contents of an object");
-            Console.WriteLine("  object_exists             query if an object exists");
-            Console.WriteLine("  object_delete             delete an object");
-            Console.WriteLine("  object_metadata           retrieve metadata of an object");
+            Console.WriteLine("  container exists          query if a container exists");
+            Console.WriteLine("  container delete          delete a container");
+            Console.WriteLine("  container enumerate       enumerate contents of a container");
+            Console.WriteLine("  object read               read contents of an object");
+            Console.WriteLine("  object exists             query if an object exists");
+            Console.WriteLine("  object delete             delete an object");
+            Console.WriteLine("  object metadata           retrieve metadata of an object");
             Console.WriteLine("  latest                    get timestamp of latest entry in a container");
-            Console.WriteLine("  sync_add                  add synchronization task");
-            Console.WriteLine("  sync_tasks                list configured synchronization tasks");
-            Console.WriteLine("  sync_start                start a synchronization task");
+            Console.WriteLine("  sync add                  add synchronization task");
+            Console.WriteLine("  sync tasks                list configured synchronization tasks");
+            Console.WriteLine("  sync start                start a synchronization task");
             Console.WriteLine("  version                   show the product version");
             Console.WriteLine("");
             return;
@@ -315,7 +320,7 @@ namespace Kvpbase
             ListTopology();
             int nodeId = Common.InputInteger("Node ID:", 0, true, false);
             string msg = Common.InputString("Message:", "Hello, world!", false);
-            Message resp = _Topology.SendSyncMessage(MessageType.Echo, nodeId, Encoding.UTF8.GetBytes(msg), 5000);
+            Message resp = _Topology.SendSyncMessage(MessageType.Echo, nodeId, Encoding.UTF8.GetBytes(msg));
             if (resp == null)
             {
                 Console.WriteLine("Failed");
@@ -433,6 +438,42 @@ namespace Kvpbase
             else
             {
                 Console.WriteLine(_OutboundMessageHandler.ContainerExists(md, node));
+            }
+        }
+
+        private void ContainerDelete()
+        {
+            int nodeId = Common.InputInteger("Node ID [0 for local]:", 0, true, true);
+            Node node = null;
+
+            string userGuid = Common.InputString("User GUID:", "default", false);
+            string containerName = Common.InputString("Container name:", "default", false);
+            RequestMetadata md = BuildMetadata(userGuid, containerName, null, "get");
+
+            if (nodeId > 0)
+            {
+                node = _Topology.GetNodeById(nodeId);
+                if (node == null)
+                {
+                    Console.WriteLine("Unknown node");
+                    return;
+                }
+            }
+
+            ContainerSettings settings = null;
+            if (!_ContainerMgr.GetContainerSettings(userGuid, containerName, out settings))
+            {
+                Console.WriteLine("Unknown container");
+                return;
+            }
+
+            if (nodeId == 0)
+            {
+                _Containers.Delete(userGuid, containerName);
+            }
+            else
+            {
+                Console.WriteLine(_OutboundMessageHandler.ContainerDelete(md, settings));
             }
         }
 

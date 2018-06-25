@@ -127,7 +127,6 @@
   <ItemGroup>
     <Reference Include="EmailModule, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EmailWrapper.1.0.1\lib\EmailModule.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -138,7 +137,6 @@
     </Reference>
     <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EmailWrapper.1.0.1\lib\RestSharp.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="RestWrapper, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RestWrapper.1.0.8\lib\RestWrapper.dll</HintPath>
@@ -174,8 +172,9 @@
     <Reference Include="Watson, Version=1.2.11.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Watson.1.2.11\lib\Watson.dll</HintPath>
     </Reference>
-    <Reference Include="WatsonMesh, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WatsonMesh.1.0.3\lib\WatsonMesh.dll</HintPath>
+    <Reference Include="WatsonMesh, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WatsonMesh.1.0.5\WatsonMesh.dll</HintPath>
     </Reference>
     <Reference Include="WatsonTcp, Version=1.1.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WatsonTcp.1.1.6\lib\WatsonTcp.dll</HintPath>

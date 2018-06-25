@@ -209,6 +209,8 @@ namespace Kvpbase
 
             Peer peer = BuildPeerFromNode(node);
             if (!_Mesh.Exists(peer)) _Mesh.Add(peer);
+
+            Task.Run(() => HeartbeatTask(node));
         }
 
         public void RemoveNode(Node node)
@@ -312,16 +314,16 @@ namespace Kvpbase
                 Encoding.UTF8.GetBytes(Common.SerializeJson(msg, false)));
         }
 
-        public Message SendSyncMessage(MessageType msgType, int nodeId, byte[] data, int timeoutMs)
+        public Message SendSyncMessage(MessageType msgType, int nodeId, byte[] data)
         {
             Node rcpt = GetNodeById(nodeId);
             if (rcpt == null || rcpt == default(Node)) return null;
 
             Message msg = new Message(LocalNode, rcpt, msgType, null, data);
-            return SendSyncMessage(msg, timeoutMs);
+            return SendSyncMessage(msg);
         }
 
-        public Message SendSyncMessage(Message msg, int timeoutMs)
+        public Message SendSyncMessage(Message msg)
         {
             if (msg == null) throw new ArgumentNullException(nameof(msg));
             if (msg.To == null) throw new ArgumentException("Message does not contain 'To' node.");
@@ -331,7 +333,7 @@ namespace Kvpbase
             if (_Settings.Topology.DebugMessages)
             {
                 _Logging.Log(LoggingModule.Severity.Info,
-                    "SendSyncMessage sending: " +
+                    "SendSyncMessage [" + msg.To.Tcp.IpAddress + ":" + msg.To.Tcp.Port + "] sending: " +
                     Environment.NewLine +
                     Common.SerializeJson(msg, true));
             }
@@ -340,17 +342,17 @@ namespace Kvpbase
             if (!_Mesh.SendSync(
                 msg.To.Tcp.IpAddress, 
                 msg.To.Tcp.Port, 
-                timeoutMs, 
+                (1000 * CalculateTimeoutSeconds(msg.To, msg.Data)), 
                 Encoding.UTF8.GetBytes(Common.SerializeJson(msg, false)),
                 out response))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage unable to send message to node ID " + msg.To.NodeId);
+                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage [" + msg.To.Tcp.IpAddress + ":" + msg.To.Tcp.Port + "] unable to send message to node ID " + msg.To.NodeId);
                 return null;
             }
              
             if (response == null || response.Length < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage no data returned from node ID " + msg.To.NodeId);
+                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage [" + msg.To.Tcp.IpAddress + ":" + msg.To.Tcp.Port + "] no data returned from node ID " + msg.To.NodeId);
                 return null;
             }
 
@@ -361,7 +363,7 @@ namespace Kvpbase
                 if (_Settings.Topology.DebugMessages)
                 {
                     _Logging.Log(LoggingModule.Severity.Info,
-                        "SendSyncMessage received: " +
+                        "SendSyncMessage [" + msg.To.Tcp.IpAddress + ":" + msg.To.Tcp.Port + "] received: " +
                         Environment.NewLine +
                         Common.SerializeJson(resp, true));
                 }
@@ -370,7 +372,7 @@ namespace Kvpbase
             }
             catch (Exception e)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage exception while deserializing response: " + e.Message);
+                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage [" + msg.To.Tcp.IpAddress + ":" + msg.To.Tcp.Port + "] exception while deserializing response: " + e.Message);
                 _Logging.Log(LoggingModule.Severity.Warn, Encoding.UTF8.GetString(response));
                 return null;
             }
@@ -540,6 +542,7 @@ namespace Kvpbase
             _Self = BuildPeerFromNode(LocalNode);
             
             _Mesh = new WatsonMesh(_MeshSettings, _Self);
+            _Mesh.WarningMessage = MeshWarningMessage;
 
             if (_Topology == null || _Topology.Nodes.Count < 2)
             {
@@ -554,6 +557,7 @@ namespace Kvpbase
                     Peer currPeer = BuildPeerFromNode(currNode);
                     _Logging.Log(LoggingModule.Severity.Info, "InitializeMeshNetwork adding peer " + currNode.ToString());
                     _Mesh.Add(currPeer);
+                    Task.Run(() => HeartbeatTask(currNode));
                 }
             }
 
@@ -562,6 +566,15 @@ namespace Kvpbase
             _Mesh.AsyncMessageReceived = MeshAsyncMessageReceived;
             _Mesh.SyncMessageReceived = MeshSyncMessageReceived;
             _Mesh.StartServer(); 
+        }
+
+        private bool MeshWarningMessage(string msg)
+        {
+            if (!String.IsNullOrEmpty(msg))
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, msg);
+            }
+            return true;
         }
 
         private Peer BuildPeerFromNode(Node node)
@@ -596,6 +609,36 @@ namespace Kvpbase
             }
 
             return peer;
+        }
+
+        private int CalculateTimeoutSeconds(Node node, byte[] data)
+        {
+            if (data == null || data.Length < 1) return node.Tcp.Timeout.MinTimeoutSec;
+            int numSeconds = data.Length / node.Tcp.Timeout.ExpectedXferRateBytesPerSec;
+            if (numSeconds <= node.Tcp.Timeout.MinTimeoutSec) return node.Tcp.Timeout.MinTimeoutSec;
+            if (numSeconds >= node.Tcp.Timeout.MaxTimeoutSec) return node.Tcp.Timeout.MaxTimeoutSec;
+            return numSeconds;
+        }
+
+        private void HeartbeatTask(Node node)
+        {
+            bool firstRun = true;
+
+            while (true)
+            {
+                if (!firstRun) Task.Delay(_Settings.Topology.HeartbeatIntervalSec * 1000).Wait();
+                else firstRun = false;
+                
+                Message msg = new Message(LocalNode, node, MessageType.Heartbeat, null, null);
+
+                if (!_Mesh.SendAsync(
+                    msg.To.Tcp.IpAddress,
+                    msg.To.Tcp.Port,
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(msg, false))))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "HeartbeatTask unable to send heartbeat to " + node.ToString()); 
+                }  
+            }
         }
 
         #endregion
@@ -652,7 +695,7 @@ namespace Kvpbase
                     Environment.NewLine +
                     Common.SerializeJson(msg, true));
             }
-
+             
             #endregion
 
             return _MessageMgr.ProcessAsyncMessage(msg);
@@ -730,7 +773,7 @@ namespace Kvpbase
 
         private bool MeshPeerConnected(Peer peer)
         {
-            _Logging.Log(LoggingModule.Severity.Info, "MeshPeerConnected " + peer.ToString());
+            _Logging.Log(LoggingModule.Severity.Info, "MeshPeerConnected " + peer.ToString()); 
             return true;
         }
 

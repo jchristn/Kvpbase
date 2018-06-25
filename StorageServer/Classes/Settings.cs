@@ -59,6 +59,7 @@ namespace Kvpbase
         { 
             public bool DebugMeshNetworking;
             public bool DebugMessages;
+            public int HeartbeatIntervalSec;
         }
 
         public class SettingsStorage

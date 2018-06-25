@@ -885,6 +885,9 @@ namespace Kvpbase
         public ContainerMetadata GetStatistics()
         { 
             ContainerMetadata meta = new ContainerMetadata();
+            meta.User = Settings.User;
+            meta.Name = Settings.Name;
+
             meta.IndexStart = null;
             meta.MaxResults = null;
             meta.Filter = null;
@@ -912,6 +915,9 @@ namespace Kvpbase
             List<ObjectMetadata> objects = ObjectMetadata.FromDataTable(result);
 
             ContainerMetadata meta = new ContainerMetadata();
+            meta.User = Settings.User;
+            meta.Name = Settings.Name;
+
             meta.IndexStart = indexStart;
             meta.MaxResults = maxResults;
             meta.Filter = filter;

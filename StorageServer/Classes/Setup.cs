@@ -132,6 +132,7 @@ namespace Kvpbase
             currSettings.Topology = new Settings.SettingsTopology(); 
             currSettings.Topology.DebugMeshNetworking = false;
             currSettings.Topology.DebugMeshNetworking = false;
+            currSettings.Topology.HeartbeatIntervalSec = 5;
 
             currSettings.Storage = new Settings.SettingsStorage();
             currSettings.Storage.Directory = "./Storage/"; 
@@ -294,6 +295,10 @@ namespace Kvpbase
             currNode.Tcp.IpAddress = "127.0.0.1";
             currNode.Tcp.Port = 9000;
             currNode.Tcp.Ssl = false;
+            currNode.Tcp.Timeout = new Node.TcpSettings.TimeoutSettings();
+            currNode.Tcp.Timeout.MinTimeoutSec = 10;
+            currNode.Tcp.Timeout.MaxTimeoutSec = 30;
+            currNode.Tcp.Timeout.ExpectedXferRateBytesPerSec = 10485760;
 
             //          1         2         3         4         5         6         7
             // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
