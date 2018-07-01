@@ -110,7 +110,12 @@ Core use cases for Kvpbase Storage Server:
 
 ## SDKs
 
-Numerous SDKs are already available for Kvpbase Storage Server: https://github.com/kvpbase/.  Note that these SDKs are not yet updated for v3.0.0.  Updates are in progress.
+Numerous SDKs are already available for Kvpbase Storage Server: https://github.com/kvpbase/.  Need an SDK for a different language?  Let me know!  Currently, SDKs are available in:
+- C#
+- Javascript
+- Java
+- Python
+- cURL (sample scripts)
 
 ## Version History
 

@@ -379,15 +379,9 @@ namespace Kvpbase
                 md.Perm = currPermission;
                 md.Params = new RequestMetadata.Parameters();
 
+                md.Params.UserGuid = "null";
                 if (md.User != null) md.Params.UserGuid = md.User.Guid;
-                else if (req.RawUrlEntries.Count >= 1)
-                {
-                    md.Params.UserGuid = req.RawUrlEntries[0];
-                }
-                else 
-                {
-                    md.Params.UserGuid = "null";
-                }
+                if (req.RawUrlEntries.Count >= 1) md.Params.UserGuid = req.RawUrlEntries[0];
 
                 if (req.RawUrlEntries.Count > 1) md.Params.Container = req.RawUrlEntries[1];
                 if (req.RawUrlEntries.Count > 2) md.Params.ObjectKey = req.RawUrlEntries[2];
