@@ -97,6 +97,7 @@ Please read our documentation on Github [https://github.com/kvpbase/storage-serv
 - 3.0.0 is fundamentally incompatible with 2.x.x (hence the major version change)
 - URL structure explicitly fixed in format with 3.x.x (i.e. /[userguid]/[containername]/[objectkey])
 - Bunkering temporarily removed (this will be reintroduced)
+- Branch release-2.1 has been preserved for those that need it: https://github.com/kvpbase/storage-server/tree/release-2.1
 
 ## Use Cases
 
@@ -108,14 +109,14 @@ Core use cases for Kvpbase Storage Server:
 - Scalable storage - multi-node support, sync and async replication, bunkering to another deployment
 - Filesystem gateway - RESTful access to existing SAN/DAS (block with filesystem) or NAS (fileshares via CIFS, NFS)
 
-## SDKs
+## SDKs and Sample Scripts
 
-Numerous SDKs are already available for Kvpbase Storage Server: https://github.com/kvpbase/.  Need an SDK for a different language?  Let me know!  Currently, SDKs are available in:
-- C#
-- Javascript
-- Java
-- Python
-- cURL (sample scripts)
+Numerous SDKs and sample scripts are already available for Kvpbase Storage Server: https://github.com/kvpbase/.  Need an SDK for a different language?  Let me know!  Currently, SDKs are available in:
+- C# - https://github.com/kvpbase/kvpbase-sdk-csharp
+- Javascript - https://github.com/kvpbase/kvpbase-sdk-js-node
+- Java - https://github.com/kvpbase/kvpbase-sdk-java
+- Python - https://github.com/kvpbase/kvpbase-sdk-python
+- cURL - https://github.com/kvpbase/kvpbase-sdk-curl
 
 ## Version History
 
@@ -123,6 +124,7 @@ Notes from previous versions (starting with v2.0.1) will be moved here.
 
 v.2.1.x
 
+- Version 2.1 can be found in the release-2.1 branch: https://github.com/kvpbase/storage-server/tree/release-2.1
 - Performance improvements
 - Simplified default HTML pages
 - Reduced CPU utilization
