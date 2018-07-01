@@ -112,11 +112,11 @@ Core use cases for Kvpbase Storage Server:
 ## SDKs and Sample Scripts
 
 Numerous SDKs and sample scripts are already available for Kvpbase Storage Server: https://github.com/kvpbase/.  Need an SDK for a different language?  Let me know!  Currently, SDKs are available in:
-- C# - https://github.com/kvpbase/kvpbase-sdk-csharp
-- Javascript - https://github.com/kvpbase/kvpbase-sdk-js-node
-- Java - https://github.com/kvpbase/kvpbase-sdk-java
-- Python - https://github.com/kvpbase/kvpbase-sdk-python
-- cURL - https://github.com/kvpbase/kvpbase-sdk-curl
+- C# - https://github.com/kvpbase/sdk-csharp
+- Javascript - https://github.com/kvpbase/sdk-js
+- Java - https://github.com/kvpbase/sdk-java
+- Python - https://github.com/kvpbase/sdk-python
+- cURL - https://github.com/kvpbase/curl-scripts
 
 ## Version History
 
