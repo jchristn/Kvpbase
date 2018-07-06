@@ -481,14 +481,7 @@ namespace Kvpbase
                 error = "No nodes in topology";
                 return false;
             }
-
-            if (_Topology.Replicas == null || _Topology.Replicas.Count < 1)
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "ValidateTopology no node IDs in replica list");
-                error = "No replica node IDs specified";
-                return false;
-            }
-
+             
             foreach (Node curr in _Topology.Nodes)
             {
                 allNodeIds.Add(curr.NodeId);
@@ -520,12 +513,15 @@ namespace Kvpbase
 
             #region Verify-Replicas-Exit
 
-            foreach (int currNodeId in _Topology.Replicas)
-            { 
-                if (!allNodeIds.Contains(currNodeId))
-                { 
-                    error = "Replica node ID " + currNodeId + " not found in node list.";
-                    return false;
+            if (_Topology.Replicas != null && _Topology.Replicas.Count > 0)
+            {
+                foreach (int currNodeId in _Topology.Replicas)
+                {
+                    if (!allNodeIds.Contains(currNodeId))
+                    {
+                        error = "Replica node ID " + currNodeId + " not found in node list.";
+                        return false;
+                    }
                 }
             }
 

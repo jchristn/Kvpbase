@@ -8,7 +8,6 @@ D:\Code\KVPbase\storageserver-3.0\Core\bin\Release\Watson.dll
 D:\Code\KVPbase\storageserver-3.0\Core\bin\Release\Newtonsoft.Json.xml
 D:\Code\KVPbase\storageserver-3.0\Core\bin\Release\RegexMatcher.pdb
 D:\Code\KVPbase\storageserver-3.0\Core\bin\Release\Watson.pdb
-D:\Code\KVPbase\storageserver-3.0\Core\obj\Release\Core.csprojResolveAssemblyReference.cache
 D:\Code\KVPbase\storageserver-3.0\Core\obj\Release\Core.csproj.CoreCompileInputs.cache
 D:\Code\KVPbase\storageserver-3.0\Core\obj\Release\Core.csproj.CopyComplete
 D:\Code\KVPbase\storageserver-3.0\Core\obj\Release\Core.dll

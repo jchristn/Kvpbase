@@ -137,3 +137,4 @@ D:\code\KVPbase\storageserver-3.0\StorageServer\bin\Debug\CSharpTest.Net.Collect
 D:\code\KVPbase\storageserver-3.0\StorageServer\obj\Debug\StorageServer.csproj.CopyComplete
 D:\code\KVPbase\storageserver-3.0\StorageServer\obj\Debug\StorageServer.exe
 D:\code\KVPbase\storageserver-3.0\StorageServer\obj\Debug\StorageServer.pdb
+D:\Code\KVPbase\storageserver-3.0\StorageServer\bin\Debug\WatsonMesh.dll
