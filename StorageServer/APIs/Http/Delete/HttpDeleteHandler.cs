@@ -13,11 +13,29 @@ namespace Kvpbase
             bool isContainer = Common.IsTrue(md.Http.RetrieveHeaderValue("_container"));
             if (isContainer)
             {
-                return HttpDeleteContainer(md);
+                if (md.Http.RawUrlEntries.Count == 2)
+                {
+                    return HttpDeleteContainer(md);
+                }
+                else
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "HttpDeleteHandler container URL does not have two entries");
+                    return new HttpResponse(md.Http, false, 400, null, "application/json",
+                        new ErrorResponse(2, 400, "URL path must contain two entries, i.e. /[user]/[container]/.", null), true);
+                }
             }
             else
             {
-                return HttpDeleteObject(md);
+                if (md.Http.RawUrlEntries.Count == 3)
+                {
+                    return HttpDeleteObject(md);
+                }
+                else
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "HttpDeleteHandler object URL does not have three entries");
+                    return new HttpResponse(md.Http, false, 400, null, "application/json",
+                        new ErrorResponse(2, 400, "URL path must contain three entries, i.e. /[user]/[container]/[key].", null), true);
+                }
             }
         }
     }

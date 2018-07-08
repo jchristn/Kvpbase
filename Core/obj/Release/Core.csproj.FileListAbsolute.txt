@@ -12,3 +12,4 @@ D:\Code\KVPbase\storageserver-3.0\Core\obj\Release\Core.csproj.CoreCompileInputs
 D:\Code\KVPbase\storageserver-3.0\Core\obj\Release\Core.csproj.CopyComplete
 D:\Code\KVPbase\storageserver-3.0\Core\obj\Release\Core.dll
 D:\Code\KVPbase\storageserver-3.0\Core\obj\Release\Core.pdb
+D:\Code\KVPbase\storageserver-3.0\Core\obj\Release\Core.csprojResolveAssemblyReference.cache

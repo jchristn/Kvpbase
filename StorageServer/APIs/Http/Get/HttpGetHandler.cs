@@ -17,15 +17,27 @@ namespace Kvpbase
                 {
                     return HttpGetContainers(md);
                 }
-                else
+                else if (md.Http.RawUrlEntries.Count == 2)
                 {
                     return HttpGetContainer(md);
                 }
+                else
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "HttpGetHandler container URL does not have either one or two entries");
+                    return new HttpResponse(md.Http, false, 400, null, "application/json",
+                        new ErrorResponse(2, 400, "URL path must contain two entries, i.e. /[user]/[container]/.", null), true);
+                }
+            }
+            else if (md.Http.RawUrlEntries.Count == 3)
+            {
+                return HttpGetObject(md);
             }
             else
             {
-                return HttpGetObject(md);
-            } 
+                _Logging.Log(LoggingModule.Severity.Warn, "HttpGetHandler object URL does not have three entries");
+                return new HttpResponse(md.Http, false, 400, null, "application/json",
+                    new ErrorResponse(2, 400, "URL path must contain three entries, i.e. /[user]/[container]/[key].", null), true);
+            }
         }
     }
 }

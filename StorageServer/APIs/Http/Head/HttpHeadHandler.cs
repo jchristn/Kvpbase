@@ -13,11 +13,29 @@ namespace Kvpbase
             bool isContainer = Common.IsTrue(md.Http.RetrieveHeaderValue("_container"));
             if (isContainer)
             {
-                return HttpHeadContainer(md);
+                if (md.Http.RawUrlEntries.Count == 2)
+                {
+                    return HttpHeadContainer(md);
+                }
+                else
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "HttpHeadHandler container URL does not have two entries");
+                    return new HttpResponse(md.Http, false, 400, null, "application/json",
+                        new ErrorResponse(2, 400, "URL path must contain two entries, i.e. /[user]/[container]/.", null), true);
+                }
             }
             else
             {
-                return HttpHeadObject(md);
+                if (md.Http.RawUrlEntries.Count == 3)
+                {
+                    return HttpHeadObject(md);
+                }
+                else
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "HttpHeadHandler object URL does not have three entries");
+                    return new HttpResponse(md.Http, false, 400, null, "application/json",
+                        new ErrorResponse(2, 400, "URL path must contain three entries, i.e. /[user]/[container]/[key].", null), true);
+                }
             }
         }
     }
