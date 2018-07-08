@@ -130,7 +130,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="RegexMatcher, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RegexMatcher.1.0.0\lib\RegexMatcher.dll</HintPath>
@@ -172,8 +172,8 @@
     <Reference Include="Watson, Version=1.2.11.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Watson.1.2.11\lib\Watson.dll</HintPath>
     </Reference>
-    <Reference Include="WatsonMesh">
-      <HintPath>..\..\..\Watson\WatsonMesh\WatsonMesh\bin\Release\WatsonMesh.dll</HintPath>
+    <Reference Include="WatsonMesh, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WatsonMesh.1.0.7\lib\WatsonMesh.dll</HintPath>
     </Reference>
     <Reference Include="WatsonTcp, Version=1.1.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WatsonTcp.1.1.6\lib\WatsonTcp.dll</HintPath>
