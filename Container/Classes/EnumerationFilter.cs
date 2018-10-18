@@ -64,6 +64,11 @@ namespace Kvpbase
         /// </summary>
         public long? SizeMax { get; set; }
 
+        /// <summary>
+        /// If not null, match objects that contain each of the supplied tags.
+        /// </summary>
+        public List<string> Tags { get; set; }
+
         #endregion
 
         #region Private-Members

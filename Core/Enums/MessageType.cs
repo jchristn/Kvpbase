@@ -51,6 +51,8 @@ namespace Kvpbase
         [EnumMember(Value = "ReplicationObjectRename")]
         ReplicationObjectRename,
         [EnumMember(Value = "ReplicationObjectWriteRange")]
-        ReplicationObjectWriteRange
+        ReplicationObjectWriteRange,
+        [EnumMember(Value = "ReplicationObjectWriteTags")]
+        ReplicationObjectWriteTags
     }
 }

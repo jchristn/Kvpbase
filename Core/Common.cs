@@ -140,6 +140,28 @@ namespace Kvpbase
             }
         }
 
+        public static List<string> InputStringList(string question, bool allowEmpty)
+        {
+            List<string> ret = new List<string>();
+
+            while (true)
+            {
+                Console.Write(question);
+                
+                Console.Write(" ");
+
+                string userInput = Console.ReadLine();
+
+                if (String.IsNullOrEmpty(userInput))
+                {
+                    if (ret.Count < 1 && !allowEmpty) continue;
+                    return ret;
+                }
+
+                ret.Add(userInput);
+            }
+        }
+
         public static int InputInteger(string question, int defaultAnswer, bool positiveOnly, bool allowZero)
         {
             while (true)
@@ -1112,6 +1134,30 @@ namespace Kvpbase
             }
 
             return null;
+        }
+
+        public static string StringListToCsv(List<string> strings)
+        {
+            if (strings == null || strings.Count < 1) return null;
+
+            int added = 0;
+            string ret = "";
+
+            foreach (string curr in strings)
+            {
+                if (added == 0)
+                {
+                    ret += curr;
+                }
+                else
+                {
+                    ret += "," + curr;
+                }
+
+                added++;
+            }
+
+            return ret;
         }
 
         #endregion

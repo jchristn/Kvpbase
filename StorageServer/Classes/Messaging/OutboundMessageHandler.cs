@@ -388,6 +388,37 @@ namespace Kvpbase
             return success;
         }
 
+        public bool ObjectWriteTags(RequestMetadata md, ContainerSettings settings)
+        {
+            if (md == null) throw new ArgumentNullException(nameof(md));
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
+            if (settings.Replication == ReplicationMode.None)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ObjectWriteTags replication mode set to none");
+                return true;
+            }
+
+            List<Node> nodes = _Topology.GetReplicas();
+            if (nodes == null || nodes.Count < 1)
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "ObjectWriteTags no replicas found in topology");
+                return true;
+            }
+
+            bool success = true;
+
+            foreach (Node currNode in nodes)
+            {
+                if (!ObjectWriteTagsInternal(md, currNode, settings.Replication))
+                {
+                    success = false;
+                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectWriteTags unable to replicate to " + currNode.ToString());
+                }
+            }
+
+            return success;
+        }
+
         public bool ObjectRename(RequestMetadata md, ContainerSettings settings)
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
@@ -819,6 +850,47 @@ namespace Kvpbase
                     if (!_Tasks.Add(currTask))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "ObjectWriteRangeInternal unable to queue task to node ID " + node.NodeId);
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        private bool ObjectWriteTagsInternal(RequestMetadata md, Node node, ReplicationMode mode)
+        {
+            Message msgOut = new Message(_Topology.LocalNode, node, md.Sanitized(), MessageType.ReplicationObjectWriteTags, null, md.ToBytes());
+
+            bool success = false;
+            if (mode == ReplicationMode.Sync)
+            {
+                Message msgIn = _Topology.SendSyncMessage(msgOut);
+                if (msgIn == null)
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectWriteTagsInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                    return false;
+                }
+
+                _Logging.Log(LoggingModule.Severity.Info, "ObjectWriteTagsInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+
+                return Common.IsTrue(msgIn.Success);
+            }
+            else if (mode == ReplicationMode.Async)
+            {
+                success = _Topology.SendAsyncMessage(msgOut);
+                if (!success)
+                {
+                    _Logging.Log(LoggingModule.Severity.Info, "ObjectWriteTagsInternal unable to send message to node ID " + node.NodeId + ", queuing");
+
+                    TaskObject currTask = new TaskObject(TaskType.Message, node.NodeId, msgOut, null);
+                    if (!_Tasks.Add(currTask))
+                    {
+                        _Logging.Log(LoggingModule.Severity.Warn, "ObjectWriteTagsInternal unable to queue task to node ID " + node.NodeId);
                         return false;
                     }
                 }

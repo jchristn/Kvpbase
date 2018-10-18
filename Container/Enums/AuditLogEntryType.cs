@@ -26,6 +26,8 @@ namespace Kvpbase
         Write,
         [EnumMember(Value = "WriteRange")]
         WriteRange,
+        [EnumMember(Value = "WriteTags")]
+        WriteTags,
         [EnumMember(Value = "Delete")]
         Delete,
         [EnumMember(Value = "Rename")]

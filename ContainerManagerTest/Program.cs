@@ -35,6 +35,7 @@ namespace Kvpbase
                 byte[] bytes;
                 ErrorCode error;
                 List<string> cached;
+                List<string> tags;
 
                 string userInput = Common.InputString("ContainerManager [? for help] >", null, false);
 
@@ -59,6 +60,8 @@ namespace Kvpbase
                         containerName = Common.InputString("Container:", null, false);
                         key = Common.InputString("Key:", null, false);
                         data = Common.InputString("Data:", null, true);
+                        tags = Common.InputStringList("Tags:", true);
+
                         contentType = Common.InputString("Content Type:", "application/octet-stream", false);
 
                         if (!_Containers.GetContainer(userName, containerName, out container))
@@ -67,7 +70,7 @@ namespace Kvpbase
                             break;
                         }
 
-                        if (container.WriteObject(key, contentType, Encoding.UTF8.GetBytes(data), out error))
+                        if (container.WriteObject(key, contentType, Encoding.UTF8.GetBytes(data), tags, out error))
                         {
                             Console.WriteLine("Success");
                         }

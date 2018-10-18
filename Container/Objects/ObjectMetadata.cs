@@ -40,6 +40,11 @@ namespace Kvpbase
         public string Md5 { get; set; }
 
         /// <summary>
+        /// The comma-separated list of tags associated with an object.
+        /// </summary>
+        public string Tags { get; set; }
+
+        /// <summary>
         /// The creation timestamp, in UTC.
         /// </summary>
         public DateTime? CreatedUtc { get; set; }
@@ -95,6 +100,9 @@ namespace Kvpbase
             if (row["Md5"] != null && row["Md5"] != DBNull.Value)
                 Md5 = row["Md5"].ToString();
 
+            if (row["Tags"] != null && row["Tags"] != DBNull.Value)
+                Tags = row["Tags"].ToString();
+
             if (row["CreatedUtc"] != null && row["CreatedUtc"] != DBNull.Value)
                 CreatedUtc = Convert.ToDateTime(row["CreatedUtc"]);
 
@@ -111,7 +119,8 @@ namespace Kvpbase
         /// <param name="key">The object's key.</param>
         /// <param name="contentType">The content type of the object.</param>
         /// <param name="data">The object's data.</param>
-        public ObjectMetadata(string key, string contentType, byte[] data)
+        /// <param name="tags">Tags associated with the object.</param>
+        public ObjectMetadata(string key, string contentType, byte[] data, List<string> tags)
         {
             if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
             if (String.IsNullOrEmpty(contentType)) contentType = "application/octet-stream";
@@ -124,6 +133,15 @@ namespace Kvpbase
 
             if (data != null && data.Length > 0) Md5 = Common.Md5(data);
             else Md5 = null;
+
+            if (tags != null)
+            {
+                Tags = Common.StringListToCsv(tags);
+            }
+            else
+            {
+                Tags = null;
+            } 
 
             DateTime ts = DateTime.Now.ToUniversalTime();
             CreatedUtc = ts;

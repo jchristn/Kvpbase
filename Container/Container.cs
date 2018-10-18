@@ -266,9 +266,10 @@ namespace Kvpbase
         /// <param name="key">The object's key.</param>
         /// <param name="contentType">The content type of the object.</param>
         /// <param name="data">The object's data.</param>
+        /// <param name="tags">Tags associated with the object.</param>
         /// <param name="error">Error code.</param>
         /// <returns>True if successful.</returns>
-        public bool WriteObject(string key, string contentType, byte[] data, out ErrorCode error)
+        public bool WriteObject(string key, string contentType, byte[] data, List<string> tags, out ErrorCode error)
         {
             error = ErrorCode.None;
             bool cleanupRequired = false;
@@ -297,7 +298,7 @@ namespace Kvpbase
 
                 #region Insert-Metadata
 
-                ObjectMetadata md = new ObjectMetadata(key, contentType, data);
+                ObjectMetadata md = new ObjectMetadata(key, contentType, data, tags);
 
                 string ts = TimestampUtc(DateTime.Now);
                 long len = 0;
@@ -308,7 +309,7 @@ namespace Kvpbase
                     md5 = Common.Md5(data);
                 }
 
-                string insertQuery = ContainerQueries.WriteObject(key, contentType, len, md5, ts);
+                string insertQuery = ContainerQueries.WriteObject(key, contentType, len, md5, tags, ts);
                 DataTable insertResult = _Database.Query(insertQuery);
 
                 #endregion
@@ -557,6 +558,56 @@ namespace Kvpbase
                     }
                 }
             } 
+        }
+
+        /// <summary>
+        /// Rewrite the tags for a given object.
+        /// </summary>
+        /// <param name="key">The object's key.</param>
+        /// <param name="tags">The tags to apply to the object, in CSV string format.</param>
+        /// <param name="error">Error code.</param>
+        /// <returns>True if successful.</returns>
+        public bool WriteObjectTags(string key, string tags, out ErrorCode error)
+        {
+            error = ErrorCode.None;
+
+            if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
+            if (String.IsNullOrEmpty(tags)) throw new ArgumentNullException(nameof(tags));
+
+            if (!Exists(key))
+            {
+                error = ErrorCode.NotFound;
+                return false;
+            }
+
+            lock (_LockKey)
+            {
+                if (_LockedKeys.Contains(key.ToLower()))
+                {
+                    error = ErrorCode.Locked;
+                    return false;
+                }
+
+                _LockedKeys.Add(key.ToLower());
+            }
+
+            try
+            {
+                string query = ContainerQueries.SetTags(key, tags);
+                DataTable result = _Database.Query(query);
+                SetLastpdateUtc(key, TimestampUtc(DateTime.Now)); 
+                return true;
+            }
+            finally
+            {
+                if (!String.IsNullOrEmpty(key))
+                {
+                    lock (_LockKey)
+                    {
+                        if (_LockedKeys.Contains(key.ToLower())) _LockedKeys.Remove(key.ToLower());
+                    }
+                }
+            }
         }
 
         /// <summary>

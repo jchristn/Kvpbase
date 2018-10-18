@@ -119,6 +119,10 @@ namespace Kvpbase
                         _InboundMessageHandler.ObjectWriteRange(msg, out resp);
                         break;
 
+                    case MessageType.ReplicationObjectWriteTags:
+                        _InboundMessageHandler.ObjectWriteTags(msg, out resp);
+                        break;
+
                     case MessageType.ReplicationObjectDelete:
                         _InboundMessageHandler.ObjectDelete(msg, out resp);
                         break;
@@ -211,6 +215,10 @@ namespace Kvpbase
 
                     case MessageType.ReplicationObjectWriteRange:
                         _InboundMessageHandler.ObjectWriteRange(msg, out resp);
+                        break;
+
+                    case MessageType.ReplicationObjectWriteTags:
+                        _InboundMessageHandler.ObjectWriteTags(msg, out resp);
                         break;
 
                     case MessageType.ReplicationObjectDelete:

@@ -57,6 +57,7 @@ namespace Kvpbase
             filter.UpdatedBefore = md.Params.UpdatedBefore;
             filter.Md5 = md.Params.Md5;
             filter.ContentType = md.Params.ContentType;
+            filter.Tags = Common.CsvToStringList(md.Params.Tags);
             filter.SizeMin = md.Params.SizeMin;
             filter.SizeMax = md.Params.SizeMax;
 

@@ -219,11 +219,70 @@ namespace Kvpbase
 
                 #endregion
             }
+            else if (!String.IsNullOrEmpty(md.Params.Tags))
+            {
+                #region Tags
+
+                #region Retrieve-Original-Object-Metadata
+
+                ObjectMetadata originalMetadata = null;
+                if (!currContainer.ReadObjectMetadata(md.Params.ObjectKey, out originalMetadata))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to read original metadata for tag rewrite for object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                    return new HttpResponse(md.Http, false, 404, null, "application/json",
+                        new ErrorResponse(5, 404, "Object not found.", null), true);
+                }
+
+                #endregion
+
+                #region Update-Tags
+
+                try
+                {
+                    if (!currContainer.WriteObjectTags(md.Params.ObjectKey, md.Params.Tags, out error))
+                    {
+                        _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to write tags to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                        cleanupRequired = true;
+
+                        int statusCode = 0;
+                        int id = 0;
+                        Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+
+                        return new HttpResponse(md.Http, false, statusCode, null, "application/json",
+                            new ErrorResponse(id, statusCode, "Unable to write tags to object.", error), true);
+                    }
+                    else
+                    {
+                        if (!_OutboundMessageHandler.ObjectWriteTags(md, currContainer.Settings))
+                        {
+                            _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to replicate operation to one or more nodes");
+                            cleanupRequired = true;
+
+                            return new HttpResponse(md.Http, false, 500, null, "application/json",
+                                new ErrorResponse(10, 500, null, null), true);
+                        }
+
+                        return new HttpResponse(md.Http, true, 200, null, null, null, true);
+                    }
+                }
+                finally
+                {
+                    if (cleanupRequired)
+                    {
+                        _ObjectHandler.WriteTags(md, currContainer, md.Params.ObjectKey, originalMetadata.Tags, out error);
+                        _OutboundMessageHandler.ObjectWriteTags(md, currContainer.Settings);
+                    }
+                }
+
+                #endregion
+
+                #endregion
+            }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject request query does not contain _index or _rename"); 
+                _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject request query does not contain _index, _rename, or _tags"); 
                 return new HttpResponse(md.Http, false, 400, null, "application/json",
-                    new ErrorResponse(2, 400, "Querystring must contain values for either '_index' or '_rename'.", null), true);
+                    new ErrorResponse(2, 400, "Querystring must contain values for '_index', '_rename', or '_tags'.", null), true);
             }
 
             #endregion 

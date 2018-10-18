@@ -540,6 +540,11 @@ namespace Kvpbase
                     md.Params.ContentType = req.QuerystringEntries["_contenttype"];
                 }
 
+                if (req.QuerystringEntries.ContainsKey("_tags"))
+                {
+                    md.Params.Tags = req.QuerystringEntries["_tags"];
+                }
+
                 long testLong = 0;
                 if (req.QuerystringEntries.ContainsKey("_sizemin"))
                 {

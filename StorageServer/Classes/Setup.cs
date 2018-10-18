@@ -372,9 +372,9 @@ namespace Kvpbase
             containerManager.GetContainer("default", "default", out defaultContainer);
 
             ErrorCode error;
-            defaultContainer.WriteObject("hello.html", "text/html", Encoding.UTF8.GetBytes(htmlFile), out error);
-            defaultContainer.WriteObject("hello.txt", "text/plain", Encoding.UTF8.GetBytes(textFile), out error);
-            defaultContainer.WriteObject("hello.json", "application/json", Encoding.UTF8.GetBytes(jsonFile), out error);
+            defaultContainer.WriteObject("hello.html", "text/html", Encoding.UTF8.GetBytes(htmlFile), null, out error);
+            defaultContainer.WriteObject("hello.txt", "text/plain", Encoding.UTF8.GetBytes(textFile), null, out error);
+            defaultContainer.WriteObject("hello.json", "application/json", Encoding.UTF8.GetBytes(jsonFile), null, out error);
 
             #endregion
              

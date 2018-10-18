@@ -94,6 +94,7 @@ namespace Kvpbase
             md.Params.LastAccessAfter = Params.LastAccessAfter;
             md.Params.Md5 = Params.Md5;
             md.Params.ContentType = Params.ContentType;
+            md.Params.Tags = Params.Tags;
             md.Params.SizeMin = Params.SizeMin;
             md.Params.SizeMax = Params.SizeMax;
             md.Params.OrderBy = Params.OrderBy;
@@ -251,6 +252,11 @@ namespace Kvpbase
             public string ContentType { get; set; }
 
             /// <summary>
+            /// The tags associated with an object.
+            /// </summary>
+            public string Tags { get; set; }
+
+            /// <summary>
             /// For queries, the minimum size allowed.
             /// </summary>
             public long? SizeMin { get; set; }
@@ -291,6 +297,7 @@ namespace Kvpbase
                 LastAccessAfter = null;
                 Md5 = null;
                 ContentType = null;
+                Tags = null;
                 SizeMin = null;
                 SizeMax = null;
                 OrderBy = null;

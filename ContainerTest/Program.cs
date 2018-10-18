@@ -28,6 +28,7 @@ namespace Kvpbase
                 int count;
                 byte[] bytes;
                 ErrorCode error;
+                List<string> tags;
 
                 string userInput = Common.InputString("container [? for help] >", null, false);
 
@@ -51,8 +52,9 @@ namespace Kvpbase
                         key = Common.InputString("Key:", null, false);
                         data = Common.InputString("Data:", null, true);
                         contentType = Common.InputString("Content Type:", "application/octet-stream", false);
+                        tags = Common.InputStringList("Tags:", true);
 
-                        if (_Container.WriteObject(key, contentType, Encoding.UTF8.GetBytes(data), out error))
+                        if (_Container.WriteObject(key, contentType, Encoding.UTF8.GetBytes(data), tags, out error))
                         {
                             Console.WriteLine("Success");
                         }

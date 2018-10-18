@@ -24,6 +24,7 @@ namespace Kvpbase
                 "  ContentType       VARCHAR(128), " +
                 "  ContentLength     INTEGER, " +
                 "  Md5               VARCHAR(32), " +
+                "  Tags              VARCHAR(256), " +
                 "  CreatedUtc        VARCHAR(32), " +
                 "  LastUpdateUtc     VARCHAR(32), " +
                 "  LastAccessUtc     VARCHAR(32) " +
@@ -77,6 +78,14 @@ namespace Kvpbase
             return query;
         }
 
+        public static string SetTags(string key, string tags)
+        {
+            string query =
+                "UPDATE Objects SET Tags = '" + Sanitize(tags) + "' " +
+                "WHERE Key = '" + Sanitize(key) + "'";
+            return query;
+        }
+
         public static string GetMd5(string key)
         {
             string query =
@@ -100,17 +109,23 @@ namespace Kvpbase
                 "SELECT * FROM Objects WHERE key = '" + Sanitize(key) + "'";
             return query;
         }
-        
-        public static string WriteObject(string key, string contentType, long contentLength, string md5, string ts)
+
+        public static string WriteObject(string key, string contentType, long contentLength, string md5, List<string> tags, string ts)
+        {
+            return WriteObject(key, contentType, contentLength, md5, Common.StringListToCsv(tags), ts);
+        }
+
+        public static string WriteObject(string key, string contentType, long contentLength, string md5, string tags, string ts)
         {
             string query =
-                "INSERT INTO Objects (Key, ContentType, ContentLength, Md5, CreatedUtc, LastUpdateUtc, LastAccessUtc) " +
+                "INSERT INTO Objects (Key, ContentType, ContentLength, Md5, Tags, CreatedUtc, LastUpdateUtc, LastAccessUtc) " +
                 "VALUES " +
                 "(" +
                 "  '" + Sanitize(key) + "', " +
                 "  '" + Sanitize(contentType) + "', " +
                 "  '" + contentLength + "', " +
                 "  '" + Sanitize(md5) + "', " +
+                "  '" + Sanitize(tags) + "', " +
                 "  '" + Sanitize(ts) + "', " +
                 "  '" + Sanitize(ts) + "', " +
                 "  '" + Sanitize(ts) + "' " +
@@ -121,13 +136,14 @@ namespace Kvpbase
         public static string WriteObject(ObjectMetadata md)
         {
             string query =
-                "INSERT INTO Objects (Key, ContentType, ContentLength, Md5, CreatedUtc, LastUpdateUtc, LastAccessUtc) " +
+                "INSERT INTO Objects (Key, ContentType, ContentLength, Md5, Tags, CreatedUtc, LastUpdateUtc, LastAccessUtc) " +
                 "VALUES " +
                 "(" +
                 "  '" + Sanitize(md.Key) + "', " +
                 "  '" + Sanitize(md.ContentType) + "', " +
                 "  '" + md.ContentLength + "', " +
                 "  '" + Sanitize(md.Md5) + "', " +
+                "  '" + Sanitize(md.Tags) + "', " +
                 "  '" + TimestampUtc(md.CreatedUtc) + "', " +
                 "  '" + TimestampUtc(md.LastUpdateUtc) + "', " +
                 "  '" + TimestampUtc(md.LastAccessUtc) + "' " +
@@ -223,6 +239,14 @@ namespace Kvpbase
                 if (filter.SizeMax != null)
                 {
                     query += "AND ContentLength <= '" + filter.SizeMax + "' ";
+                } 
+
+                if (filter.Tags != null && filter.Tags.Count > 0)
+                {
+                    foreach (string currTag in filter.Tags)
+                    {
+                        query += "AND Tags LIKE '%" + currTag + "%' ";
+                    }
                 }
             }
 

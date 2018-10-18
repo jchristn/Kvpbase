@@ -67,6 +67,22 @@ namespace Kvpbase
 
                 #endregion
             }
+            else if (!String.IsNullOrEmpty(md.Params.Tags))
+            {
+                #region Tags
+                  
+                if (!currContainer.WriteObjectTags(md.Params.ObjectKey, md.Params.Tags, out error))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to write tags to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+                 
+                #endregion
+            }
             else
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "TcpPutObject request query does not contain index start or rename"); 

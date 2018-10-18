@@ -200,6 +200,14 @@ namespace Kvpbase
             msgOut = new Message(msgIn.To, msgIn.From, msgIn.Metadata, msgIn.Type, success, null); 
         }
 
+        public void ObjectWriteTags(Message msgIn, out Message msgOut)
+        {
+            if (msgIn == null) throw new ArgumentNullException(nameof(msgIn));
+            RequestMetadata md = Common.DeserializeJson<RequestMetadata>(msgIn.Data);
+            bool success = StorageServer.TcpPutObject(md);
+            msgOut = new Message(msgIn.To, msgIn.From, msgIn.Metadata, msgIn.Type, success, null);
+        }
+
         #endregion
          
         #region Private-Methods

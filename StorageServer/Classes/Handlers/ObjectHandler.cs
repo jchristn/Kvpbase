@@ -165,7 +165,7 @@ namespace Kvpbase
             Container container,
             string objectName,
             string contentType,
-            byte[] data, 
+            byte[] data,  
             out ErrorCode error)
         {
             error = ErrorCode.None;
@@ -178,7 +178,7 @@ namespace Kvpbase
                 return false;
             }
 
-            if (!container.WriteObject(objectName, md.Http.ContentType, md.Http.Data, out error))
+            if (!container.WriteObject(objectName, md.Http.ContentType, md.Http.Data, Common.CsvToStringList(md.Params.Tags), out error))
             {
                 _UrlLockMgr.RemoveWriteLock(md);
                 return false;
@@ -268,6 +268,43 @@ namespace Kvpbase
                 container.AddAuditLogEntry(objectName, AuditLogEntryType.WriteRange, logData, true);
                 return true;
             } 
+        }
+
+        public bool WriteTags(
+            RequestMetadata md,
+            Container container,
+            string objectName,
+            string tags,
+            out ErrorCode error)
+        {
+            error = ErrorCode.None;
+            if (md == null) throw new ArgumentNullException(nameof(md));
+            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
+            if (String.IsNullOrEmpty(tags)) throw new ArgumentNullException(nameof(tags));
+
+            if (!_UrlLockMgr.AddWriteLock(md))
+            {
+                return false;
+            }
+
+            if (!container.WriteObjectTags(objectName, tags, out error))
+            {
+                _UrlLockMgr.RemoveWriteLock(md);
+                return false;
+            }
+            else
+            {
+                _UrlLockMgr.RemoveWriteLock(md);
+                int dataLen = 0;
+                if (md.Http.Data != null) dataLen = md.Http.Data.Length;
+                string logData =
+                  "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
+                  "User: " + md.Params.UserGuid + " " +
+                  "Tags: " + tags;
+                container.AddAuditLogEntry(objectName, AuditLogEntryType.WriteTags, logData, true);
+                return true;
+            }
         }
 
         #endregion
