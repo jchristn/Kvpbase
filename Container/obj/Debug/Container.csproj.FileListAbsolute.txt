@@ -81,7 +81,6 @@ D:\code\kvpbase\storageserver-3.0\Container\bin\Debug\Newtonsoft.Json.xml
 D:\code\kvpbase\storageserver-3.0\Container\bin\Debug\SqliteWrapper.pdb
 D:\code\kvpbase\storageserver-3.0\Container\bin\Debug\Watson.pdb
 D:\code\kvpbase\storageserver-3.0\Container\bin\Debug\RegexMatcher.pdb
-D:\code\kvpbase\storageserver-3.0\Container\obj\Debug\Container.csprojResolveAssemblyReference.cache
 D:\code\kvpbase\storageserver-3.0\Container\obj\Debug\Container.csproj.CoreCompileInputs.cache
 D:\code\kvpbase\storageserver-3.0\Container\obj\Debug\Container.csproj.CopyComplete
 D:\code\kvpbase\storageserver-3.0\Container\obj\Debug\Container.dll
@@ -118,3 +117,4 @@ Z:\Dropbox\Kvpbase\storageserver-3.0\Container\bin\Debug\SqliteWrapper.pdb
 Z:\Dropbox\Kvpbase\storageserver-3.0\Container\bin\Debug\Watson.pdb
 Z:\Dropbox\Kvpbase\storageserver-3.0\Container\bin\Debug\RegexMatcher.pdb
 Z:\Dropbox\Kvpbase\storageserver-3.0\Container\obj\Debug\Container.csproj.CopyComplete
+D:\code\kvpbase\storageserver-3.0\Container\obj\Debug\Container.csprojAssemblyReference.cache

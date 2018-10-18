@@ -54,7 +54,6 @@ D:\code\kvpbase\storageserver-2.0\StorageServer\obj\Release\StorageServer.pdb
 D:\code\kvpbase\storageserver-2.0\StorageServer\bin\Release\StorageServer.exe.config
 D:\code\kvpbase\storageserver-2.0\StorageServer\bin\Release\RegexMatcher.dll
 D:\code\kvpbase\storageserver-2.0\StorageServer\bin\Release\RegexMatcher.pdb
-D:\Code\KVPbase\storageserver-3.0\StorageServer\obj\Release\StorageServer.csprojResolveAssemblyReference.cache
 D:\Code\KVPbase\storageserver-3.0\StorageServer\obj\Release\StorageServer.csproj.CoreCompileInputs.cache
 D:\Code\KVPbase\storageserver-3.0\StorageServer\bin\Release\sqlite3.dll
 D:\Code\KVPbase\storageserver-3.0\StorageServer\bin\Release\README.txt
@@ -95,3 +94,4 @@ D:\Code\KVPbase\storageserver-3.0\StorageServer\bin\Release\CSharpTest.Net.Colle
 D:\Code\KVPbase\storageserver-3.0\StorageServer\obj\Release\StorageServer.csproj.CopyComplete
 D:\Code\KVPbase\storageserver-3.0\StorageServer\obj\Release\StorageServer.exe
 D:\Code\KVPbase\storageserver-3.0\StorageServer\obj\Release\StorageServer.pdb
+D:\code\kvpbase\storageserver-3.0\StorageServer\obj\Release\StorageServer.csprojAssemblyReference.cache

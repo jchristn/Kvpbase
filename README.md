@@ -82,26 +82,27 @@ The response is simply a 200/OK.
 
 Please read our documentation on Github [https://github.com/kvpbase/storage-server/wiki/Getting-Started] and our API documentation [http://www.kvpbase.com/docs].  Note that documentation updates to 3.0.0 are in progress.
 
-## New in v3.0.0
+## New in v3.1.0
 
-- Significant performance improvements
-- Major refactor in preparation of new features, better code manageability
-- Container class now used for metadata management, eliminating dependency on filesystem for enumeration and encapsulation for extended metadata
-- Support for larger number of objects per container
-- Better support for public containers (read, write)
-- Streamlined replication and messaging based on persistent TCP sockets amongst nodes (instead of using HTTP APIs)
-- Container resync support (useful when replacing failed node or populating container contents on another node)
+- Support for object tags (on create/POST, on edit/PUT, and for enumeration)
 
-## Compatibility with 2.x.x
+## Compatibility 
 
-- 3.0.0 is fundamentally incompatible with 2.x.x (hence the major version change)
+### With 3.0.x
+
+- 3.1.0 is compatible with 3.0.x with minor changes to each container SQLite database.  Simply add the 'Tags' field to the 'Objects' table, with field type ```VARCHAR(256)```.
+
+### With 2.x.x
+
+- 3.x.x is fundamentally incompatible with 2.x.x (hence the major version change)
 - URL structure explicitly fixed in format with 3.x.x (i.e. /[userguid]/[containername]/[objectkey])
 - Bunkering temporarily removed (this will be reintroduced)
-- Branch release-2.1 has been preserved for those that need it: https://github.com/kvpbase/storage-server/tree/release-2.1
+- Branch ```release-2.1``` has been preserved for those that need it: https://github.com/kvpbase/storage-server/tree/release-2.1
 
 ## Use Cases
 
 Core use cases for Kvpbase Storage Server:
+
 - Object storage - create, read, update, delete, search objects using HTTP
 - Container storage - create, read, update, delete, search containers using HTTP
 - Primary storage for objects - range read, range write, and append support
@@ -112,6 +113,7 @@ Core use cases for Kvpbase Storage Server:
 ## SDKs and Sample Scripts
 
 Numerous SDKs and sample scripts are already available for Kvpbase Storage Server: https://github.com/kvpbase/.  Need an SDK for a different language?  Let me know!  Currently, SDKs are available in:
+
 - C# - https://github.com/kvpbase/sdk-csharp
 - Javascript - https://github.com/kvpbase/sdk-js
 - Java - https://github.com/kvpbase/sdk-java
@@ -122,7 +124,17 @@ Numerous SDKs and sample scripts are already available for Kvpbase Storage Serve
 
 Notes from previous versions (starting with v2.0.1) will be moved here.
 
-v.2.1.x
+v3.x
+
+- Significant performance improvements
+- Major refactor in preparation of new features, better code manageability
+- Container class now used for metadata management, eliminating dependency on filesystem for enumeration and encapsulation for extended metadata
+- Support for larger number of objects per container
+- Better support for public containers (read, write)
+- Streamlined replication and messaging based on persistent TCP sockets amongst nodes (instead of using HTTP APIs)
+- Container resync support (useful when replacing failed node or populating container contents on another node)
+
+v2.1.x
 
 - Version 2.1 can be found in the release-2.1 branch: https://github.com/kvpbase/storage-server/tree/release-2.1
 - Performance improvements

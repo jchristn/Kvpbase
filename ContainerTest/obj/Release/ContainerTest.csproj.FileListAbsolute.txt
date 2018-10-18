@@ -24,8 +24,8 @@ D:\Code\KVPbase\storageserver-3.0\ContainerTest\bin\Release\SqliteWrapper.pdb
 D:\Code\KVPbase\storageserver-3.0\ContainerTest\bin\Release\Watson.pdb
 D:\Code\KVPbase\storageserver-3.0\ContainerTest\bin\Release\CSharpTest.Net.Collections.xml
 D:\Code\KVPbase\storageserver-3.0\ContainerTest\bin\Release\RegexMatcher.pdb
-D:\Code\KVPbase\storageserver-3.0\ContainerTest\obj\Release\ContainerTest.csprojResolveAssemblyReference.cache
 D:\Code\KVPbase\storageserver-3.0\ContainerTest\obj\Release\ContainerTest.csproj.CoreCompileInputs.cache
 D:\Code\KVPbase\storageserver-3.0\ContainerTest\obj\Release\ContainerTest.csproj.CopyComplete
 D:\Code\KVPbase\storageserver-3.0\ContainerTest\obj\Release\ContainerTest.exe
 D:\Code\KVPbase\storageserver-3.0\ContainerTest\obj\Release\ContainerTest.pdb
+D:\code\kvpbase\storageserver-3.0\ContainerTest\obj\Release\ContainerTest.csprojAssemblyReference.cache

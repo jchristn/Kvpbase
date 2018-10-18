@@ -25,8 +25,8 @@ D:\Code\KVPbase\storageserver-3.0\Container\bin\Release\Newtonsoft.Json.xml
 D:\Code\KVPbase\storageserver-3.0\Container\bin\Release\SqliteWrapper.pdb
 D:\Code\KVPbase\storageserver-3.0\Container\bin\Release\Watson.pdb
 D:\Code\KVPbase\storageserver-3.0\Container\bin\Release\RegexMatcher.pdb
-D:\Code\KVPbase\storageserver-3.0\Container\obj\Release\Container.csprojResolveAssemblyReference.cache
 D:\Code\KVPbase\storageserver-3.0\Container\obj\Release\Container.csproj.CoreCompileInputs.cache
 D:\Code\KVPbase\storageserver-3.0\Container\obj\Release\Container.csproj.CopyComplete
 D:\Code\KVPbase\storageserver-3.0\Container\obj\Release\Container.dll
 D:\Code\KVPbase\storageserver-3.0\Container\obj\Release\Container.pdb
+D:\code\kvpbase\storageserver-3.0\Container\obj\Release\Container.csprojAssemblyReference.cache

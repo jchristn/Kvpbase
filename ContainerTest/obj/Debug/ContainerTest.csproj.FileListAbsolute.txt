@@ -78,7 +78,6 @@ D:\code\kvpbase\storageserver-3.0\ContainerTest\bin\Debug\SqliteWrapper.pdb
 D:\code\kvpbase\storageserver-3.0\ContainerTest\bin\Debug\Watson.pdb
 D:\code\kvpbase\storageserver-3.0\ContainerTest\bin\Debug\CSharpTest.Net.Collections.xml
 D:\code\kvpbase\storageserver-3.0\ContainerTest\bin\Debug\RegexMatcher.pdb
-D:\code\kvpbase\storageserver-3.0\ContainerTest\obj\Debug\ContainerTest.csprojResolveAssemblyReference.cache
 D:\code\kvpbase\storageserver-3.0\ContainerTest\obj\Debug\ContainerTest.csproj.CoreCompileInputs.cache
 D:\code\kvpbase\storageserver-3.0\ContainerTest\obj\Debug\ContainerTest.csproj.CopyComplete
 D:\code\kvpbase\storageserver-3.0\ContainerTest\obj\Debug\ContainerTest.exe
@@ -114,3 +113,4 @@ Z:\Dropbox\Kvpbase\storageserver-3.0\ContainerTest\obj\Debug\ContainerTest.cspro
 Z:\Dropbox\Kvpbase\storageserver-3.0\ContainerTest\obj\Debug\ContainerTest.csproj.CopyComplete
 Z:\Dropbox\Kvpbase\storageserver-3.0\ContainerTest\obj\Debug\ContainerTest.exe
 Z:\Dropbox\Kvpbase\storageserver-3.0\ContainerTest\obj\Debug\ContainerTest.pdb
+D:\code\kvpbase\storageserver-3.0\ContainerTest\obj\Debug\ContainerTest.csprojAssemblyReference.cache

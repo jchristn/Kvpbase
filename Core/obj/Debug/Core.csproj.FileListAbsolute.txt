@@ -23,7 +23,6 @@ D:\code\kvpbase\storageserver-3.0\Core\bin\Debug\Watson.dll
 D:\code\kvpbase\storageserver-3.0\Core\bin\Debug\Newtonsoft.Json.xml
 D:\code\kvpbase\storageserver-3.0\Core\bin\Debug\RegexMatcher.pdb
 D:\code\kvpbase\storageserver-3.0\Core\bin\Debug\Watson.pdb
-D:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
 D:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.csproj.CoreCompileInputs.cache
 D:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.csproj.CopyComplete
 D:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.dll
@@ -43,3 +42,4 @@ Z:\Dropbox\Kvpbase\storageserver-3.0\Core\obj\Debug\Core.csproj.CoreCompileInput
 Z:\Dropbox\Kvpbase\storageserver-3.0\Core\obj\Debug\Core.csproj.CopyComplete
 Z:\Dropbox\Kvpbase\storageserver-3.0\Core\obj\Debug\Core.dll
 Z:\Dropbox\Kvpbase\storageserver-3.0\Core\obj\Debug\Core.pdb
+D:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.csprojAssemblyReference.cache

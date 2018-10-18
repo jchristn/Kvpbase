@@ -97,7 +97,6 @@ C:\Code\StorageServer\StorageServer\obj\Debug\StorageServer.csproj.CopyComplete
 C:\Code\StorageServer\StorageServer\obj\Debug\StorageServer.exe
 C:\Code\StorageServer\StorageServer\obj\Debug\StorageServer.pdb
 C:\Code\StorageServer\StorageServer\bin\Debug\Core.dll.config
-D:\code\kvpbase\storageserver-3.0\StorageServer\obj\Debug\StorageServer.csprojResolveAssemblyReference.cache
 D:\code\kvpbase\storageserver-3.0\StorageServer\obj\Debug\StorageServer.csproj.CoreCompileInputs.cache
 D:\code\KVPbase\storageserver-3.0\StorageServer\bin\Debug\sqlite3.dll
 D:\code\KVPbase\storageserver-3.0\StorageServer\bin\Debug\README.txt
@@ -179,3 +178,4 @@ Z:\Dropbox\Kvpbase\storageserver-3.0\StorageServer\obj\Debug\StorageServer.cspro
 Z:\Dropbox\Kvpbase\storageserver-3.0\StorageServer\obj\Debug\StorageServer.csproj.CopyComplete
 Z:\Dropbox\Kvpbase\storageserver-3.0\StorageServer\obj\Debug\StorageServer.exe
 Z:\Dropbox\Kvpbase\storageserver-3.0\StorageServer\obj\Debug\StorageServer.pdb
+D:\code\kvpbase\storageserver-3.0\StorageServer\obj\Debug\StorageServer.csprojAssemblyReference.cache
