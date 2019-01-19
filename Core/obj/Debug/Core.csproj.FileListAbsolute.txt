@@ -53,7 +53,6 @@ C:\code\kvpbase\storageserver-3.0\Core\bin\Debug\Watson.dll
 C:\code\kvpbase\storageserver-3.0\Core\bin\Debug\Newtonsoft.Json.xml
 C:\code\kvpbase\storageserver-3.0\Core\bin\Debug\RegexMatcher.pdb
 C:\code\kvpbase\storageserver-3.0\Core\bin\Debug\Watson.pdb
-C:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.csprojAssemblyReference.cache
 C:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.csproj.CoreCompileInputs.cache
 C:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.csproj.CopyComplete
 C:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.dll

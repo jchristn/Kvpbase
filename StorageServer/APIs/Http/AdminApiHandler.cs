@@ -23,7 +23,8 @@ namespace Kvpbase
 
             if (md.Params.RequestMetadata)
             {
-                return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(md, true), true);
+                RequestMetadata respMetadata = md.Sanitized();
+                return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(respMetadata, true), true);
             }
 
             #endregion
