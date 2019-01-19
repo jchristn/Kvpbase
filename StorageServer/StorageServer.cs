@@ -396,6 +396,11 @@ namespace Kvpbase
                     md.Params.Metadata = Common.IsTrue(req.QuerystringEntries["_metadata"]);
                 }
 
+                if (req.QuerystringEntries.ContainsKey("_reqmetadata"))
+                {
+                    md.Params.RequestMetadata = Common.IsTrue(req.QuerystringEntries["_reqmetadata"]);
+                }
+
                 if (req.QuerystringEntries.ContainsKey("_auditkey"))
                 {
                     md.Params.AuditKey = req.QuerystringEntries["_auditkey"];

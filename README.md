@@ -82,9 +82,9 @@ The response is simply a 200/OK.
 
 Please read our documentation on Github [https://github.com/kvpbase/storage-server/wiki/Getting-Started] and our API documentation [http://www.kvpbase.com/docs].  Note that documentation updates to 3.0.0 are in progress.
 
-## New in v3.1.0
+## New in v3.1.1
 
-- Support for object tags (on create/POST, on edit/PUT, and for enumeration)
+- Bugfix for retrieving request metadata vs container/object metadata (new querystring parameter)
 
 ## Compatibility 
 
@@ -126,6 +126,7 @@ Notes from previous versions (starting with v2.0.1) will be moved here.
 
 v3.x
 
+- Support for object tags (on create/POST, on edit/PUT, and for enumeration)
 - Significant performance improvements
 - Major refactor in preparation of new features, better code manageability
 - Container class now used for metadata management, eliminating dependency on filesystem for enumeration and encapsulation for extended metadata

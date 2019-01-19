@@ -212,6 +212,11 @@ namespace Kvpbase
             public bool Metadata { get; set; }
 
             /// <summary>
+            /// Indicates if the request is attempting to retrieve HTTP and internal metadata.
+            /// </summary>
+            public bool RequestMetadata { get; set; }
+
+            /// <summary>
             /// For queries, the time before which the resource must have been created.
             /// </summary>
             public DateTime? CreatedBefore { get; set; }
@@ -289,6 +294,7 @@ namespace Kvpbase
                 Stats = false;
                 AuditLog = false;
                 Metadata = false;
+                RequestMetadata = false;
                 CreatedBefore = null;
                 CreatedAfter = null;
                 UpdatedBefore = null;

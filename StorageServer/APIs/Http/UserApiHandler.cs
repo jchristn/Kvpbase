@@ -11,7 +11,7 @@ namespace Kvpbase
     {
         static HttpResponse UserApiHandler(RequestMetadata md)
         {  
-            if (Common.IsTrue(md.Http.RetrieveHeaderValue("_metadata")))
+            if (md.Params.RequestMetadata)
             {
                 RequestMetadata respMetadata = md.Sanitized();
                 return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(respMetadata, true), true);

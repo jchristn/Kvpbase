@@ -21,7 +21,7 @@ namespace Kvpbase
 
             #region Metadata
 
-            if (Common.IsTrue(md.Http.RetrieveHeaderValue("_metadata")))
+            if (md.Params.RequestMetadata)
             {
                 return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(md, true), true);
             }
