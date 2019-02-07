@@ -119,11 +119,11 @@ namespace Kvpbase
 
             if (!_ObjectHandler.Read(md, currContainer, md.Params.ObjectKey, index, count, out contentType, out data, out error))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpGetObject unable to find object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-
                 int statusCode = 0;
                 int id = 0;
                 Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+
+                _Logging.Log(LoggingModule.Severity.Warn, "HttpGetObject unable to read object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
 
                 return new HttpResponse(md.Http, false, statusCode, null, "application/json",
                     new ErrorResponse(id, statusCode, null, error), true);

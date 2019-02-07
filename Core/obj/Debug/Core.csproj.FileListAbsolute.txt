@@ -57,3 +57,4 @@ C:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.csproj.CoreCompileInputs.c
 C:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.csproj.CopyComplete
 C:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.dll
 C:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.pdb
+C:\code\kvpbase\storageserver-3.0\Core\obj\Debug\Core.csprojAssemblyReference.cache

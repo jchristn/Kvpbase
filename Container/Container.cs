@@ -762,7 +762,7 @@ namespace Kvpbase
         /// <param name="data">The object's data.</param>
         /// <param name="error">Error code.</param>
         /// <returns>True if successful.</returns>
-        public bool ReadRangeObject(string key, long startRange, int numBytes, out string contentType, out byte[] data, out ErrorCode error)
+        public bool ReadRangeObject(string key, long startRange, long numBytes, out string contentType, out byte[] data, out ErrorCode error)
         {
             if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
             data = null;
@@ -795,10 +795,15 @@ namespace Kvpbase
                     contentType = md.ContentType;
                 }
 
-                if (startRange + numBytes > md.ContentLength)
+                if (startRange >= md.ContentLength)
                 {
                     error = ErrorCode.OutOfRange;
                     return false;
+                }
+
+                if (startRange + numBytes > md.ContentLength)
+                {
+                    numBytes = Convert.ToInt64(md.ContentLength) - startRange;
                 }
 
                 bool success = false;
@@ -806,7 +811,7 @@ namespace Kvpbase
                 switch (Settings.HandlerType)
                 {
                     case ObjectHandlerType.Disk:
-                        success = _DiskHandler.ReadRange(Settings.ObjectsDirectory + key, startRange, numBytes, out data, out error);
+                        success = _DiskHandler.ReadRange(Settings.ObjectsDirectory + key, startRange, (int)numBytes, out data, out error);
                         break;
                     default:
                         throw new Exception("Unknown disk handler type in container settings");
