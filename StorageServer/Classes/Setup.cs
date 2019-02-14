@@ -83,14 +83,8 @@ namespace Kvpbase
 
             #region Initial-Settings
 
-            currSettings.ProductName = "Kvpbase";
-
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            currSettings.ProductVersion = fvi.FileVersion; 
-             
-            currSettings.HomepageUrl = "http://www.kvpbase.com";
-            currSettings.SupportEmail = "support@maraudersoftware.com";
+            currSettings.ProductName = "Kvpbase"; 
+            currSettings.HomepageUrl = "http://www.kvpbase.com"; 
 
             int platform = (int)Environment.OSVersion.Platform;
             if ((platform == 4) || (platform == 6) || (platform == 128))

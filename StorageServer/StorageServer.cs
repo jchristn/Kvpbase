@@ -195,6 +195,10 @@ namespace Kvpbase
         {
             // http://patorjk.com/software/taag/#p=display&f=Small&t=kvpbase
 
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
+
             string msg =
                 Environment.NewLine +
                 @"   _             _                    " + Environment.NewLine +
@@ -204,7 +208,7 @@ namespace Kvpbase
                 @"           |_|                        " + Environment.NewLine +
                 @"                                      " + Environment.NewLine +
                 Environment.NewLine +
-                "  " + _Settings.ProductName + " v" + _Settings.ProductVersion + Environment.NewLine +
+                "  " + _Settings.ProductName + " v" + version + Environment.NewLine +
                 Environment.NewLine;
 
             Console.WriteLine(msg);

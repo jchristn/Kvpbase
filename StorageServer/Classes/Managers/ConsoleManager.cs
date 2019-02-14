@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -145,7 +146,10 @@ namespace Kvpbase
                         break;
                          
                     case "version":
-                        Console.WriteLine(_Settings.ProductVersion);
+                        System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+                        string version = fvi.FileVersion;
+                        Console.WriteLine(version);
                         break;
 
                     case "debug_on":

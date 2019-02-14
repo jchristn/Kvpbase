@@ -9,11 +9,9 @@ namespace Kvpbase
     {
         #region Public-Members-and-Nested-Classes
 
-        public string ProductName;
-        public string ProductVersion; 
+        public string ProductName; 
         public string Environment; 
-        public string HomepageUrl;
-        public string SupportEmail;
+        public string HomepageUrl; 
         public bool EnableConsole;
 
         public SettingsFiles Files;
