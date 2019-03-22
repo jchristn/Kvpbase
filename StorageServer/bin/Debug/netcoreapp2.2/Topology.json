@@ -1,0 +1,24 @@
+{
+  "NodeId": 1,
+  "Nodes": [
+    {
+      "NodeId": 1,
+      "Name": "localhost",
+      "Http": {
+        "Port": 8000,
+        "DnsHostname": "localhost",
+        "Ssl": false
+      },
+      "Tcp": {
+        "IpAddress": "127.0.0.1",
+        "Port": 9000,
+        "Ssl": false,
+        "Timeout": {
+          "MinTimeoutSec": 10,
+          "MaxTimeoutSec": 30,
+          "ExpectedXferRateBytesPerSec": 10485760
+        }
+      }
+    }
+  ]
+}

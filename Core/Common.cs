@@ -10,10 +10,6 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
-using Mono.Posix;
-using Mono.Unix;
-using Mono.Unix.Native;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq; 
 
@@ -25,34 +21,7 @@ namespace Kvpbase
     public static class Common
     {
         #region Environment
-
-        public static bool IsAdmin()
-        {
-            int platform = (int)Environment.OSVersion.Platform;
-            if ((platform == 4) || (platform == 6) || (platform == 128))
-            {
-                #region Linux
-
-                // see http://stackoverflow.com/questions/2615997/winforms-console-application-on-mono-how-to-know-it-runs-as-root
-                if (Mono.Unix.Native.Syscall.getuid() == 0) return true;
-
-                #endregion
-            }
-            else
-            {
-                #region Windows
-
-                // see http://stackoverflow.com/questions/11660184/c-sharp-check-if-run-as-administrator
-                var identity = WindowsIdentity.GetCurrent();
-                var principal = new WindowsPrincipal(identity);
-                if (principal.IsInRole(WindowsBuiltInRole.Administrator)) return true;
-
-                #endregion
-            }
-
-            return false;
-        }
-
+        
         public static void ExitApplication(string method, string text, int returnCode)
         {
             Console.WriteLine("---");
@@ -995,36 +964,7 @@ namespace Kvpbase
 
             return json;
         }
-
-        public static T DeserializeJsonBuiltIn<T>(string json)
-        {
-            if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json));
-
-            try
-            {
-                JavaScriptSerializer ser = new JavaScriptSerializer();
-                ser.MaxJsonLength = Int32.MaxValue;
-                return ser.Deserialize<T>(json);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("");
-                Console.WriteLine("Exception while deserializing:");
-                Console.WriteLine(json);
-                Console.WriteLine("");
-                Console.WriteLine("Exception:");
-                Console.WriteLine(SerializeJson(e, true));
-                Console.WriteLine("");
-                throw e;
-            }
-        }
-
-        public static T DeserializeJsonBuiltIn<T>(byte[] data)
-        {
-            if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data));
-            return DeserializeJsonBuiltIn<T>(Encoding.UTF8.GetString(data));
-        }
-
+        
         public static T DeserializeJson<T>(string json)
         {
             if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json));

@@ -139,7 +139,7 @@ namespace Kvpbase
                 List<ContainerSettings> containers = new List<ContainerSettings>();
                 List<ContainerSettings> filtered = new List<ContainerSettings>();
 
-                RequestMetadata md = BuildMetadata(null, null, UserName, ContainerName, null, "get");
+                RequestMetadata md = BuildMetadata(null, null, UserName, ContainerName, null, HttpMethod.GET);
                 if (!_OutboundReplicationMgr.ContainerList(md, SourceNode, out containers))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask unable to retrieve container list from " + SourceNode.ToString());
@@ -192,7 +192,7 @@ namespace Kvpbase
                     #region Variables
 
                     int? currIndex = 0;
-                    md = BuildMetadata(currIndex, null, currContainer.User, currContainer.Name, null, "get");
+                    md = BuildMetadata(currIndex, null, currContainer.User, currContainer.Name, null, HttpMethod.GET);
                     ContainerMetadata currMetadata = new ContainerMetadata();
                     bool running = true;
                     Container container = null;
@@ -296,7 +296,7 @@ namespace Kvpbase
                                 long currPosition = 0;
                                 long bytesRemaining = Convert.ToInt64(currObject.ContentLength);
                                 
-                                md = BuildMetadata(null, null, currContainer.User, currContainer.Name, currObject.Key, "get");
+                                md = BuildMetadata(null, null, currContainer.User, currContainer.Name, currObject.Key, HttpMethod.GET);
                                 md.Params.Index = 0;
                                 md.Params.Count = _Settings.Server.MaxTransferSize;
                                 long currIteration = 1;
@@ -421,7 +421,7 @@ namespace Kvpbase
                             {
                                 #region Retrieve-Full
 
-                                md = BuildMetadata(null, null, currContainer.User, currContainer.Name, currObject.Key, "get");
+                                md = BuildMetadata(null, null, currContainer.User, currContainer.Name, currObject.Key, HttpMethod.GET);
                                 if (!_OutboundReplicationMgr.ObjectRead(md, SourceNode, out objectBytes))
                                 {
                                     _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask " + WorkerGuid + " unable to retrieve " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key);
@@ -470,7 +470,7 @@ namespace Kvpbase
             }
         }
 
-        private RequestMetadata BuildMetadata(int? indexStart, int? maxResults, string userGuid, string container, string objectKey, string method)
+        private RequestMetadata BuildMetadata(int? indexStart, int? maxResults, string userGuid, string container, string objectKey, HttpMethod method)
         {
             Node localNode = _Topology.LocalNode; 
             RequestMetadata ret = new RequestMetadata();

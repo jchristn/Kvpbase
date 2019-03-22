@@ -139,7 +139,7 @@ namespace Kvpbase
         private string KeyFromMetadata(RequestMetadata md)
         {
             string ret = "";
-            ret += md.Http.Method.ToLower();
+            ret += md.Http.Method.ToString();
             ret += " ";
             ret += md.Http.RawUrlWithoutQuery.ToLower();
             ret += " ";

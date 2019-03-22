@@ -1,0 +1,85 @@
+{
+  "ProductName": "Kvpbase",
+  "Environment": "windows",
+  "HomepageUrl": "http://www.kvpbase.com",
+  "EnableConsole": true,
+  "Files": {
+    "Topology": "./Topology.json",
+    "UserMaster": "./UserMaster.json",
+    "ApiKey": "./ApiKey.json",
+    "Permission": "./ApiKeyPermission.json",
+    "Container": "./Container.json"
+  },
+  "Server": {
+    "HeaderApiKey": "x-api-key",
+    "HeaderEmail": "x-email",
+    "HeaderPassword": "x-password",
+    "HeaderToken": "x-token",
+    "HeaderVersion": "x-version",
+    "AdminApiKey": "kvpbaseadmin",
+    "TokenExpirationSec": 86400,
+    "FailedRequestsIntervalSec": 60,
+    "MaxTransferSize": 536870912
+  },
+  "Redirection": {
+    "Mode": "PermanentRedirect"
+  },
+  "Topology": {
+    "DebugMeshNetworking": false,
+    "DebugMessages": false,
+    "HeartbeatIntervalSec": 5
+  },
+  "Storage": {
+    "Directory": "./Storage/"
+  },
+  "Container": {
+    "CacheSize": 100,
+    "EvictSize": 10,
+    "DefaultReplicationMode": "Async"
+  },
+  "Messages": {
+    "Directory": "./Messages/",
+    "RefreshSec": 10
+  },
+  "Expiration": {
+    "Directory": "./Expiration/",
+    "RefreshSec": 10,
+    "DefaultExpirationSec": 0
+  },
+  "Replication": {
+    "Directory": "./Replication/",
+    "ReplicationMode": "sync",
+    "RefreshSec": 10
+  },
+  "Tasks": {
+    "Directory": "./Tasks/",
+    "RefreshSec": 10
+  },
+  "Syslog": {
+    "ServerIp": "127.0.0.1",
+    "ServerPort": 514,
+    "Header": "kvpbase",
+    "MinimumLevel": 1,
+    "LogHttpRequests": false,
+    "LogHttpResponses": false,
+    "ConsoleLogging": true
+  },
+  "Email": {
+    "SmtpPort": 0,
+    "SmtpSsl": false,
+    "EmailExceptions": 0
+  },
+  "Encryption": {
+    "Mode": "local",
+    "Port": 0,
+    "Ssl": false,
+    "Passphrase": "0000000000000000",
+    "Salt": "0000000000000000",
+    "Iv": "0000000000000000"
+  },
+  "Rest": {
+    "UseWebProxy": false,
+    "AcceptInvalidCerts": true
+  },
+  "Mailgun": {}
+}

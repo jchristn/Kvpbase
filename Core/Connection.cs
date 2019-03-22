@@ -1,4 +1,5 @@
-﻿using System; 
+﻿using System;
+using WatsonWebserver;
 
 namespace Kvpbase
 {
@@ -37,7 +38,7 @@ namespace Kvpbase
         /// <summary>
         /// HTTP method
         /// </summary>
-        public string Method { get; set; }
+        public HttpMethod Method { get; set; }
 
         /// <summary>
         /// URL being accessed.

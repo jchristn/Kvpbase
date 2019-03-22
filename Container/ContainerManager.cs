@@ -26,7 +26,7 @@ namespace Kvpbase
         private readonly object _ContainersLock;
         private List<ContainerSettings> _Containers;
 
-        private LRUCache<Container> _Cache;
+        private LRUCache<string, Container> _Cache;
 
         #endregion
 
@@ -50,7 +50,7 @@ namespace Kvpbase
             _ContainersLock = new object();
             ReadContainersFile();
 
-            _Cache = new LRUCache<Container>(cacheSize, evictSize, false);
+            _Cache = new LRUCache<string, Container>(cacheSize, evictSize, false);
             
             InitializeContainers();
         }

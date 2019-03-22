@@ -31,9 +31,9 @@ namespace Kvpbase
 
             #region Process-Request
 
-            switch (md.Http.Method.ToLower())
+            switch (md.Http.Method)
             {
-                case "get":
+                case HttpMethod.GET:
                     #region get
 
                     if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/admin/disks", false))
@@ -50,28 +50,28 @@ namespace Kvpbase
 
                 #endregion
 
-                case "put":
+                case HttpMethod.PUT:
                     #region put
 
                     break;
 
                 #endregion
 
-                case "post":
+                case HttpMethod.POST:
                     #region post
                      
                     break;
 
                 #endregion
 
-                case "delete":
+                case HttpMethod.DELETE:
                     #region delete
                      
                     break;
 
                 #endregion
 
-                case "head":
+                case HttpMethod.HEAD:
                     #region head
 
                     break;

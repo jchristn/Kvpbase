@@ -1,321 +1,36 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{FBCAC97E-AE38-4055-91E5-7D4BB3C7D8FA}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>netcoreapp2.2;net461</TargetFrameworks>
     <RootNamespace>Kvpbase</RootNamespace>
-    <AssemblyName>StorageServer</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <StartupObject>
-    </StartupObject>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkProfile />
-    <PublishUrl>ftp://joelchristner.dnsalias.com/inetpub/cubebright-accesstier/</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://localhost/accesstier/</InstallUrl>
-    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
-    <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <PackageId>Kvpbase</PackageId>
+    <Version>3.2.0</Version>
+    <Authors>Joel Christner</Authors>
+    <Product>Kvpbase Storage Server</Product>
+    <Description>Object storage system with integrated replication and a simple RESTful API.</Description>
+    <Copyright>(c)2019</Copyright>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/kvpbase/storage-server</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
+    <PackageReleaseNotes>Retarget the server to both .NET Core and .NET Framework</PackageReleaseNotes>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>46CCAF951E60D10CA55DD5044AE0AF13E74DB3E3</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>accesstier_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>false</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>false</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetZone>LocalIntranet</TargetZone>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="EmailModule, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EmailWrapper.1.0.1\lib\EmailModule.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="RegexMatcher, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RegexMatcher.1.0.0\lib\RegexMatcher.dll</HintPath>
-    </Reference>
-    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EmailWrapper.1.0.1\lib\RestSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="RestWrapper, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestWrapper.1.0.8\lib\RestWrapper.dll</HintPath>
-    </Reference>
-    <Reference Include="SyslogLogging, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SyslogLogging.1.0.9\lib\SyslogLogging.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.ServiceModel">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.ServiceProcess" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Watson, Version=1.2.11.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Watson.1.2.11\lib\Watson.dll</HintPath>
-    </Reference>
-    <Reference Include="WatsonMesh, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WatsonMesh.1.0.7\lib\WatsonMesh.dll</HintPath>
-    </Reference>
-    <Reference Include="WatsonTcp, Version=1.1.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WatsonTcp.1.1.6\lib\WatsonTcp.dll</HintPath>
-    </Reference>
+    <PackageReference Include="EmailWrapper" Version="1.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="RestWrapper" Version="1.0.9" />
+    <PackageReference Include="SyslogLogging" Version="1.0.10" />
+    <PackageReference Include="Watson" Version="1.5.1" />
+    <PackageReference Include="WatsonMesh" Version="1.0.8" />
+    <PackageReference Include="WatsonTcp" Version="1.1.7" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="APIs\Http\AdminApiHandler.cs" />
-    <Compile Include="APIs\Http\Delete\HttpDeleteHandler.cs" />
-    <Compile Include="APIs\Http\Delete\HttpDeleteContainer.cs" />
-    <Compile Include="APIs\Http\Delete\HttpDeleteObject.cs" />
-    <Compile Include="APIs\Http\Get\HttpGetContainerList.cs" />
-    <Compile Include="APIs\Http\Get\HttpGetContainers.cs" />
-    <Compile Include="APIs\Http\Get\HttpGetObject.cs" />
-    <Compile Include="APIs\Http\Get\HttpGetContainer.cs" />
-    <Compile Include="APIs\Http\Get\HttpGetDisks.cs" />
-    <Compile Include="APIs\Http\Get\HttpGetTopology.cs" />
-    <Compile Include="APIs\Http\Get\HttpGetUser.cs" />
-    <Compile Include="APIs\Http\Get\HttpGetToken.cs" />
-    <Compile Include="APIs\Http\Get\HttpGetHandler.cs" />
-    <Compile Include="APIs\Tcp\Delete\TcpDeleteContainer.cs" />
-    <Compile Include="APIs\Tcp\Delete\TcpDeleteObject.cs" />
-    <Compile Include="APIs\Tcp\Get\TcpGetContainer.cs" />
-    <Compile Include="APIs\Tcp\Get\TcpGetContainerList.cs" />
-    <Compile Include="APIs\Tcp\Get\TcpGetObject.cs" />
-    <Compile Include="APIs\Tcp\Head\TcpHeadContainer.cs" />
-    <Compile Include="APIs\Tcp\Head\TcpHeadObject.cs" />
-    <Compile Include="APIs\Tcp\Post\TcpPostContainer.cs" />
-    <Compile Include="APIs\Tcp\Post\TcpPostObject.cs" />
-    <Compile Include="APIs\Tcp\Put\TcpPutContainer.cs" />
-    <Compile Include="APIs\Tcp\Put\TcpPutObject.cs" />
-    <Compile Include="Classes\BackgroundThreads\ResyncWorker.cs" />
-    <Compile Include="Classes\Handlers\ContainerHandler.cs" />
-    <Compile Include="Classes\Handlers\ObjectHandler.cs" />
-    <Compile Include="APIs\Http\Head\HttpHeadContainer.cs" />
-    <Compile Include="APIs\Http\Head\HttpHeadObject.cs" />
-    <Compile Include="APIs\Http\Head\HttpHeadHandler.cs" />
-    <Compile Include="APIs\Http\Put\HttpPutContainer.cs" />
-    <Compile Include="APIs\Http\Post\HttpPostContainer.cs" />
-    <Compile Include="APIs\Http\Put\HttpPutObject.cs" />
-    <Compile Include="APIs\Http\Post\HttpPostObject.cs" />
-    <Compile Include="APIs\Http\Post\HttpPostHandler.cs" />
-    <Compile Include="APIs\Http\Put\HttpPutHandler.cs" />
-    <Compile Include="APIs\Http\UserApiHandler.cs" />
-    <Compile Include="Classes\Helpers\EmailHelper.cs" />
-    <Compile Include="Classes\Helpers\MailgunHelper.cs" />
-    <Compile Include="Classes\Managers\ResyncManager.cs" />
-    <Compile Include="Classes\Managers\TaskManager.cs" />
-    <Compile Include="Classes\Messaging\OutboundMessageHandler.cs" />
-    <Compile Include="Classes\Messaging\InboundMessageHandler.cs" />
-    <Compile Include="Classes\Messaging\MessageManager.cs" />
-    <Compile Include="Classes\Managers\TopologyManager.cs" />
-    <Compile Include="Classes\Managers\TokenManager.cs" />
-    <Compile Include="Classes\Managers\ConsoleManager.cs" />
-    <Compile Include="Classes\BackgroundThreads\FailedRequestsThread.cs" />
-    <Compile Include="Classes\Managers\ApiKeyManager.cs" />
-    <Compile Include="Classes\Managers\UrlLockManager.cs" />
-    <Compile Include="Classes\Managers\UserManager.cs" />
-    <Compile Include="Classes\Managers\ConnectionManager.cs" />
-    <Compile Include="Classes\Managers\EncryptionManager.cs" />
-    <Compile Include="Classes\Setup.cs" />
-    <Compile Include="Classes\Settings.cs" />
-    <Compile Include="StorageServer.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\Container\Container.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="README.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="RestSharp.xml" />
-    <Content Include="sqlite3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-    <None Include="Properties\app.manifest" />
-    <None Include="Properties\DataSources\System.Data.DataTable.datasource" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Container\Container.csproj">
-      <Project>{85fe3421-dfd4-4a00-acb9-d1fe1f8977ab}</Project>
-      <Name>Container</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{91546caf-db7d-473c-9b5f-2916e1254252}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <Import Project="..\packages\Mono.Posix.5.4.0.201\build\net45\Mono.Posix.targets" Condition="Exists('..\packages\Mono.Posix.5.4.0.201\build\net45\Mono.Posix.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Mono.Posix.5.4.0.201\build\net45\Mono.Posix.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Mono.Posix.5.4.0.201\build\net45\Mono.Posix.targets'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

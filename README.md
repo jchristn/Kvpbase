@@ -4,6 +4,8 @@ Object Storage Platform in C#
 
 Kvpbase Storage Server is a RESTful object storage platform written in C# and available under the MIT license.  
 
+As of v3.2, Kvpbase is targeted to both .NET Core 2.2 and .NET Framework 4.6.1.
+
 ![alt tag](https://github.com/kvpbase/storage-server/blob/master/assets/diagram.png)
 
 ## Help and Feedback
@@ -84,7 +86,7 @@ Please read our documentation on Github [https://github.com/kvpbase/storage-serv
 
 ## New in v3.1.1
 
-- Bugfix for retrieving request metadata vs container/object metadata (new querystring parameter)
+- Retarget to .NET Core 2.2 and .NET Framework 4.6.1
 
 ## Compatibility 
 
@@ -126,6 +128,7 @@ Notes from previous versions (starting with v2.0.1) will be moved here.
 
 v3.x
 
+- Bugfix for retrieving request metadata vs container/object metadata (new querystring parameter)
 - Support for object tags (on create/POST, on edit/PUT, and for enumeration)
 - Significant performance improvements
 - Major refactor in preparation of new features, better code manageability

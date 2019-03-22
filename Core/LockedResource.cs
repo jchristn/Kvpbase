@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO; 
+using System.IO;
+using WatsonWebserver;
 
 namespace Kvpbase
 {
@@ -19,7 +20,7 @@ namespace Kvpbase
         /// <summary>
         /// The HTTP method in use.
         /// </summary>
-        public string Method { get; set; }
+        public HttpMethod Method { get; set; }
 
         /// <summary>
         /// The URL of the resource in use.
@@ -47,7 +48,7 @@ namespace Kvpbase
         /// <param name="user">UserMaster.</param>
         /// <param name="method">HTTP method.</param>
         /// <param name="url">Object URL.</param>
-        public LockedResource(UserMaster user, string method, string url)
+        public LockedResource(UserMaster user, HttpMethod method, string url)
         {
             if (user != null) UserMasterId = user.UserMasterId;
             else UserMasterId = null;

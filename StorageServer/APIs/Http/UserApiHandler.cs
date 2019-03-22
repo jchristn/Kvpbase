@@ -17,9 +17,9 @@ namespace Kvpbase
                 return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(respMetadata, true), true);
             }
               
-            switch (md.Http.Method.ToLower())
+            switch (md.Http.Method)
             {
-                case "get":
+                case HttpMethod.GET:
                     #region get
 
                     if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/token", false))
@@ -41,28 +41,28 @@ namespace Kvpbase
                      
                 #endregion
 
-                case "put":
+                case HttpMethod.PUT:
                     #region put
 
                     return HttpPutHandler(md);
                      
                 #endregion
 
-                case "post":
+                case HttpMethod.POST:
                     #region post
 
                     return HttpPostHandler(md);
                      
                 #endregion
 
-                case "delete":
+                case HttpMethod.DELETE:
                     #region delete
 
                     return HttpDeleteHandler(md);
                     
                 #endregion
 
-                case "head":
+                case HttpMethod.HEAD:
                     #region head
 
                     return HttpHeadHandler(md);

@@ -51,18 +51,13 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Container\Container.csproj">
-      <Project>{85fe3421-dfd4-4a00-acb9-d1fe1f8977ab}</Project>
+      <Project>{832a08fb-0f9f-4583-8248-b6856ceff039}</Project>
       <Name>Container</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{91546caf-db7d-473c-9b5f-2916e1254252}</Project>
+      <Project>{9de1e407-c72c-4539-9f7f-4b19997e50a1}</Project>
       <Name>Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="sqlite3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

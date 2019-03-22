@@ -44,13 +44,7 @@ namespace Kvpbase
         public static void Main(string[] args)
         {
             #region Startup-Check
-
-            if (!Common.IsAdmin())
-            {
-                Common.ExitApplication("StorageServer", "This application must be run with administrative privileges", -1);
-                return;
-            }
-
+            
             if (!HttpListener.IsSupported)
             {
                 Common.ExitApplication("StorageServer", "Your OS does not support HttpListener", -1);
@@ -263,7 +257,7 @@ namespace Kvpbase
 
                 #region Options-Handler
 
-                if (req.Method.ToLower().Trim().Contains("option"))
+                if (req.Method == HttpMethod.OPTIONS)
                 {
                     _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived " + Thread.CurrentThread.ManagedThreadId + ": OPTIONS request received");
                     resp = OptionsHandler(req);

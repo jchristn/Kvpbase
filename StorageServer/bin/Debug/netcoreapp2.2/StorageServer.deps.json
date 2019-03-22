@@ -1,0 +1,362 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.2",
+    "signature": "eb051a00b773a58b6df097e8383a8990d9094aa9"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.2": {
+      "StorageServer/3.2.0": {
+        "dependencies": {
+          "Container": "1.0.0",
+          "Core": "1.0.0",
+          "EmailWrapper": "1.0.2",
+          "Newtonsoft.Json": "12.0.1",
+          "RestWrapper": "1.0.9",
+          "SyslogLogging": "1.0.10",
+          "Watson": "1.5.1",
+          "WatsonMesh": "1.0.8",
+          "WatsonTcp": "1.1.7"
+        },
+        "runtime": {
+          "StorageServer.dll": {}
+        }
+      },
+      "Caching.dll/1.3.1": {
+        "dependencies": {
+          "Microsoft.CSharp": "4.5.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Caching.dll": {
+            "assemblyVersion": "1.3.1.0",
+            "fileVersion": "1.3.1.0"
+          }
+        }
+      },
+      "EmailWrapper/1.0.2": {
+        "dependencies": {
+          "RestSharp": "106.6.9"
+        },
+        "runtime": {
+          "lib/netstandard2.0/EmailModule.dll": {
+            "assemblyVersion": "1.0.2.0",
+            "fileVersion": "1.0.2.0"
+          }
+        }
+      },
+      "Microsoft.CSharp/4.5.0": {},
+      "Microsoft.Win32.SystemEvents/4.5.0": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Win32.SystemEvents.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.26515.6"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/netcoreapp2.0/Microsoft.Win32.SystemEvents.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.26515.6"
+          }
+        }
+      },
+      "Newtonsoft.Json/12.0.1": {
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "12.0.0.0",
+            "fileVersion": "12.0.1.22727"
+          }
+        }
+      },
+      "RegexMatcher/1.0.1": {
+        "runtime": {
+          "lib/netstandard2.0/RegexMatcher.dll": {
+            "assemblyVersion": "1.0.1.0",
+            "fileVersion": "1.0.1.0"
+          }
+        }
+      },
+      "RestSharp/106.6.9": {
+        "runtime": {
+          "lib/netstandard2.0/RestSharp.dll": {
+            "assemblyVersion": "106.6.9.0",
+            "fileVersion": "106.6.9.0"
+          }
+        }
+      },
+      "RestWrapper/1.0.9": {
+        "runtime": {
+          "lib/netstandard2.0/RestWrapper.dll": {
+            "assemblyVersion": "1.0.9.0",
+            "fileVersion": "1.0.9.0"
+          }
+        }
+      },
+      "SqliteHelper/1.0.9": {
+        "dependencies": {
+          "Microsoft.CSharp": "4.5.0",
+          "System.Data.SQLite": "1.0.110"
+        },
+        "runtime": {
+          "lib/netstandard2.0/SqliteWrapper.dll": {
+            "assemblyVersion": "1.0.9.0",
+            "fileVersion": "1.0.9.0"
+          }
+        }
+      },
+      "SyslogLogging/1.0.10": {
+        "runtime": {
+          "lib/netstandard2.0/LoggingModule.dll": {
+            "assemblyVersion": "1.0.10.0",
+            "fileVersion": "1.0.10.0"
+          }
+        }
+      },
+      "System.Data.SQLite/1.0.110": {
+        "dependencies": {
+          "System.Data.SQLite.Core": "1.0.110"
+        }
+      },
+      "System.Data.SQLite.Core/1.0.110": {
+        "runtime": {
+          "lib/netstandard2.0/System.Data.SQLite.dll": {
+            "assemblyVersion": "1.0.110.0",
+            "fileVersion": "1.0.110.0"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux-x64/native/netstandard2.0/SQLite.Interop.dll": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx-x64/native/netstandard2.0/SQLite.Interop.dll": {
+            "rid": "osx-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/netstandard2.0/SQLite.Interop.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "1.0.110.0"
+          },
+          "runtimes/win-x86/native/netstandard2.0/SQLite.Interop.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "1.0.110.0"
+          }
+        }
+      },
+      "System.Drawing.Common/4.5.1": {
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "4.5.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Drawing.Common.dll": {
+            "assemblyVersion": "4.0.0.1",
+            "fileVersion": "4.6.26919.2"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/unix/lib/netcoreapp2.0/System.Drawing.Common.dll": {
+            "rid": "unix",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.0.1",
+            "fileVersion": "4.6.26919.2"
+          },
+          "runtimes/win/lib/netcoreapp2.0/System.Drawing.Common.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.0.1",
+            "fileVersion": "4.6.26919.2"
+          }
+        }
+      },
+      "Watson/1.5.1": {
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.1",
+          "RegexMatcher": "1.0.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/WatsonWebserver.dll": {
+            "assemblyVersion": "1.5.1.0",
+            "fileVersion": "1.5.1.0"
+          }
+        }
+      },
+      "WatsonMesh/1.0.8": {
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.1",
+          "WatsonTcp": "1.1.7"
+        },
+        "runtime": {
+          "lib/netstandard2.0/WatsonMesh.dll": {
+            "assemblyVersion": "1.0.8.0",
+            "fileVersion": "1.0.8.0"
+          }
+        }
+      },
+      "WatsonTcp/1.1.7": {
+        "runtime": {
+          "lib/netstandard2.0/WatsonTcp.dll": {
+            "assemblyVersion": "1.1.7.0",
+            "fileVersion": "1.1.7.0"
+          }
+        }
+      },
+      "Container/1.0.0": {
+        "dependencies": {
+          "Caching.dll": "1.3.1",
+          "Core": "1.0.0",
+          "Microsoft.CSharp": "4.5.0",
+          "Newtonsoft.Json": "12.0.1",
+          "SqliteHelper": "1.0.9",
+          "System.Data.SQLite": "1.0.110"
+        },
+        "runtime": {
+          "Container.dll": {}
+        }
+      },
+      "Core/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.1",
+          "System.Drawing.Common": "4.5.1",
+          "Watson": "1.5.1"
+        },
+        "runtime": {
+          "Core.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "StorageServer/3.2.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Caching.dll/1.3.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-FBSM1oNz6zaiyI0rmZS63P2204qI4ULSYgxBzs2vx1mzx4VLUQ9ONERbtOy3wyHeOSM+7sFNjdL//7aipsjrkw==",
+      "path": "caching.dll/1.3.1",
+      "hashPath": "caching.dll.1.3.1.nupkg.sha512"
+    },
+    "EmailWrapper/1.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WZbTG+9tIDAK6bl7jB0cqfUi9DnF4R55/8/b2LjBMfzSzbrF0vT6dDU2lnQfLGXjuezF+eqCBnjEs1W/n4nioA==",
+      "path": "emailwrapper/1.0.2",
+      "hashPath": "emailwrapper.1.0.2.nupkg.sha512"
+    },
+    "Microsoft.CSharp/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kaj6Wb4qoMuH3HySFJhxwQfe8R/sJsNJnANrvv8WdFPMoNbKY5htfNscv+LHCu5ipz+49m2e+WQXpLXr9XYemQ==",
+      "path": "microsoft.csharp/4.5.0",
+      "hashPath": "microsoft.csharp.4.5.0.nupkg.sha512"
+    },
+    "Microsoft.Win32.SystemEvents/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-K2TAr07pgl/m/J9ed3cmAzx0SD55kYuVfBG6SPRIH/ELTh/D2qGrjOWDQJo7r+LZl1nO2Nkl0UAQBUt6S2ewqQ==",
+      "path": "microsoft.win32.systemevents/4.5.0",
+      "hashPath": "microsoft.win32.systemevents.4.5.0.nupkg.sha512"
+    },
+    "Newtonsoft.Json/12.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jmVyoEyk0In8r+AObYQyFKVFm7uSRzE0XSHSbEtBJcZDMV6DqJoyB4FLcHwprPVhAh826so0db3DIKXVnpGoPA==",
+      "path": "newtonsoft.json/12.0.1",
+      "hashPath": "newtonsoft.json.12.0.1.nupkg.sha512"
+    },
+    "RegexMatcher/1.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-lAGEZDOSv6TvKBmi/ers840aHepcaIWlDYLN2q2F3OOoEa2MHnxLo1tneoBJHSxoUpENdS7MQK/754otk3ASMA==",
+      "path": "regexmatcher/1.0.1",
+      "hashPath": "regexmatcher.1.0.1.nupkg.sha512"
+    },
+    "RestSharp/106.6.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/IAQTwlnlQcjlIyvelf+rhQcCRPy/r/0MftpNbff/D7PZVnmVXE4AnHk/F4NJJJEZbI4M+QTglB+xFkAyzr+9A==",
+      "path": "restsharp/106.6.9",
+      "hashPath": "restsharp.106.6.9.nupkg.sha512"
+    },
+    "RestWrapper/1.0.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ycRBjjtvX85+IowkgfRPkSiqdYS3FS+MjNqQsIfYPqBH0o8A8dAatarm06rPQ/CIxhhfgds5oYH4HJxOxS3n5g==",
+      "path": "restwrapper/1.0.9",
+      "hashPath": "restwrapper.1.0.9.nupkg.sha512"
+    },
+    "SqliteHelper/1.0.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7kZY808clbsoL+OYePEo4Vy4D4JDIbYszq+koH6sKbyz/BDRCJ1YEDDZMEnQDw4YqaD7LlPqtX5z0pbakjrP7A==",
+      "path": "sqlitehelper/1.0.9",
+      "hashPath": "sqlitehelper.1.0.9.nupkg.sha512"
+    },
+    "SyslogLogging/1.0.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yi5UmWevLYRhZy1FR5YbyobICaOIxrpJX9vzCWXDR6W7xUycPT3EtNpYiLI7B5rxf2a3J8rOk++CRtIwEUwJtg==",
+      "path": "sysloglogging/1.0.10",
+      "hashPath": "sysloglogging.1.0.10.nupkg.sha512"
+    },
+    "System.Data.SQLite/1.0.110": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YFUBQ4BzxzLhq/TOVg8wipF+YbpFHrfMx1dkhgpfTDsiLnpt/2oqRmI0ti48rNhNjR0ZPW5TLCdNA4zrHiNy0g==",
+      "path": "system.data.sqlite/1.0.110",
+      "hashPath": "system.data.sqlite.1.0.110.nupkg.sha512"
+    },
+    "System.Data.SQLite.Core/1.0.110": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-x7xZ0oBWycJch9ShAFwTQRPJ2HEo5NmXyhx/LFJvSbCBQVXnHc9rIAeLo1VXzDFbfbtPl3HFpFhriEnUkS2L0Q==",
+      "path": "system.data.sqlite.core/1.0.110",
+      "hashPath": "system.data.sqlite.core.1.0.110.nupkg.sha512"
+    },
+    "System.Drawing.Common/4.5.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-m3c7Fe/CS/jZ/nLBrxCCh52dYiC33GPbGfcF4CiVukb8+p121XUTHxs6sYKbWfvDVD8JssHcM+HVFLtzl3X3Xw==",
+      "path": "system.drawing.common/4.5.1",
+      "hashPath": "system.drawing.common.4.5.1.nupkg.sha512"
+    },
+    "Watson/1.5.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+EWwqZGgpXdRVJbKL3/M/JxnpKsf3tDUc+FUjxa6u171YmG4zp8Vh1x7njG5EHD5Jzr8TxivzxCo2f59MTKhgA==",
+      "path": "watson/1.5.1",
+      "hashPath": "watson.1.5.1.nupkg.sha512"
+    },
+    "WatsonMesh/1.0.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NyR1mp9sFQD6v6uupxAVtFVku+LUryulrDb9PCwE8yck4F2Yq1aOQ27AK5nV7VRxvnrcWYoc30rjq8GBrksF6A==",
+      "path": "watsonmesh/1.0.8",
+      "hashPath": "watsonmesh.1.0.8.nupkg.sha512"
+    },
+    "WatsonTcp/1.1.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hX3ozV5A4EGaBtvPfeJCotUv0J+RTeohfOH6BC7TlXpORjDObK37p8Ku1HQJF5WpSKN+tjBHN8OTHhZo+QlU5A==",
+      "path": "watsontcp/1.1.7",
+      "hashPath": "watsontcp.1.1.7.nupkg.sha512"
+    },
+    "Container/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

@@ -1,0 +1,12 @@
+C:\Code\KVPbase\storageserver-3.1\Container\bin\Debug\netstandard2.0\Container.deps.json
+C:\Code\KVPbase\storageserver-3.1\Container\bin\Debug\netstandard2.0\Container.dll
+C:\Code\KVPbase\storageserver-3.1\Container\bin\Debug\netstandard2.0\Container.pdb
+C:\Code\KVPbase\storageserver-3.1\Container\bin\Debug\netstandard2.0\Core.dll
+C:\Code\KVPbase\storageserver-3.1\Container\bin\Debug\netstandard2.0\Core.pdb
+C:\Code\KVPbase\storageserver-3.1\Container\obj\Debug\netstandard2.0\Container.csprojAssemblyReference.cache
+C:\Code\KVPbase\storageserver-3.1\Container\obj\Debug\netstandard2.0\Container.csproj.CoreCompileInputs.cache
+C:\Code\KVPbase\storageserver-3.1\Container\obj\Debug\netstandard2.0\Container.AssemblyInfoInputs.cache
+C:\Code\KVPbase\storageserver-3.1\Container\obj\Debug\netstandard2.0\Container.AssemblyInfo.cs
+C:\Code\KVPbase\storageserver-3.1\Container\obj\Debug\netstandard2.0\Container.csproj.CopyComplete
+C:\Code\KVPbase\storageserver-3.1\Container\obj\Debug\netstandard2.0\Container.dll
+C:\Code\KVPbase\storageserver-3.1\Container\obj\Debug\netstandard2.0\Container.pdb

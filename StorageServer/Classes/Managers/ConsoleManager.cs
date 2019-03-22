@@ -404,7 +404,7 @@ namespace Kvpbase
                     return;
                 }
 
-                RequestMetadata md = BuildMetadata(null, null, null, "get");
+                RequestMetadata md = BuildMetadata(null, null, null, HttpMethod.GET);
                 if (!_OutboundMessageHandler.ContainerList(md, node, out containers))
                 {
                     Console.WriteLine("Request to node ID " + nodeId + " failed");
@@ -423,7 +423,7 @@ namespace Kvpbase
 
             string userGuid = Common.InputString("User GUID:", "default", false);
             string containerName = Common.InputString("Container name:", "default", false);
-            RequestMetadata md = BuildMetadata(userGuid, containerName, null, "get");
+            RequestMetadata md = BuildMetadata(userGuid, containerName, null, HttpMethod.GET);
 
             if (nodeId > 0)
             {
@@ -452,7 +452,7 @@ namespace Kvpbase
 
             string userGuid = Common.InputString("User GUID:", "default", false);
             string containerName = Common.InputString("Container name:", "default", false);
-            RequestMetadata md = BuildMetadata(userGuid, containerName, null, "get");
+            RequestMetadata md = BuildMetadata(userGuid, containerName, null, HttpMethod.GET);
 
             if (nodeId > 0)
             {
@@ -488,7 +488,7 @@ namespace Kvpbase
 
             string userGuid = Common.InputString("User GUID:", "default", false);
             string containerName = Common.InputString("Container name:", "default", false);
-            RequestMetadata md = BuildMetadata(userGuid, containerName, null, "get");
+            RequestMetadata md = BuildMetadata(userGuid, containerName, null, HttpMethod.GET);
 
             if (nodeId > 0)
             {
@@ -535,7 +535,7 @@ namespace Kvpbase
             string userGuid = Common.InputString("User GUID:", "default", false);
             string containerName = Common.InputString("Container name:", "default", false);
             string objectKey = Common.InputString("Object key:", "hello.txt", false);
-            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, "get");
+            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, HttpMethod.GET);
 
             if (nodeId > 0)
             {
@@ -596,7 +596,7 @@ namespace Kvpbase
             string userGuid = Common.InputString("User GUID:", "default", false);
             string containerName = Common.InputString("Container name:", "default", false);
             string objectKey = Common.InputString("Object key:", "hello.txt", false);
-            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, "get");
+            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, HttpMethod.GET);
 
             if (nodeId > 0)
             {
@@ -633,7 +633,7 @@ namespace Kvpbase
             string userGuid = Common.InputString("User GUID:", "default", false);
             string containerName = Common.InputString("Container name:", "default", false);
             string objectKey = Common.InputString("Object key:", "hello.txt", false);
-            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, "delete");
+            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, HttpMethod.DELETE);
 
             if (nodeId > 0)
             {
@@ -683,7 +683,7 @@ namespace Kvpbase
             string userGuid = Common.InputString("User GUID:", "default", false);
             string containerName = Common.InputString("Container name:", "default", false);
             string objectKey = Common.InputString("Object key:", "hello.txt", false);
-            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, "get");
+            RequestMetadata md = BuildMetadata(userGuid, containerName, objectKey, HttpMethod.GET);
             md.Params.Metadata = true;
 
             if (nodeId > 0)
@@ -796,7 +796,7 @@ namespace Kvpbase
             _ResyncMgr.Start(workerGuid);
         }
 
-        private RequestMetadata BuildMetadata(string userGuid, string container, string objectKey, string method)
+        private RequestMetadata BuildMetadata(string userGuid, string container, string objectKey, HttpMethod method)
         {
             RequestMetadata ret = new RequestMetadata();
             ret.Params = new RequestMetadata.Parameters();
