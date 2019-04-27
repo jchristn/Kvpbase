@@ -172,7 +172,7 @@ namespace Kvpbase
 
             #region Wait-for-Server-Thread
             
-            EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, Guid.NewGuid().ToString());
+            EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, null);
             bool waitHandleSignal = false;
             do
             {
