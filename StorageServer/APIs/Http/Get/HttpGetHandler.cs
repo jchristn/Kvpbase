@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
@@ -24,8 +25,8 @@ namespace Kvpbase
                 else
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpGetHandler container URL does not have either one or two entries");
-                    return new HttpResponse(md.Http, false, 400, null, "application/json",
-                        new ErrorResponse(2, 400, "URL path must contain two entries, i.e. /[user]/[container]/.", null), true);
+                    return new HttpResponse(md.Http, 400, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "URL path must contain two entries, i.e. /[user]/[container]/.", null), true)));
                 }
             }
             else if (md.Http.RawUrlEntries.Count == 3)
@@ -35,8 +36,8 @@ namespace Kvpbase
             else
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpGetHandler object URL does not have three entries");
-                return new HttpResponse(md.Http, false, 400, null, "application/json",
-                    new ErrorResponse(2, 400, "URL path must contain three entries, i.e. /[user]/[container]/[key].", null), true);
+                return new HttpResponse(md.Http, 400, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "URL path must contain three entries, i.e. /[user]/[container]/[key].", null), true)));
             }
         }
     }

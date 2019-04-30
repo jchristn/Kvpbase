@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
@@ -20,8 +21,8 @@ namespace Kvpbase
                 if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpHeadContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, false, 404, null, "application/json",
-                        new ErrorResponse(5, 404, "Unknown user or container.", null), true);
+                    return new HttpResponse(md.Http, 404, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
                 }
                 else
                 {
@@ -33,7 +34,7 @@ namespace Kvpbase
             }
             else
             {
-                return new HttpResponse(md.Http, true, 200, null, null, null, true);
+                return new HttpResponse(md.Http, 200, null, null, null);
             }
             
             #endregion

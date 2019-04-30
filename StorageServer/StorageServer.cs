@@ -144,8 +144,7 @@ namespace Kvpbase
                 _TopologyMgr.LocalNode.Http.DnsHostname, 
                 _TopologyMgr.LocalNode.Http.Port, 
                 _TopologyMgr.LocalNode.Http.Ssl, 
-                RequestReceived, 
-                false); 
+                RequestReceived); 
              
             if (Common.IsTrue(_Settings.EnableConsole))
             {
@@ -219,8 +218,8 @@ namespace Kvpbase
 
         static HttpResponse RequestReceived(HttpRequest req)
         {
-            HttpResponse resp = new HttpResponse(req, false, 500, null, "application/json",
-                new ErrorResponse(4, 500, null, null), true);
+            HttpResponse resp = new HttpResponse(req, 500, null, "application/json",
+                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, null, null), true)));
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -272,21 +271,21 @@ namespace Kvpbase
                 {
                     if (String.Compare(req.RawUrlEntries[0].ToLower(), "favicon.ico") == 0)
                     {
-                        resp = new HttpResponse(req, true, 200, null, null, null, true);
+                        resp = new HttpResponse(req, 200, null, null, null);
                         return resp;
                     }
                 
                     if (String.Compare(req.RawUrlEntries[0].ToLower(), "robots.txt") == 0)
                     {
-                        resp = new HttpResponse(req, true, 200, null, "text/plain", "User-Agent: *\r\nDisallow:\r\n", true);
+                        resp = new HttpResponse(req, 200, null, "text/plain", Encoding.UTF8.GetBytes("User-Agent: *\r\nDisallow:\r\n"));
                         return resp;
                     }
                 }
 
                 if (req.RawUrlEntries == null || req.RawUrlEntries.Count == 0)
                 {
-                    resp = new HttpResponse(req, true, 200, null, "text/html",
-                        DefaultPage("http://github.com/kvpbase"), true);
+                    resp = new HttpResponse(req, 200, null, "text/html",
+                        Encoding.UTF8.GetBytes(DefaultPage("http://github.com/kvpbase")));
                     return resp;
                 }
 
@@ -317,16 +316,16 @@ namespace Kvpbase
                         if (String.IsNullOrEmpty(apiKey))
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived admin API requested but no API key specified");
-                            resp = new HttpResponse(req, false, 401, null, "application/json",
-                                new ErrorResponse(3, 401, "No API key specified.", null), true);
+                            resp = new HttpResponse(req, 401, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "No API key specified.", null), true)));
                             return resp;
                         }
 
                         if (String.Compare(_Settings.Server.AdminApiKey, apiKey) != 0)
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived admin API requested but invalid API key specified");
-                            resp = new HttpResponse(req, false, 401, null, "application/json",
-                                new ErrorResponse(3, 401, null, null), true);
+                            resp = new HttpResponse(req, 401, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true)));
                             return resp;
                         }
 
@@ -344,8 +343,8 @@ namespace Kvpbase
                     if (!_TokenMgr.VerifyToken(token, out currUserMaster, out currPermission))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify token");
-                        resp = new HttpResponse(req, false, 401, null, "application/json",
-                            new ErrorResponse(3, 401, null, null), true);
+                        resp = new HttpResponse(req, 401, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true)));
                         return resp;
                     }
                 }
@@ -354,8 +353,8 @@ namespace Kvpbase
                     if (!_ApiKeyMgr.VerifyApiKey(apiKey, out currUserMaster, out currApiKey, out currPermission))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify API key " + apiKey);
-                        resp = new HttpResponse(req, false, 401, null, "application/json",
-                           new ErrorResponse(3, 401, null, null), true);
+                        resp = new HttpResponse(req,  401, null, "application/json",
+                           Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true)));
                         return resp;
                     }
                 }
@@ -364,8 +363,8 @@ namespace Kvpbase
                     if (!_UserMgr.Authenticate(email, password, out currUserMaster))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify credentials for email " + email);
-                        resp = new HttpResponse(req, false, 401, null, "application/json",
-                            new ErrorResponse(3, 401, null, null), true);
+                        resp = new HttpResponse(req, 401, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true)));
                         return resp;
                     }
 
@@ -449,8 +448,8 @@ namespace Kvpbase
                     if (!DateTime.TryParse(req.QuerystringEntries["_createdbefore"], out testTimestamp))
                     {
                         _Logging.Log(LoggingModule.Severity.Debug, "StorageServer invalid value for _createdbefore");
-                        resp = new HttpResponse(req, false, 400, null, "application/json",
-                            new ErrorResponse(2, 400, "Invalid value for _createdbefore.", null), true);
+                        resp = new HttpResponse(req, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _createdbefore.", null), true)));
                     }
                     else
                     {
@@ -463,8 +462,8 @@ namespace Kvpbase
                     if (!DateTime.TryParse(req.QuerystringEntries["_createdafter"], out testTimestamp))
                     {
                         _Logging.Log(LoggingModule.Severity.Debug, "StorageServer invalid value for _createdafter");
-                        resp = new HttpResponse(req, false, 400, null, "application/json",
-                            new ErrorResponse(2, 400, "Invalid value for _createdafter.", null), true);
+                        resp = new HttpResponse(req, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _createdafter.", null), true)));
                     }
                     else
                     {
@@ -477,8 +476,8 @@ namespace Kvpbase
                     if (!DateTime.TryParse(req.QuerystringEntries["_updatedbefore"], out testTimestamp))
                     {
                         _Logging.Log(LoggingModule.Severity.Debug, "StorageServer invalid value for _updatedbefore");
-                        resp = new HttpResponse(req, false, 400, null, "application/json",
-                            new ErrorResponse(2, 400, "Invalid value for _updatedbefore.", null), true);
+                        resp = new HttpResponse(req, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _updatedbefore.", null), true)));
                     }
                     else
                     {
@@ -491,8 +490,8 @@ namespace Kvpbase
                     if (!DateTime.TryParse(req.QuerystringEntries["_updatedafter"], out testTimestamp))
                     {
                         _Logging.Log(LoggingModule.Severity.Debug, "StorageServer invalid value for _updatedafter");
-                        resp = new HttpResponse(req, false, 400, null, "application/json",
-                            new ErrorResponse(2, 400, "Invalid value for _updatedafter.", null), true);
+                        resp = new HttpResponse(req, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _updatedafter.", null), true)));
                     }
                     else
                     {
@@ -505,8 +504,8 @@ namespace Kvpbase
                     if (!DateTime.TryParse(req.QuerystringEntries["_accessedbefore"], out testTimestamp))
                     {
                         _Logging.Log(LoggingModule.Severity.Debug, "StorageServer invalid value for _accessedbefore");
-                        resp = new HttpResponse(req, false, 400, null, "application/json",
-                            new ErrorResponse(2, 400, "Invalid value for _updatedbefore.", null), true);
+                        resp = new HttpResponse(req, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _updatedbefore.", null), true)));
                     }
                     else
                     {
@@ -519,8 +518,8 @@ namespace Kvpbase
                     if (!DateTime.TryParse(req.QuerystringEntries["_accessedafter"], out testTimestamp))
                     {
                         _Logging.Log(LoggingModule.Severity.Debug, "StorageServer invalid value for _accessedafter");
-                        resp = new HttpResponse(req, false, 400, null, "application/json",
-                            new ErrorResponse(2, 400, "Invalid value for _updatedafter.", null), true);
+                        resp = new HttpResponse(req, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _updatedafter.", null), true)));
                     }
                     else
                     {
@@ -554,8 +553,8 @@ namespace Kvpbase
                     if (!Int64.TryParse(req.QuerystringEntries["_sizemin"], out testLong))
                     {
                         _Logging.Log(LoggingModule.Severity.Debug, "StorageServer invalid value for _sizemin");
-                        resp = new HttpResponse(req, false, 400, null, "application/json",
-                            new ErrorResponse(2, 400, "Invalid value for _sizemin.", null), true);
+                        resp = new HttpResponse(req, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _sizemin.", null), true)));
                     }
                     else
                     {
@@ -568,8 +567,8 @@ namespace Kvpbase
                     if (!Int64.TryParse(req.QuerystringEntries["_sizemax"], out testLong))
                     {
                         _Logging.Log(LoggingModule.Severity.Debug, "StorageServer invalid value for _sizemax");
-                        resp = new HttpResponse(req, false, 400, null, "application/json",
-                            new ErrorResponse(2, 400, "Invalid value for _sizemax.", null), true);
+                        resp = new HttpResponse(req, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _sizemax.", null), true)));
                     }
                     else
                     {
@@ -591,8 +590,8 @@ namespace Kvpbase
             catch (Exception e)
             {
                 _Logging.LogException("StorageServer", "RequestReceived", e);
-                resp = new HttpResponse(req, false, 500, null, "application/json",
-                    new ErrorResponse(1, 500, "Outer exception.", null), true);
+                resp = new HttpResponse(req, 500, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(1, 500, "Outer exception.", null), true)));
                 return resp;
             }
             finally
@@ -670,7 +669,7 @@ namespace Kvpbase
             }
 
             _Logging.Log(LoggingModule.Severity.Debug, "OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": exiting successfully from OptionsHandler");
-            return new HttpResponse(req, true, 200, responseHeaders, null, null, true);
+            return new HttpResponse(req, 200, responseHeaders, null, null);
         }
 
         static string DefaultPage(string link)

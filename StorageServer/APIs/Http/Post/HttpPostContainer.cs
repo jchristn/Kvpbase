@@ -22,8 +22,8 @@ namespace Kvpbase
                 if (md.User == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPostContainer no authentication material");
-                    return new HttpResponse(md.Http, false, 401, null, "application/json",
-                        new ErrorResponse(3, 401, "Unauthorized.", null), true);
+                    return new HttpResponse(md.Http, 401, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
                 }
 
                 #endregion
@@ -33,8 +33,8 @@ namespace Kvpbase
                 if (_ContainerMgr.Exists(md.User.Guid, md.Params.Container))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPostContainer container " + md.User.Guid + "/" + md.Params.Container + " already exists");
-                    return new HttpResponse(md.Http, false, 409, null, "application/json",
-                        new ErrorResponse(7, 409, null, null), true);
+                    return new HttpResponse(md.Http, 409, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(7, 409, null, null), true)));
                 }
 
                 #endregion
@@ -50,8 +50,8 @@ namespace Kvpbase
                     catch (Exception)
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "HttpPostContainer unable to deserialize request body");
-                        return new HttpResponse(md.Http, false, 400, null, "application/json",
-                            new ErrorResponse(9, 400, null, null), true);
+                        return new HttpResponse(md.Http, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true)));
                     }
                 }
 
@@ -87,12 +87,12 @@ namespace Kvpbase
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPostContainer unable to replicate operation to one or more nodes");
                     cleanupRequired = true;
 
-                    return new HttpResponse(md.Http, false, 500, null, "application/json",
-                        new ErrorResponse(10, 500, null, null), true);
+                    return new HttpResponse(md.Http, 500, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true)));
                 }
 
                 _Logging.Log(LoggingModule.Severity.Debug, "HttpPostContainer successfully created container " + settings.User + "/" + settings.Name);
-                return new HttpResponse(md.Http, true, 201, null, "application/json", null, true);
+                return new HttpResponse(md.Http, 201, null, "application/json", null);
 
                 #endregion
             }

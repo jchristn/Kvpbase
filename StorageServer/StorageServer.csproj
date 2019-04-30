@@ -5,11 +5,11 @@
     <TargetFrameworks>netcoreapp2.2;net461</TargetFrameworks>
     <RootNamespace>Kvpbase</RootNamespace>
     <PackageId>Kvpbase</PackageId>
-    <Version>3.2.0</Version>
+    <Version>3.2.1</Version>
     <Authors>Joel Christner</Authors>
     <Product>Kvpbase Storage Server</Product>
     <Description>Object storage system with integrated replication and a simple RESTful API.</Description>
-    <Copyright>(c)2019</Copyright>
+    <Copyright>(c)2019 Joel Christner</Copyright>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/kvpbase/storage-server</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
@@ -20,12 +20,12 @@
 
   <ItemGroup>
     <PackageReference Include="EmailWrapper" Version="1.0.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="RestWrapper" Version="1.0.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="RestWrapper" Version="2.0.2" />
     <PackageReference Include="SyslogLogging" Version="1.0.10" />
-    <PackageReference Include="Watson" Version="1.5.1" />
+    <PackageReference Include="Watson" Version="2.0.2" />
     <PackageReference Include="WatsonMesh" Version="1.0.8" />
-    <PackageReference Include="WatsonTcp" Version="1.1.7" />
+    <PackageReference Include="WatsonTcp" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
@@ -24,7 +25,7 @@ namespace Kvpbase
             if (md.Params.RequestMetadata)
             {
                 RequestMetadata respMetadata = md.Sanitized();
-                return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(respMetadata, true), true);
+                return new HttpResponse(md.Http, 200, null, "application/json", Encoding.UTF8.GetBytes(Common.SerializeJson(respMetadata, true)));
             }
 
             #endregion
@@ -80,8 +81,8 @@ namespace Kvpbase
             }
 
             _Logging.Log(LoggingModule.Severity.Warn, "AdminApiHandler unknown endpoint URL: " + md.Http.RawUrlWithoutQuery);
-            return new HttpResponse(md.Http, false, 400, null, "application/json", 
-                new ErrorResponse(2, 400, "Unknown endpoint.", null), true);
+            return new HttpResponse(md.Http, 400, null, "application/json",
+                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Unknown endpoint.", null), true)));
 
             #endregion
         }

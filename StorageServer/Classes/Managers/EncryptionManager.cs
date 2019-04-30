@@ -148,12 +148,11 @@ namespace Kvpbase
             clear = null;
             if (cipher == null || cipher.Length < 1) throw new ArgumentNullException(nameof(cipher));
             if (String.IsNullOrEmpty(ksn)) throw new ArgumentNullException(nameof(ksn));
-
-            RestResponse resp = new RestResponse();
+             
             string url = "";
             DateTime startTime = DateTime.Now;
             Dictionary<string, string> headers = new Dictionary<string, string>();
-            EncryptedMessage req = new EncryptedMessage();
+            EncryptedMessage msg = new EncryptedMessage();
 
             if (Common.IsTrue(_Settings.Encryption.Ssl)) url = "https://";
             else url = "http://";
@@ -161,24 +160,27 @@ namespace Kvpbase
 
             headers = Common.AddToDictionary(_Settings.Encryption.ApiKeyHeader, _Settings.Encryption.ApiKeyValue, null);
 
-            req.Cipher = cipher;
-            req.Ksn = ksn;
+            msg.Cipher = cipher;
+            msg.Ksn = ksn;
 
-            resp = RestRequest.SendRequestSafe(
-                url, "application/json", "POST", null, null, false,
-                Common.IsTrue(_Settings.Rest.AcceptInvalidCerts),
+            RestRequest req = new RestRequest(
+                url,
+                HttpMethod.POST,
                 headers,
-                Encoding.UTF8.GetBytes(Common.SerializeJson(req, true)));
+                "application/json",
+                true);
 
+            RestResponse resp = req.Send(Encoding.UTF8.GetBytes(Common.SerializeJson(msg, true)));
+            
             if (resp == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "ServerDecrypt null REST response returned");
                 return false;
             }
 
-            if (resp.StatusCode != 200)
+            if (resp.StatusCode < 200 || resp.StatusCode > 299)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ServerDecrypt non-200 response returned: " + resp.StatusCode);
+                _Logging.Log(LoggingModule.Severity.Warn, "ServerDecrypt non success response returned: " + resp.StatusCode);
                 return false;
             }
 
@@ -192,8 +194,7 @@ namespace Kvpbase
             cipher = null;
             ksn = "";
             if (clear == null || clear.Length < 1) throw new ArgumentNullException(nameof(clear));
-             
-            RestResponse resp = new RestResponse();
+              
             string url = "";
             DateTime startTime = DateTime.Now;
             Dictionary<string, string> headers = new Dictionary<string, string>();
@@ -205,11 +206,14 @@ namespace Kvpbase
 
             headers = Common.AddToDictionary(_Settings.Encryption.ApiKeyHeader, _Settings.Encryption.ApiKeyValue, null);
 
-            resp = RestRequest.SendRequestSafe(
-                url, null, "POST", null, null, false,
-                Common.IsTrue(_Settings.Rest.AcceptInvalidCerts),
+            RestRequest req = new RestRequest(
+                url,
+                HttpMethod.POST,
                 headers,
-                clear);
+                "application/octet-stream",
+                true);
+
+            RestResponse resp = req.Send(clear);
 
             if (resp == null)
             {
@@ -217,9 +221,9 @@ namespace Kvpbase
                 return false;
             }
 
-            if (resp.StatusCode != 200)
+            if (resp.StatusCode < 200 || resp.StatusCode > 299)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ServerEncrypt non-200 response returned: " + resp.StatusCode);
+                _Logging.Log(LoggingModule.Severity.Warn, "ServerEncrypt non success response returned: " + resp.StatusCode);
                 return false;
             }
 

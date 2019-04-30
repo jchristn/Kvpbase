@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "eb051a00b773a58b6df097e8383a8990d9094aa9"
+    "signature": "896ce875ca23e50d739236f4325acaf8d9d87b0e"
   },
   "compilationOptions": {},
   "targets": {
@@ -11,12 +11,12 @@
           "Container": "1.0.0",
           "Core": "1.0.0",
           "EmailWrapper": "1.0.2",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.2",
           "RestWrapper": "1.0.9",
           "SyslogLogging": "1.0.10",
-          "Watson": "1.5.1",
+          "Watson": "2.0.1",
           "WatsonMesh": "1.0.8",
-          "WatsonTcp": "1.1.7"
+          "WatsonTcp": "1.2.0"
         },
         "runtime": {
           "StorageServer.dll": {}
@@ -44,6 +44,14 @@
           }
         }
       },
+      "IpMatcher/1.0.1": {
+        "runtime": {
+          "lib/netstandard2.0/IpMatcher.dll": {
+            "assemblyVersion": "1.0.1.0",
+            "fileVersion": "1.0.1.0"
+          }
+        }
+      },
       "Microsoft.CSharp/4.5.0": {},
       "Microsoft.Win32.SystemEvents/4.5.0": {
         "runtime": {
@@ -61,11 +69,11 @@
           }
         }
       },
-      "Newtonsoft.Json/12.0.1": {
+      "Newtonsoft.Json/12.0.2": {
         "runtime": {
           "lib/netstandard2.0/Newtonsoft.Json.dll": {
             "assemblyVersion": "12.0.0.0",
-            "fileVersion": "12.0.1.22727"
+            "fileVersion": "12.0.2.23222"
           }
         }
       },
@@ -93,15 +101,15 @@
           }
         }
       },
-      "SqliteHelper/1.0.9": {
+      "SqliteHelper/1.0.10": {
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
           "System.Data.SQLite": "1.0.110"
         },
         "runtime": {
           "lib/netstandard2.0/SqliteWrapper.dll": {
-            "assemblyVersion": "1.0.9.0",
-            "fileVersion": "1.0.9.0"
+            "assemblyVersion": "1.0.10.0",
+            "fileVersion": "1.0.10.0"
           }
         }
       },
@@ -173,22 +181,23 @@
           }
         }
       },
-      "Watson/1.5.1": {
+      "Watson/2.0.1": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.1",
+          "IpMatcher": "1.0.1",
+          "Newtonsoft.Json": "12.0.2",
           "RegexMatcher": "1.0.1"
         },
         "runtime": {
           "lib/netstandard2.0/WatsonWebserver.dll": {
-            "assemblyVersion": "1.5.1.0",
-            "fileVersion": "1.5.1.0"
+            "assemblyVersion": "2.0.1.0",
+            "fileVersion": "2.0.1.0"
           }
         }
       },
       "WatsonMesh/1.0.8": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.1",
-          "WatsonTcp": "1.1.7"
+          "Newtonsoft.Json": "12.0.2",
+          "WatsonTcp": "1.2.0"
         },
         "runtime": {
           "lib/netstandard2.0/WatsonMesh.dll": {
@@ -197,11 +206,11 @@
           }
         }
       },
-      "WatsonTcp/1.1.7": {
+      "WatsonTcp/1.2.0": {
         "runtime": {
           "lib/netstandard2.0/WatsonTcp.dll": {
-            "assemblyVersion": "1.1.7.0",
-            "fileVersion": "1.1.7.0"
+            "assemblyVersion": "1.2.0.0",
+            "fileVersion": "1.2.0.0"
           }
         }
       },
@@ -210,8 +219,8 @@
           "Caching.dll": "1.3.1",
           "Core": "1.0.0",
           "Microsoft.CSharp": "4.5.0",
-          "Newtonsoft.Json": "12.0.1",
-          "SqliteHelper": "1.0.9",
+          "Newtonsoft.Json": "12.0.2",
+          "SqliteHelper": "1.0.10",
           "System.Data.SQLite": "1.0.110"
         },
         "runtime": {
@@ -220,9 +229,9 @@
       },
       "Core/1.0.0": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "1.5.1"
+          "Watson": "2.0.1"
         },
         "runtime": {
           "Core.dll": {}
@@ -250,6 +259,13 @@
       "path": "emailwrapper/1.0.2",
       "hashPath": "emailwrapper.1.0.2.nupkg.sha512"
     },
+    "IpMatcher/1.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ASdqz1wygrLi6biivalAsxORk24DI5ZMyfgyRazsEqqXsVSDqzEBUt9IqxVdGhY6le2P0TX3eQqUzaokNXCpog==",
+      "path": "ipmatcher/1.0.1",
+      "hashPath": "ipmatcher.1.0.1.nupkg.sha512"
+    },
     "Microsoft.CSharp/4.5.0": {
       "type": "package",
       "serviceable": true,
@@ -264,12 +280,12 @@
       "path": "microsoft.win32.systemevents/4.5.0",
       "hashPath": "microsoft.win32.systemevents.4.5.0.nupkg.sha512"
     },
-    "Newtonsoft.Json/12.0.1": {
+    "Newtonsoft.Json/12.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-jmVyoEyk0In8r+AObYQyFKVFm7uSRzE0XSHSbEtBJcZDMV6DqJoyB4FLcHwprPVhAh826so0db3DIKXVnpGoPA==",
-      "path": "newtonsoft.json/12.0.1",
-      "hashPath": "newtonsoft.json.12.0.1.nupkg.sha512"
+      "sha512": "sha512-mtweBXPWhp1CMQATtBT7ZfMZrbZBTKfjGwz6Y75NwGjx/GztDaUnfw8GK9KZ2T4fDIqKJyDjc9Rxlw5+G2FcVA==",
+      "path": "newtonsoft.json/12.0.2",
+      "hashPath": "newtonsoft.json.12.0.2.nupkg.sha512"
     },
     "RegexMatcher/1.0.1": {
       "type": "package",
@@ -292,12 +308,12 @@
       "path": "restwrapper/1.0.9",
       "hashPath": "restwrapper.1.0.9.nupkg.sha512"
     },
-    "SqliteHelper/1.0.9": {
+    "SqliteHelper/1.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-7kZY808clbsoL+OYePEo4Vy4D4JDIbYszq+koH6sKbyz/BDRCJ1YEDDZMEnQDw4YqaD7LlPqtX5z0pbakjrP7A==",
-      "path": "sqlitehelper/1.0.9",
-      "hashPath": "sqlitehelper.1.0.9.nupkg.sha512"
+      "sha512": "sha512-qpIXOv6Ry6K2l2xvBszISC7mphVbeso+hn5L5LtPsXrSo0xwvw0FU6vv/Brj92Etg+dmwv7pnxYq4Q9BjuB0gA==",
+      "path": "sqlitehelper/1.0.10",
+      "hashPath": "sqlitehelper.1.0.10.nupkg.sha512"
     },
     "SyslogLogging/1.0.10": {
       "type": "package",
@@ -327,12 +343,12 @@
       "path": "system.drawing.common/4.5.1",
       "hashPath": "system.drawing.common.4.5.1.nupkg.sha512"
     },
-    "Watson/1.5.1": {
+    "Watson/2.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-+EWwqZGgpXdRVJbKL3/M/JxnpKsf3tDUc+FUjxa6u171YmG4zp8Vh1x7njG5EHD5Jzr8TxivzxCo2f59MTKhgA==",
-      "path": "watson/1.5.1",
-      "hashPath": "watson.1.5.1.nupkg.sha512"
+      "sha512": "sha512-gcU9yvu6mkoRNAiqAZdxure5O1WgnQFevqUQBqD+T38TmQ+ur2KPlwC+Cy+YGDi2uFkfyARovkojRvL/MXaHKA==",
+      "path": "watson/2.0.1",
+      "hashPath": "watson.2.0.1.nupkg.sha512"
     },
     "WatsonMesh/1.0.8": {
       "type": "package",
@@ -341,12 +357,12 @@
       "path": "watsonmesh/1.0.8",
       "hashPath": "watsonmesh.1.0.8.nupkg.sha512"
     },
-    "WatsonTcp/1.1.7": {
+    "WatsonTcp/1.2.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-hX3ozV5A4EGaBtvPfeJCotUv0J+RTeohfOH6BC7TlXpORjDObK37p8Ku1HQJF5WpSKN+tjBHN8OTHhZo+QlU5A==",
-      "path": "watsontcp/1.1.7",
-      "hashPath": "watsontcp.1.1.7.nupkg.sha512"
+      "sha512": "sha512-QW8W1oVOAMmK/RHA/eN6UItZmxTifqhTWThNRABUoeYwuqxD156djpYuWJV2gZmL1UmJZR7S2lEMMfO30murCQ==",
+      "path": "watsontcp/1.2.0",
+      "hashPath": "watsontcp.1.2.0.nupkg.sha512"
     },
     "Container/1.0.0": {
       "type": "project",

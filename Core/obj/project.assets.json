@@ -2,7 +2,16 @@
   "version": 3,
   "targets": {
     ".NETFramework,Version=v4.6.1": {
-      "Newtonsoft.Json/12.0.1": {
+      "IpMatcher/1.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net452/IpMatcher.dll": {}
+        },
+        "runtime": {
+          "lib/net452/IpMatcher.dll": {}
+        }
+      },
+      "Newtonsoft.Json/12.0.2": {
         "type": "package",
         "compile": {
           "lib/net45/Newtonsoft.Json.dll": {}
@@ -34,9 +43,10 @@
           "lib/net461/System.Drawing.Common.dll": {}
         }
       },
-      "Watson/1.5.1": {
+      "Watson/2.0.2": {
         "type": "package",
         "dependencies": {
+          "IpMatcher": "1.0.1",
           "Newtonsoft.Json": "12.0.1",
           "RegexMatcher": "1.0.1"
         },
@@ -49,6 +59,15 @@
       }
     },
     ".NETStandard,Version=v2.0": {
+      "IpMatcher/1.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/IpMatcher.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/IpMatcher.dll": {}
+        }
+      },
       "Microsoft.NETCore.Platforms/1.1.0": {
         "type": "package",
         "compile": {
@@ -73,7 +92,7 @@
           "build/netstandard2.0/NETStandard.Library.targets": {}
         }
       },
-      "Newtonsoft.Json/12.0.1": {
+      "Newtonsoft.Json/12.0.2": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/Newtonsoft.Json.dll": {}
@@ -100,9 +119,10 @@
           "lib/netstandard2.0/System.Drawing.Common.dll": {}
         }
       },
-      "Watson/1.5.1": {
+      "Watson/2.0.2": {
         "type": "package",
         "dependencies": {
+          "IpMatcher": "1.0.1",
           "Newtonsoft.Json": "12.0.1",
           "RegexMatcher": "1.0.1"
         },
@@ -116,6 +136,19 @@
     }
   },
   "libraries": {
+    "IpMatcher/1.0.1": {
+      "sha512": "ASdqz1wygrLi6biivalAsxORk24DI5ZMyfgyRazsEqqXsVSDqzEBUt9IqxVdGhY6le2P0TX3eQqUzaokNXCpog==",
+      "type": "package",
+      "path": "ipmatcher/1.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ipmatcher.1.0.1.nupkg.sha512",
+        "ipmatcher.nuspec",
+        "lib/net452/IpMatcher.dll",
+        "lib/netstandard2.0/IpMatcher.dll"
+      ]
+    },
     "Microsoft.NETCore.Platforms/1.1.0": {
       "sha512": "a/iSwnRZb+LHFk49hQOyThh/ZNC3vsbZsF65XwQIb863qF6msmhdQtxGXFL28Ob2NsCz/drEj28BJd/YPpLRBg==",
       "type": "package",
@@ -259,42 +292,33 @@
         "netstandard.library.nuspec"
       ]
     },
-    "Newtonsoft.Json/12.0.1": {
-      "sha512": "jmVyoEyk0In8r+AObYQyFKVFm7uSRzE0XSHSbEtBJcZDMV6DqJoyB4FLcHwprPVhAh826so0db3DIKXVnpGoPA==",
+    "Newtonsoft.Json/12.0.2": {
+      "sha512": "mtweBXPWhp1CMQATtBT7ZfMZrbZBTKfjGwz6Y75NwGjx/GztDaUnfw8GK9KZ2T4fDIqKJyDjc9Rxlw5+G2FcVA==",
       "type": "package",
-      "path": "newtonsoft.json/12.0.1",
+      "path": "newtonsoft.json/12.0.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE.md",
         "lib/net20/Newtonsoft.Json.dll",
-        "lib/net20/Newtonsoft.Json.pdb",
         "lib/net20/Newtonsoft.Json.xml",
         "lib/net35/Newtonsoft.Json.dll",
-        "lib/net35/Newtonsoft.Json.pdb",
         "lib/net35/Newtonsoft.Json.xml",
         "lib/net40/Newtonsoft.Json.dll",
-        "lib/net40/Newtonsoft.Json.pdb",
         "lib/net40/Newtonsoft.Json.xml",
         "lib/net45/Newtonsoft.Json.dll",
-        "lib/net45/Newtonsoft.Json.pdb",
         "lib/net45/Newtonsoft.Json.xml",
         "lib/netstandard1.0/Newtonsoft.Json.dll",
-        "lib/netstandard1.0/Newtonsoft.Json.pdb",
         "lib/netstandard1.0/Newtonsoft.Json.xml",
         "lib/netstandard1.3/Newtonsoft.Json.dll",
-        "lib/netstandard1.3/Newtonsoft.Json.pdb",
         "lib/netstandard1.3/Newtonsoft.Json.xml",
         "lib/netstandard2.0/Newtonsoft.Json.dll",
-        "lib/netstandard2.0/Newtonsoft.Json.pdb",
         "lib/netstandard2.0/Newtonsoft.Json.xml",
         "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.dll",
-        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.pdb",
         "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.xml",
         "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.dll",
-        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.pdb",
         "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.xml",
-        "newtonsoft.json.12.0.1.nupkg.sha512",
+        "newtonsoft.json.12.0.2.nupkg.sha512",
         "newtonsoft.json.nuspec"
       ]
     },
@@ -344,31 +368,31 @@
         "version.txt"
       ]
     },
-    "Watson/1.5.1": {
-      "sha512": "+EWwqZGgpXdRVJbKL3/M/JxnpKsf3tDUc+FUjxa6u171YmG4zp8Vh1x7njG5EHD5Jzr8TxivzxCo2f59MTKhgA==",
+    "Watson/2.0.2": {
+      "sha512": "DxrAFA+JsAI/nc2DJX7JkQksN+TYLXAR/1EbYyt+BpNHA/ouLb3YFcAoylLq5Wiao4FkDHO3DZhq7PP+1/Iigg==",
       "type": "package",
-      "path": "watson/1.5.1",
+      "path": "watson/2.0.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net462/WatsonWebserver.dll",
         "lib/netstandard2.0/WatsonWebserver.dll",
-        "watson.1.5.1.nupkg.sha512",
+        "watson.2.0.2.nupkg.sha512",
         "watson.nuspec"
       ]
     }
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.6.1": [
-      "Newtonsoft.Json >= 12.0.1",
+      "Newtonsoft.Json >= 12.0.2",
       "System.Drawing.Common >= 4.5.1",
-      "Watson >= 1.5.1"
+      "Watson >= 2.0.2"
     ],
     ".NETStandard,Version=v2.0": [
       "NETStandard.Library >= 2.0.3",
-      "Newtonsoft.Json >= 12.0.1",
+      "Newtonsoft.Json >= 12.0.2",
       "System.Drawing.Common >= 4.5.1",
-      "Watson >= 1.5.1"
+      "Watson >= 2.0.2"
     ]
   },
   "packageFolders": {
@@ -378,11 +402,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\code\\KVPbase\\storageserver-3.1\\Core\\Core.csproj",
+      "projectUniqueName": "C:\\Code\\KVPbase\\storageserver-3.1\\Core\\Core.csproj",
       "projectName": "Core",
-      "projectPath": "C:\\code\\KVPbase\\storageserver-3.1\\Core\\Core.csproj",
+      "projectPath": "C:\\Code\\KVPbase\\storageserver-3.1\\Core\\Core.csproj",
       "packagesPath": "C:\\Users\\joelc\\.nuget\\packages\\",
-      "outputPath": "C:\\code\\KVPbase\\storageserver-3.1\\Core\\obj\\",
+      "outputPath": "C:\\Code\\KVPbase\\storageserver-3.1\\Core\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
@@ -419,7 +443,7 @@
         "dependencies": {
           "Newtonsoft.Json": {
             "target": "Package",
-            "version": "[12.0.1, )"
+            "version": "[12.0.2, )"
           },
           "System.Drawing.Common": {
             "target": "Package",
@@ -427,7 +451,7 @@
           },
           "Watson": {
             "target": "Package",
-            "version": "[1.5.1, )"
+            "version": "[2.0.2, )"
           }
         }
       },
@@ -441,7 +465,7 @@
           },
           "Newtonsoft.Json": {
             "target": "Package",
-            "version": "[12.0.1, )"
+            "version": "[12.0.2, )"
           },
           "System.Drawing.Common": {
             "target": "Package",
@@ -449,7 +473,7 @@
           },
           "Watson": {
             "target": "Package",
-            "version": "[1.5.1, )"
+            "version": "[2.0.2, )"
           }
         },
         "imports": [

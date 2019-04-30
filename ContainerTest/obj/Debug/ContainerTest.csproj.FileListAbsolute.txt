@@ -166,3 +166,4 @@ C:\Code\KVPbase\storageserver-3.1\ContainerTest\obj\Debug\ContainerTest.csproj.C
 C:\Code\KVPbase\storageserver-3.1\ContainerTest\obj\Debug\ContainerTest.csproj.CopyComplete
 C:\Code\KVPbase\storageserver-3.1\ContainerTest\obj\Debug\ContainerTest.exe
 C:\Code\KVPbase\storageserver-3.1\ContainerTest\obj\Debug\ContainerTest.pdb
+C:\Code\KVPbase\storageserver-3.1\ContainerTest\bin\Debug\IpMatcher.dll

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
@@ -21,8 +22,8 @@ namespace Kvpbase
                 if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpGetContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, false, 404, null, "application/json",
-                        new ErrorResponse(5, 404, "Unknown user or container.", null), true);
+                    return new HttpResponse(md.Http, 404, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
                 }
                 else
                 {
@@ -44,8 +45,8 @@ namespace Kvpbase
                 if (md.User == null || !(md.User.Guid.ToLower().Equals(md.Params.UserGuid.ToLower())))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpGetContainer unauthorized unauthenticated access attempt to container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, false, 401, null, "application/json",
-                        new ErrorResponse(3, 401, "Unauthorized.", null), true);
+                    return new HttpResponse(md.Http, 401, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
                 }
             }
              
@@ -54,8 +55,8 @@ namespace Kvpbase
                 if (!md.Perm.ReadContainer)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpGetContainer unauthorized access attempt to container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, false, 401, null, "application/json",
-                        new ErrorResponse(3, 401, "Unauthorized.", null), true);
+                    return new HttpResponse(md.Http, 401, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
                 }
             }
 
@@ -67,13 +68,13 @@ namespace Kvpbase
             if (!_ContainerMgr.GetContainerSettings(md.Params.UserGuid, md.Params.Container, out settings))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpGetContainer unable to retrieve settings for " + md.Params.UserGuid + "/" + md.Params.Container);
-                return new HttpResponse(md.Http, false, 500, null, "application/json",
-                    new ErrorResponse(4, 500, null, null), true);
+                return new HttpResponse(md.Http, 500, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, null, null), true)));
             }
 
             if (md.Params.Config)
             {
-                return new HttpResponse(md.Http, true, 200, null, "application/json", settings, true);
+                return new HttpResponse(md.Http, 200, null, "application/json", Encoding.UTF8.GetBytes(Common.SerializeJson(settings, true)));
             }
 
             #endregion
@@ -88,8 +89,8 @@ namespace Kvpbase
              
             ContainerMetadata meta = _ContainerHandler.Enumerate(md, currContainer, index, count, md.Params.OrderBy);
              
-            return new HttpResponse(md.Http, true, 200, null, "application/json",
-                Common.SerializeJson(meta, true), true);
+            return new HttpResponse(md.Http, 200, null, "application/json",
+                Encoding.UTF8.GetBytes(Common.SerializeJson(meta, true)));
 
             #endregion 
         }

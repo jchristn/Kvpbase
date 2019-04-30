@@ -17,8 +17,8 @@ namespace Kvpbase
             if (md.User == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer no authentication material");
-                return new HttpResponse(md.Http, false, 401, null, "application/json",
-                    new ErrorResponse(3, 401, "Unauthorized.", null), true);
+                return new HttpResponse(md.Http, 401, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
             }
 
             #endregion
@@ -28,15 +28,15 @@ namespace Kvpbase
             if (md.Http.RawUrlEntries.Count != 2)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer request URL does not have two entries");
-                return new HttpResponse(md.Http, false, 400, null, "application/json",
-                    new ErrorResponse(2, 400, "URL path must contain two entries, i.e. /[user]/[container]/.", null), true);
+                return new HttpResponse(md.Http, 400, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "URL path must contain two entries, i.e. /[user]/[container]/.", null), true)));
             }
              
             if (!md.Params.UserGuid.ToLower().Equals(md.User.Guid.ToLower()))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer user " + md.User.Guid + " attempting to PUT container in user " + md.Params.UserGuid);
-                return new HttpResponse(md.Http, false, 401, null, "application/json",
-                    new ErrorResponse(3, 401, "Unauthorized.", null), true);
+                return new HttpResponse(md.Http, 401, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
             }
 
             #endregion
@@ -50,8 +50,8 @@ namespace Kvpbase
                 if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, false, 404, null, "application/json",
-                        new ErrorResponse(5, 404, "Unknown user or container.", null), true);
+                    return new HttpResponse(md.Http, 404, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace Kvpbase
                     md.Params.CreatedBefore,
                     md.Params.CreatedAfter);
 
-                return new HttpResponse(md.Http, true, 200, null, "application/json", entries, true);
+                return new HttpResponse(md.Http, 200, null, "application/json", Encoding.UTF8.GetBytes(Common.SerializeJson(entries, true)));
 
                 #endregion
             }
@@ -103,16 +103,16 @@ namespace Kvpbase
                     catch (Exception)
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer unable to deserialize request body");
-                        return new HttpResponse(md.Http, false, 400, null, "application/json",
-                            new ErrorResponse(9, 400, null, null), true);
+                        return new HttpResponse(md.Http, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true)));
                     }
                 }
 
                 if (settings == null)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer no request body");
-                    return new HttpResponse(md.Http, false, 400, null, "application/json",
-                        new ErrorResponse(2, 400, "No container settings found in request body.", null), true);
+                    return new HttpResponse(md.Http, 400, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "No container settings found in request body.", null), true)));
                 }
 
                 #endregion
@@ -123,7 +123,7 @@ namespace Kvpbase
 
                 _OutboundMessageHandler.ContainerUpdate(md, settings);
 
-                return new HttpResponse(md.Http, true, 200, null, "application/json", null, true);
+                return new HttpResponse(md.Http, 200, null, "application/json", null);
 
                 #endregion
 

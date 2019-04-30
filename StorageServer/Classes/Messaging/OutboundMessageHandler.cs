@@ -560,7 +560,7 @@ namespace Kvpbase
             else if (_Settings.Redirection.Mode == RedirectMode.TemporaryRedirect) status = 307;
             else if (_Settings.Redirection.Mode == RedirectMode.PermanentRedirect) status = 308;
 
-            return new HttpResponse(md.Http, true, status, headers, null, null, true);
+            return new HttpResponse(md.Http, status, headers, null, null);
         }
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
@@ -20,8 +21,8 @@ namespace Kvpbase
                 if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, false, 404, null, "application/json",
-                        new ErrorResponse(5, 404, "Unknown user or container.", null), true);
+                    return new HttpResponse(md.Http, 404, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
                 }
                 else
                 {
@@ -43,8 +44,8 @@ namespace Kvpbase
                 if (md.User == null || !(md.User.Guid.ToLower().Equals(md.Params.UserGuid.ToLower())))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unauthorized unauthenticated write attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                    return new HttpResponse(md.Http, false, 401, null, "application/json",
-                        new ErrorResponse(3, 401, "Unauthorized.", null), true);
+                    return new HttpResponse(md.Http, 401, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
                 }
             }
 
@@ -53,8 +54,8 @@ namespace Kvpbase
                 if (!md.Perm.WriteObject)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unauthorized write attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                    return new HttpResponse(md.Http, false, 401, null, "application/json",
-                        new ErrorResponse(3, 401, "Unauthorized.", null), true);
+                    return new HttpResponse(md.Http, 401, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
                 }
             }
 
@@ -65,8 +66,8 @@ namespace Kvpbase
             if (!currContainer.Exists(md.Params.ObjectKey))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " does not exists");
-                return new HttpResponse(md.Http, false, 404, null, "application/json",
-                    new ErrorResponse(5, 404, "Object does not exist.", null), true);
+                return new HttpResponse(md.Http, 404, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Object does not exist.", null), true)));
             }
 
             #endregion
@@ -91,8 +92,8 @@ namespace Kvpbase
                         int id = 0;
                         Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
 
-                        return new HttpResponse(md.Http, false, statusCode, null, "application/json",
-                            new ErrorResponse(id, statusCode, "Unable to rename object.", error), true);
+                        return new HttpResponse(md.Http, statusCode, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to rename object.", error), true)));
                     }
                     else
                     {
@@ -101,11 +102,11 @@ namespace Kvpbase
                             _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to replicate operation to one or more nodes");
                             cleanupRequired = true;
 
-                            return new HttpResponse(md.Http, false, 500, null, "application/json",
-                                new ErrorResponse(10, 500, null, null), true); 
+                            return new HttpResponse(md.Http, 500, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true))); 
                         }
 
-                        return new HttpResponse(md.Http, true, 200, null, null, null, true);
+                        return new HttpResponse(md.Http, 200, null, null, null);
                     }
                 }
                 finally
@@ -141,8 +142,8 @@ namespace Kvpbase
                     )
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject transfer size too large (count requested: " + md.Params.Count + ")");
-                    return new HttpResponse(md.Http, false, 413, null, "application/json",
-                        new ErrorResponse(11, 413, null, null), true);
+                    return new HttpResponse(md.Http, 413, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true)));
                 }
 
                 #endregion
@@ -165,8 +166,8 @@ namespace Kvpbase
                     else
                     { 
                         _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to retrieve original data from object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
-                        return new HttpResponse(md.Http, false, 500, null, "application/json",
-                            new ErrorResponse(4, 500, "Unable to retrieve original data.", null), true);
+                        return new HttpResponse(md.Http, 500, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, "Unable to retrieve original data.", null), true)));
                     }
                 }
 
@@ -185,8 +186,8 @@ namespace Kvpbase
                         int id = 0;
                         Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
 
-                        return new HttpResponse(md.Http, false, statusCode, null, "application/json",
-                            new ErrorResponse(id, statusCode, "Unable to write range to object.", error), true);
+                        return new HttpResponse(md.Http, statusCode, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to write range to object.", error), true)));
                     }
                     else
                     { 
@@ -195,11 +196,11 @@ namespace Kvpbase
                             _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to replicate operation to one or more nodes");
                             cleanupRequired = true;
 
-                            return new HttpResponse(md.Http, false, 500, null, "application/json",
-                                new ErrorResponse(10, 500, null, null), true);
+                            return new HttpResponse(md.Http, 500, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true)));
                         }
 
-                        return new HttpResponse(md.Http, true, 200, null, null, null, true);
+                        return new HttpResponse(md.Http, 200, null, null, null);
                     }
                 }
                 finally
@@ -229,8 +230,8 @@ namespace Kvpbase
                 if (!currContainer.ReadObjectMetadata(md.Params.ObjectKey, out originalMetadata))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to read original metadata for tag rewrite for object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                    return new HttpResponse(md.Http, false, 404, null, "application/json",
-                        new ErrorResponse(5, 404, "Object not found.", null), true);
+                    return new HttpResponse(md.Http, 404, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Object not found.", null), true)));
                 }
 
                 #endregion
@@ -248,8 +249,8 @@ namespace Kvpbase
                         int id = 0;
                         Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
 
-                        return new HttpResponse(md.Http, false, statusCode, null, "application/json",
-                            new ErrorResponse(id, statusCode, "Unable to write tags to object.", error), true);
+                        return new HttpResponse(md.Http, statusCode, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to write tags to object.", error), true)));
                     }
                     else
                     {
@@ -258,11 +259,11 @@ namespace Kvpbase
                             _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to replicate operation to one or more nodes");
                             cleanupRequired = true;
 
-                            return new HttpResponse(md.Http, false, 500, null, "application/json",
-                                new ErrorResponse(10, 500, null, null), true);
+                            return new HttpResponse(md.Http, 500, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true)));
                         }
 
-                        return new HttpResponse(md.Http, true, 200, null, null, null, true);
+                        return new HttpResponse(md.Http, 200, null, null, null);
                     }
                 }
                 finally
@@ -281,8 +282,8 @@ namespace Kvpbase
             else
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject request query does not contain _index, _rename, or _tags"); 
-                return new HttpResponse(md.Http, false, 400, null, "application/json",
-                    new ErrorResponse(2, 400, "Querystring must contain values for '_index', '_rename', or '_tags'.", null), true);
+                return new HttpResponse(md.Http, 400, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Querystring must contain values for '_index', '_rename', or '_tags'.", null), true)));
             }
 
             #endregion 

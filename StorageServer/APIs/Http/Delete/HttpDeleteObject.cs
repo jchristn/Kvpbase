@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
@@ -16,15 +17,15 @@ namespace Kvpbase
             if (md.User == null || !(md.User.Guid.ToLower().Equals(md.Params.UserGuid.ToLower())))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpDeleteObject unauthorized unauthenticated write attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                return new HttpResponse(md.Http, false, 401, null, "application/json",
-                    new ErrorResponse(3, 401, "Unauthorized.", null), true);
+                return new HttpResponse(md.Http, 401, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
             }
 
             if (!md.Perm.DeleteObject)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpDeleteObject unauthorized delete attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                return new HttpResponse(md.Http, false, 401, null, "application/json",
-                    new ErrorResponse(3, 401, "Unauthorized.", null), true);
+                return new HttpResponse(md.Http, 401, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
             }
 
             #endregion
@@ -38,8 +39,8 @@ namespace Kvpbase
                 if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpDeleteObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, false, 404, null, "application/json",
-                        new ErrorResponse(5, 404, "Unknown user or container.", null), true);
+                    return new HttpResponse(md.Http, 404, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
                 }
                 else
                 {
@@ -57,8 +58,8 @@ namespace Kvpbase
             if (!currContainer.Exists(md.Params.ObjectKey))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpDeleteObject object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " does not exist");
-                return new HttpResponse(md.Http, false, 404, null, "application/json",
-                    new ErrorResponse(5, 404, null, null), true);
+                return new HttpResponse(md.Http, 404, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true)));
             }
 
             #endregion
@@ -69,14 +70,14 @@ namespace Kvpbase
             if (!_ObjectHandler.Delete(md, currContainer, md.Params.ObjectKey, out error))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpDeleteObject unable to delete object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
-                return new HttpResponse(md.Http, false, 500, null, "application/json",
-                    new ErrorResponse(4, 500, "Unable to delete object.", error), true);
+                return new HttpResponse(md.Http, 500, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, "Unable to delete object.", error), true)));
             }
             else
             {
                 _Logging.Log(LoggingModule.Severity.Debug, "HttpDeleteObject deleted object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                 _OutboundMessageHandler.ObjectDelete(md, currContainer.Settings);
-                return new HttpResponse(md.Http, true, 204, null, null, null, true);
+                return new HttpResponse(md.Http, 204, null, null, null);
             } 
             
             #endregion 

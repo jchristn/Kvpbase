@@ -128,6 +128,7 @@ Notes from previous versions (starting with v2.0.1) will be moved here.
 
 v3.x
 
+- Updated dependencies
 - Bugfix for retrieving request metadata vs container/object metadata (new querystring parameter)
 - Support for object tags (on create/POST, on edit/PUT, and for enumeration)
 - Significant performance improvements
