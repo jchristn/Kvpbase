@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
-namespace Kvpbase
+namespace Kvpbase.Container
 {
     /// <summary>
     /// The type of object handler.

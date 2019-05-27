@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using SyslogLogging;
 using WatsonWebserver;
 
-namespace Kvpbase
+using Kvpbase.Classes.Managers;
+
+using Kvpbase.Container;
+
+namespace Kvpbase.Classes.Messaging
 {
     /// <summary>
     /// Handles outgoing message requests.
@@ -281,9 +286,11 @@ namespace Kvpbase
 
         #region Object-Methods
 
-        public bool ObjectCreate(RequestMetadata md, ContainerSettings settings)
+        public bool ObjectCreate(RequestMetadata md, ContainerSettings settings, Stream stream)
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (!stream.CanRead) throw new ArgumentException("Cannot read from supplied stream.");
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (settings.Replication == ReplicationMode.None)
             {
@@ -302,7 +309,7 @@ namespace Kvpbase
 
             foreach (Node currNode in nodes)
             {
-                if (!ObjectCreateInternal(md, currNode, settings.Replication))
+                if (!ObjectCreateInternal(md, currNode, settings.Replication, stream))
                 {
                     success = false;
                     _Logging.Log(LoggingModule.Severity.Warn, "ObjectCreate unable to replicate to " + currNode.ToString());
@@ -739,8 +746,9 @@ namespace Kvpbase
 
         #region Object-Methods
 
-        private bool ObjectCreateInternal(RequestMetadata md, Node node, ReplicationMode mode)
+        private bool ObjectCreateInternal(RequestMetadata md, Node node, ReplicationMode mode, Stream stream)
         {
+            md.Http.Data = Common.StreamToBytes(stream);
             Message msgOut = new Message(_Topology.LocalNode, node, md.Sanitized(), MessageType.ReplicationObjectCreate, null, md.ToBytes());
 
             bool success = false;

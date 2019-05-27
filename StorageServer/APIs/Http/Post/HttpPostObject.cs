@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -15,6 +16,8 @@ namespace Kvpbase
             bool cleanupRequired = false;  
             Container currContainer = null;
             ErrorCode error;
+
+            string guid = null;
 
             try
             { 
@@ -68,11 +71,9 @@ namespace Kvpbase
 
                 #region Verify-Transfer-Size
 
-                if (md.Http.ContentLength > _Settings.Server.MaxTransferSize ||
-                    (md.Http.Data != null && md.Http.Data.Length > _Settings.Server.MaxTransferSize)
-                    )
+                if (_Settings.Server.MaxObjectSize > 0 && md.Http.ContentLength > _Settings.Server.MaxObjectSize)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPostObject transfer size too large (count requested: " + md.Params.Count + ")");
+                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPostObject object size too large (" + md.Http.ContentLength + " bytes)");
                     return new HttpResponse(md.Http, 413, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true)));
                 }
@@ -80,8 +81,25 @@ namespace Kvpbase
                 #endregion
 
                 #region Write-and-Return
+                 
+                if (!_TempFilesMgr.Add(md.Http.ContentLength, md.Http.DataStream, out guid))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPostObject unable to write temporary file for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                    return new HttpResponse(md.Http, 500, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, "Unable to write temporary file.", null), true)));
+                }
 
-                if (!_ObjectHandler.Create(md, currContainer, md.Params.ObjectKey, md.Http.ContentType, md.Http.Data, out error))
+                Stream stream = null;
+                long contentLength = 0;
+
+                if (!_TempFilesMgr.Read(guid, out contentLength, out stream))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPostObject unable to attach stream for for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                    return new HttpResponse(md.Http, 500, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, "Unable to attach stream.", null), true)));
+                }
+                 
+                if (!_ObjectHandler.Create(md, currContainer, md.Params.ObjectKey, md.Http.ContentType, contentLength, stream, out error))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPostObject unable to write object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
 
@@ -94,7 +112,9 @@ namespace Kvpbase
                 }
                 else
                 {
-                    if (!_OutboundMessageHandler.ObjectCreate(md, currContainer.Settings))
+                    stream.Seek(0, SeekOrigin.Begin);
+
+                    if (!_OutboundMessageHandler.ObjectCreate(md, currContainer.Settings, stream))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "HttpPostObject unable to replicate operation to one or more nodes");
                         cleanupRequired = true;
@@ -114,6 +134,11 @@ namespace Kvpbase
                 {
                     _ObjectHandler.Delete(md, currContainer, md.Params.ObjectKey, out error);
                     _OutboundMessageHandler.ObjectDelete(md, currContainer.Settings);
+                }
+
+                if (!String.IsNullOrEmpty(guid))
+                {
+                    _TempFilesMgr.Delete(guid);
                 }
             }
         }

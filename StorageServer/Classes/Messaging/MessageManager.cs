@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SyslogLogging;
 
-namespace Kvpbase
+namespace Kvpbase.Classes.Messaging
 {
     /// <summary>
     /// Processes messages received in TopologyManager callbacks.
@@ -47,7 +47,7 @@ namespace Kvpbase
             {
                 if (msg == null) throw new ArgumentNullException(nameof(msg));
                  
-                _Logging.Log(LoggingModule.Severity.Debug, "ProcessAsyncMessage " + msg.Type.ToString() + " received from node ID " + msg.From.NodeId);
+                // _Logging.Log(LoggingModule.Severity.Debug, "ProcessAsyncMessage " + msg.Type.ToString() + " received from node ID " + msg.From.NodeId);
                  
                 Message resp = new Message(msg.To, msg.From, msg.Type, false, null);
 
@@ -147,7 +147,7 @@ namespace Kvpbase
             { 
                 if (msg == null) throw new ArgumentNullException(nameof(msg));
                  
-                _Logging.Log(LoggingModule.Severity.Debug, "ProcessSyncMessage " + msg.Type.ToString() + " received from node ID " + msg.From.NodeId);
+                // _Logging.Log(LoggingModule.Severity.Debug, "ProcessSyncMessage " + msg.Type.ToString() + " received from node ID " + msg.From.NodeId);
 
                 Message resp = new Message(msg.To, msg.From, msg.Type, false, null); 
 

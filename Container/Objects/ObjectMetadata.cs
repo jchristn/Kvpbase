@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kvpbase
+namespace Kvpbase.Container
 {
     /// <summary>
     /// Metadata describing an object.
@@ -141,7 +141,41 @@ namespace Kvpbase
             else
             {
                 Tags = null;
-            } 
+            }
+
+            DateTime ts = DateTime.Now.ToUniversalTime();
+            CreatedUtc = ts;
+            LastUpdateUtc = ts;
+            LastAccessUtc = ts;
+        }
+
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
+        /// <param name="key">The object's key.</param>
+        /// <param name="contentType">The content type of the object.</param>
+        /// <param name="contentLength">The object's length.</param>
+        /// <param name="tags">Tags associated with the object.</param>
+        public ObjectMetadata(string key, string contentType, long contentLength, List<string> tags)
+        {
+            if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
+            if (String.IsNullOrEmpty(contentType)) contentType = "application/octet-stream";
+            if (contentLength < 0) throw new ArgumentException("Invalid content length.");
+            
+            Initialize();
+            Key = key;
+            ContentType = contentType;
+            ContentLength = contentLength;
+            Md5 = null;
+
+            if (tags != null)
+            {
+                Tags = Common.StringListToCsv(tags);
+            }
+            else
+            {
+                Tags = null;
+            }
 
             DateTime ts = DateTime.Now.ToUniversalTime();
             CreatedUtc = ts;

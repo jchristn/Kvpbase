@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFrameworks>netcoreapp2.2;net461</TargetFrameworks>
     <RootNamespace>Kvpbase</RootNamespace>
     <PackageId>Kvpbase</PackageId>
-    <Version>3.2.1</Version>
+    <Version>3.3.0</Version>
     <Authors>Joel Christner</Authors>
     <Product>Kvpbase Storage Server</Product>
     <Description>Object storage system with integrated replication and a simple RESTful API.</Description>
@@ -15,7 +15,9 @@
     <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
-    <PackageReleaseNotes>Retarget the server to both .NET Core and .NET Framework</PackageReleaseNotes>
+    <PackageReleaseNotes>Support for streams to support larger objects (modified APIs and Container)</PackageReleaseNotes>
+    <ApplicationIcon />
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,8 +26,8 @@
     <PackageReference Include="RestWrapper" Version="2.0.2" />
     <PackageReference Include="SyslogLogging" Version="1.0.10" />
     <PackageReference Include="Watson" Version="2.0.2" />
-    <PackageReference Include="WatsonMesh" Version="1.0.8" />
-    <PackageReference Include="WatsonTcp" Version="1.2.0" />
+    <PackageReference Include="WatsonMesh" Version="1.1.4" />
+    <PackageReference Include="WatsonTcp" Version="1.3.6" />
   </ItemGroup>
 
   <ItemGroup>

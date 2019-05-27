@@ -9,9 +9,7 @@ namespace Kvpbase
     {
         #region Public-Members-and-Nested-Classes
 
-        public string ProductName; 
-        public string Environment; 
-        public string HomepageUrl; 
+        public string ProductName;  
         public bool EnableConsole;
 
         public SettingsFiles Files;
@@ -50,6 +48,7 @@ namespace Kvpbase
             public string AdminApiKey;
             public int TokenExpirationSec;
             public int FailedRequestsIntervalSec;
+            public long MaxObjectSize;
             public int MaxTransferSize;
         }
 
@@ -62,6 +61,7 @@ namespace Kvpbase
 
         public class SettingsStorage
         {
+            public string TempFiles;
             public string Directory; 
         }
 

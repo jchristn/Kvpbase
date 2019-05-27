@@ -5,6 +5,8 @@ using System.IO;
 using System.Text;
 using SyslogLogging;
 
+using Kvpbase.Container;
+
 namespace Kvpbase
 {
     public class Setup
@@ -83,19 +85,7 @@ namespace Kvpbase
 
             #region Initial-Settings
 
-            currSettings.ProductName = "Kvpbase"; 
-            currSettings.HomepageUrl = "http://www.kvpbase.com"; 
-
-            int platform = (int)Environment.OSVersion.Platform;
-            if ((platform == 4) || (platform == 6) || (platform == 128))
-            {
-                currSettings.Environment = "linux";
-            }
-            else
-            {
-                currSettings.Environment = "windows";
-            }
-
+            currSettings.ProductName = "Kvpbase";   
             currSettings.EnableConsole = true;
 
             #endregion
@@ -118,7 +108,8 @@ namespace Kvpbase
             currSettings.Server.AdminApiKey = "kvpbaseadmin";
             currSettings.Server.TokenExpirationSec = 86400;
             currSettings.Server.FailedRequestsIntervalSec = 60;
-            currSettings.Server.MaxTransferSize = 536870912;
+            currSettings.Server.MaxObjectSize = 2199023255552;      // 2TB object size
+            currSettings.Server.MaxTransferSize = 536870912;        // 512MB transfer size
 
             currSettings.Redirection = new Settings.SettingsRedirection();
             currSettings.Redirection.Mode = RedirectMode.PermanentRedirect; 
@@ -129,6 +120,7 @@ namespace Kvpbase
             currSettings.Topology.HeartbeatIntervalSec = 5;
 
             currSettings.Storage = new Settings.SettingsStorage();
+            currSettings.Storage.TempFiles = "./Temp/";
             currSettings.Storage.Directory = "./Storage/"; 
              
             currSettings.Container = new Settings.SettingsContainer();
@@ -362,7 +354,7 @@ namespace Kvpbase
             containerSettings.EnableAuditLogging = true;
             containerManager.Add(containerSettings);
 
-            Container defaultContainer = null;
+            Container.Container defaultContainer = null;
             containerManager.GetContainer("default", "default", out defaultContainer);
 
             ErrorCode error;

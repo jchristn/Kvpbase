@@ -9,7 +9,9 @@ using WatsonWebserver;
 using RestWrapper;
 using Watson;
 
-namespace Kvpbase
+using Kvpbase.Classes.Messaging;
+
+namespace Kvpbase.Classes.Managers
 {
     /// <summary>
     /// Maintains and manages connectivity amongst nodes.  Relies on MessageManager to handle incoming messages.
@@ -62,8 +64,7 @@ namespace Kvpbase
              
             InitializeMeshNetwork(); 
 
-            if (_Settings.Topology.DebugMeshNetworking) _Logging.Log(LoggingModule.Severity.Info, "TopologyManager debugging enabled, disable to reduce log verbocity");
-            SayHello();
+            if (_Settings.Topology.DebugMeshNetworking) _Logging.Log(LoggingModule.Severity.Info, "TopologyManager debugging enabled, disable to reduce log verbocity"); 
         }
 
         #endregion
@@ -389,8 +390,8 @@ namespace Kvpbase
             if (nodes != null && nodes.Count > 0)
             {
                 foreach (Node node in nodes)
-                {
-                    Message msg = new Message(LocalNode, node, MessageType.Hello, null, Encoding.UTF8.GetBytes("Hello")); 
+                { 
+                    Message msg = new Message(LocalNode, node, MessageType.Console, null, Encoding.UTF8.GetBytes("Hello")); 
                     SendAsyncMessage(msg);
                 }
             }
@@ -533,12 +534,10 @@ namespace Kvpbase
         private void InitializeMeshNetwork()
         { 
             _MeshSettings = new MeshSettings();
-            _MeshSettings.DebugNetworking = _Settings.Topology.DebugMeshNetworking;
 
             _Self = BuildPeerFromNode(LocalNode);
             
-            _Mesh = new WatsonMesh(_MeshSettings, _Self);
-            _Mesh.WarningMessage = MeshWarningMessage;
+            _Mesh = new WatsonMesh(_MeshSettings, _Self); 
 
             if (_Topology == null || _Topology.Nodes.Count < 2)
             {
@@ -561,7 +560,7 @@ namespace Kvpbase
             _Mesh.PeerDisconnected = MeshPeerDisconnected;
             _Mesh.AsyncMessageReceived = MeshAsyncMessageReceived;
             _Mesh.SyncMessageReceived = MeshSyncMessageReceived;
-            _Mesh.StartServer(); 
+            _Mesh.Start();
         }
 
         private bool MeshWarningMessage(string msg)
@@ -697,7 +696,7 @@ namespace Kvpbase
             return _MessageMgr.ProcessAsyncMessage(msg);
         }
 
-        private byte[] MeshSyncMessageReceived(Peer peer, byte[] data)
+        private SyncResponse MeshSyncMessageReceived(Peer peer, byte[] data)
         {
             #region Check-for-Null-Values
 
@@ -752,11 +751,11 @@ namespace Kvpbase
 
             #region Process
 
-            Message resp = _MessageMgr.ProcessSyncMessage(msg);
-            if (resp != null)
+            Message respMsg = _MessageMgr.ProcessSyncMessage(msg);
+            if (respMsg != null)
             {
-                _Logging.Log(LoggingModule.Severity.Info, "MeshSyncMessageReceived responding to node ID " + msg.From.NodeId + " [" + msg.Type.ToString() + "]: " + resp.Success);
-                return Encoding.UTF8.GetBytes(Common.SerializeJson(resp, false));
+                _Logging.Log(LoggingModule.Severity.Info, "MeshSyncMessageReceived responding to node ID " + msg.From.NodeId + " [" + msg.Type.ToString() + "]: " + respMsg.Success); 
+                return new SyncResponse(Encoding.UTF8.GetBytes(Common.SerializeJson(respMsg, false)));
             }
             else
             {

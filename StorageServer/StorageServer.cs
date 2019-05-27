@@ -11,6 +11,12 @@ using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
+using Kvpbase.Classes.BackgroundThreads;
+using Kvpbase.Classes.Handlers;
+using Kvpbase.Classes.Managers;
+using Kvpbase.Classes.Messaging;
+using Kvpbase.Container;
+
 namespace Kvpbase
 {
     public partial class StorageServer
@@ -19,7 +25,8 @@ namespace Kvpbase
         public static LoggingModule _Logging;
         public static UserManager _UserMgr;
         public static ApiKeyManager _ApiKeyMgr;
-        
+
+        public static TempFilesManager _TempFilesMgr;
         public static ContainerManager _ContainerMgr;
         public static ContainerHandler _ContainerHandler;
         public static UrlLockManager _UrlLockMgr;
@@ -42,7 +49,7 @@ namespace Kvpbase
         public static string _TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
 
         public static void Main(string[] args)
-        {
+        { 
             #region Startup-Check
             
             if (!HttpListener.IsSupported)
@@ -96,42 +103,31 @@ namespace Kvpbase
             // Authentication, state, and encrypted related managers
             //
 
-            _UserMgr = new UserManager(_Settings, _Logging);
-
-            _ApiKeyMgr = new ApiKeyManager(_Settings, _Logging, _UserMgr);
-
-            _ConnMgr = new ConnectionManager();
-
-            _EncryptionMgr = new EncryptionManager(_Settings, _Logging);
-
+            _UserMgr = new UserManager(_Settings, _Logging); 
+            _ApiKeyMgr = new ApiKeyManager(_Settings, _Logging, _UserMgr); 
+            _ConnMgr = new ConnectionManager(); 
+            _EncryptionMgr = new EncryptionManager(_Settings, _Logging); 
             _TokenMgr = new TokenManager(_Settings, _Logging, _EncryptionMgr, _UserMgr);
 
             //
             // Managers and handlers for containers, objects
             //
 
-            _ContainerMgr = new ContainerManager(_Settings.Files.Container, _Settings.Container.CacheSize, _Settings.Container.EvictSize);
-
-            _ContainerHandler = new ContainerHandler(_Settings, _Logging, _ContainerMgr);
-
-            _UrlLockMgr = new UrlLockManager(_Logging);
-
+            _TempFilesMgr = new TempFilesManager(_Settings, _Logging);
+            _ContainerMgr = new ContainerManager(_Settings.Files.Container, _Settings.Container.CacheSize, _Settings.Container.EvictSize); 
+            _ContainerHandler = new ContainerHandler(_Settings, _Logging, _ContainerMgr); 
+            _UrlLockMgr = new UrlLockManager(_Logging); 
             _ObjectHandler = new ObjectHandler(_Settings, _Logging, _UrlLockMgr);
 
             //
             // Managers and handlers for the topology, messaging, and callbacks for messages
             //
 
-            _InboundMessageHandler = new InboundMessageHandler(_Settings, _Logging, _ContainerHandler, _ObjectHandler);
-
-            _MessageMgr = new MessageManager(_Settings, _Logging, _InboundMessageHandler);
-
-            _TopologyMgr = new TopologyManager(_Settings, _Logging, _UserMgr, _MessageMgr);
-
-            _Tasks = new TaskManager(_Settings, _Logging, _TopologyMgr);
-
-            _OutboundMessageHandler = new OutboundMessageHandler(_Settings, _Logging, _TopologyMgr, _Tasks);
-
+            _InboundMessageHandler = new InboundMessageHandler(_Settings, _Logging, _ContainerHandler, _ObjectHandler); 
+            _MessageMgr = new MessageManager(_Settings, _Logging, _InboundMessageHandler); 
+            _TopologyMgr = new TopologyManager(_Settings, _Logging, _UserMgr, _MessageMgr); 
+            _Tasks = new TaskManager(_Settings, _Logging, _TopologyMgr); 
+            _OutboundMessageHandler = new OutboundMessageHandler(_Settings, _Logging, _TopologyMgr, _Tasks); 
             _ResyncMgr = new ResyncManager(_Settings, _Logging, _TopologyMgr, _OutboundMessageHandler, _ContainerMgr, _ContainerHandler, _ObjectHandler);
 
             //
@@ -144,8 +140,10 @@ namespace Kvpbase
                 _TopologyMgr.LocalNode.Http.DnsHostname, 
                 _TopologyMgr.LocalNode.Http.Port, 
                 _TopologyMgr.LocalNode.Http.Ssl, 
-                RequestReceived); 
-             
+                RequestReceived);
+
+            _Server.ReadInputStream = false;
+
             if (Common.IsTrue(_Settings.EnableConsole))
             {
                 _ConsoleMgr = new ConsoleManager(
@@ -210,6 +208,7 @@ namespace Kvpbase
         static void CreateDirectories()
         {
             if (!Directory.Exists(_Settings.Storage.Directory)) Directory.CreateDirectory(_Settings.Storage.Directory);
+            if (!Directory.Exists(_Settings.Storage.TempFiles)) Directory.CreateDirectory(_Settings.Storage.TempFiles);
             if (!Directory.Exists(_Settings.Messages.Directory)) Directory.CreateDirectory(_Settings.Messages.Directory);
             if (!Directory.Exists(_Settings.Expiration.Directory)) Directory.CreateDirectory(_Settings.Expiration.Directory);
             if (!Directory.Exists(_Settings.Replication.Directory)) Directory.CreateDirectory(_Settings.Replication.Directory);

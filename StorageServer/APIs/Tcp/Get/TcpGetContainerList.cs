@@ -5,6 +5,8 @@ using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
 
+using Kvpbase.Container;
+
 namespace Kvpbase
 {
     public partial class StorageServer

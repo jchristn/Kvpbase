@@ -1,25 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kvpbase; 
+
+using Kvpbase.Container;
 
 namespace Kvpbase
 {
     class Program
     {  
-        static Container _Container;
+        static Container.Container _Container;
         static ContainerSettings _ContainerSettings;
         static bool _RunForever = true;
 
         static void Main(string[] args)
         { 
             _ContainerSettings = new ContainerSettings();
-            _Container = new Container(_ContainerSettings);
+            _Container = new Container.Container(_ContainerSettings);
 
             while (_RunForever)
             {
+                string file;
+                long fileLen;
                 string key; 
                 ContainerMetadata md; 
                 string data;
@@ -64,6 +68,24 @@ namespace Kvpbase
                         }
                         break;
 
+                    case "writefile":
+                        file = Common.InputString("File:", null, false);
+                        fileLen = new FileInfo(file).Length;
+                        key = Common.InputString("Key:", null, false);
+
+                        using (FileStream fs = new FileStream(file, FileMode.Open))
+                        {
+                            if (_Container.WriteObject(key, null, fileLen, fs, null, out error))
+                            {
+                                Console.WriteLine("Success");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Error: " + error.ToString());
+                            }
+                        }
+                        break;
+
                     case "writerange":
                         key = Common.InputString("Key:", null, false);
                         position = Common.InputInteger("Position:", 0, true, true);
@@ -93,6 +115,30 @@ namespace Kvpbase
                             Console.WriteLine("Error: " + error.ToString());
                         }
                         break;
+
+                    case "readfile":
+                        key = Common.InputString("Key:", null, false);
+                        file = Common.InputString("File:", null, false); 
+                        
+                        using (FileStream fs = new FileStream(file, FileMode.OpenOrCreate))
+                        {
+                            Stream s = null;
+                            if (_Container.ReadObject(key, out contentType, out fileLen, out s, out error))
+                            {
+                                int bytesRead = 0;
+                                byte[] buffer = new byte[65536];
+                                while ((bytesRead = s.Read(buffer, 0, buffer.Length)) > 0)
+                                {
+                                    fs.Write(buffer, 0, bytesRead);
+                                }
+                                Console.WriteLine("Success");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Error: " + error.ToString());
+                            }
+                        }
+                        break; 
 
                     case "readrange":
                         key = Common.InputString("Key:", null, false);
@@ -152,8 +198,10 @@ namespace Kvpbase
             Console.WriteLine("  q              exit the application");
             Console.WriteLine("  write          write object to the container");
             Console.WriteLine("  writerange     write data to existing object in the container");
+            Console.WriteLine("  writefile      write object using a file from the filesystem");
             Console.WriteLine("  read           read object from the container");
             Console.WriteLine("  readrange      read range from object in the container");
+            Console.WriteLine("  readfile       read object to a file on the filesystem");
             Console.WriteLine("  remove         remove object from the container");
             Console.WriteLine("  exists         check if key exists in the container");
             Console.WriteLine("  list           list objects in the container");

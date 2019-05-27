@@ -12,7 +12,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace Kvpbase
+namespace Kvpbase.Classes.Managers
 {
     public class TaskManager
     {

@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
-namespace Kvpbase
+namespace Kvpbase.Container
 {
     /// <summary>
     /// Error codes returned by container operations.
@@ -28,8 +28,10 @@ namespace Kvpbase
         ServerError, 
         [EnumMember(Value = "NotFound")]
         NotFound, 
-        [EnumMember(Value = "FileAccessError")]
-        FileAccessError,
+        [EnumMember(Value = "IOError")]
+        IOError,
+        [EnumMember(Value = "StreamError")]
+        StreamError,
         [EnumMember(Value = "PermissionsError")]
         PermissionsError,
         [EnumMember(Value = "DiskFull")]

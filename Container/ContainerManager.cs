@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Caching;
 
-namespace Kvpbase
+namespace Kvpbase.Container
 {
     /// <summary>
     /// Container manager with caching.

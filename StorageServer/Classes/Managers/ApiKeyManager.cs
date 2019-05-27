@@ -6,7 +6,7 @@ using System.Text;
 using SyslogLogging;
 using WatsonWebserver;
 
-namespace Kvpbase
+namespace Kvpbase.Classes.Managers
 {
     public class ApiKeyManager
     {

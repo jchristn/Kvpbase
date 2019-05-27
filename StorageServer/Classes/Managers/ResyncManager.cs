@@ -5,7 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using SyslogLogging;
 
-namespace Kvpbase 
+using Kvpbase.Classes.BackgroundThreads;
+using Kvpbase.Classes.Handlers;
+using Kvpbase.Classes.Messaging;
+using Kvpbase.Container;
+
+namespace Kvpbase.Classes.Managers
 {
     public class ResyncManager
     {

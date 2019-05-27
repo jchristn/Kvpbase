@@ -6,7 +6,11 @@ using System.Text;
 using SyslogLogging;
 using WatsonWebserver;
 
-namespace Kvpbase
+using Kvpbase.Classes.Handlers;
+using Kvpbase.Container;
+
+
+namespace Kvpbase.Classes.Messaging
 {
     /// <summary>
     /// Handles inbound message requests.

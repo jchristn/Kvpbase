@@ -1,0 +1,13 @@
+{
+  "User": "Default",
+  "Name": "Default",
+  "RootDirectory": "./Default/",
+  "DatabaseFilename": "./Default/__Container__.db",
+  "ObjectsDirectory": "./Default/__Objects__/",
+  "HandlerType": "Disk",
+  "EnableAuditLogging": false,
+  "IsPublicRead": true,
+  "IsPublicWrite": false,
+  "DatabaseDebug": false,
+  "Replication": "None"
+}

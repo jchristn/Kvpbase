@@ -7,7 +7,12 @@ using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
-namespace Kvpbase
+using Kvpbase.Classes.Handlers;
+using Kvpbase.Classes.Managers;
+using Kvpbase.Classes.Messaging;
+using Kvpbase.Container;
+
+namespace Kvpbase.Classes.BackgroundThreads
 {
     public class ResyncWorker
     {
@@ -195,7 +200,7 @@ namespace Kvpbase
                     md = BuildMetadata(currIndex, null, currContainer.User, currContainer.Name, null, HttpMethod.GET);
                     ContainerMetadata currMetadata = new ContainerMetadata();
                     bool running = true;
-                    Container container = null;
+                    Container.Container container = null;
                     ErrorCode error;
 
                     #endregion

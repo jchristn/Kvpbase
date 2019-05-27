@@ -94,8 +94,11 @@ namespace Kvpbase
                 #region Deserialize-Request-Body
 
                 ContainerSettings settings = null;
-                if (md.Http.Data != null && md.Http.Data.Length > 0)
+
+                if (md.Http.DataStream != null && md.Http.DataStream.CanRead)
                 {
+                    md.Http.Data = Common.StreamToBytes(md.Http.DataStream);
+
                     try
                     {
                         settings = Common.DeserializeJson<ContainerSettings>(md.Http.Data);

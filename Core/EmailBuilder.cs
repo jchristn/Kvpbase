@@ -29,8 +29,7 @@ namespace Kvpbase
             return "<p><h2>" + text + "</h2></p>";
         }
 
-        public static string Bottom( 
-            string homepageUrl,
+        public static string Bottom(
             bool includeEmailSentTo,
             string emailAddress)
         {
@@ -73,12 +72,7 @@ namespace Kvpbase
         {
             return "<p>If you would like to contact with us, don't hesitate to email <a href='mailto:" + emailAddress + "'>" + emailAddress + "</a>.</p>";
         }
-
-        public static string ClosingThanks(string homepageUrl)
-        {
-            return "<p>Thanks!</p><p><a href='" + homepageUrl + "'>" + homepageUrl + "</a></p>";
-        }
-
+         
         public static string Link(string url, string text, string link)
         {
             if (!String.IsNullOrEmpty(link))

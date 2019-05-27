@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SqliteWrapper;
 
-namespace Kvpbase
+namespace Kvpbase.Container
 {
     /// <summary>
     /// Sqlite querybuilders for the container.

@@ -5,6 +5,8 @@ using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
 
+using Kvpbase.Container;
+
 namespace Kvpbase
 {
     public partial class StorageServer
@@ -15,8 +17,8 @@ namespace Kvpbase
             data = null;
 
             #region Retrieve-Container
-            
-            Container currContainer = null;
+
+            Container.Container currContainer = null;
             if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "TcpGetObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);

@@ -480,7 +480,16 @@ namespace Kvpbase
 
         public static bool WriteFile(string filename, byte[] content)
         {
-            File.WriteAllBytes(filename, content); return true;
+            if (content != null && content.Length > 0)
+            {
+                File.WriteAllBytes(filename, content); 
+            }
+            else
+            {
+                File.Create(filename).Close();
+            }
+
+            return true;
         }
 
         public static bool WriteFile(string filename, byte[] content, int pos)
@@ -1021,9 +1030,40 @@ namespace Kvpbase
             return ret;
         }
 
+        public static string Md5(Stream stream)
+        {
+            if (stream == null || !stream.CanRead) return null;
+
+            MD5 md5 = MD5.Create();
+            byte[] hash = md5.ComputeHash(stream);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++) sb.Append(hash[i].ToString("X2"));
+            string ret = sb.ToString();
+            return ret; 
+        }
+
         #endregion
 
         #region Encoding
+
+        public static byte[] StreamToBytes(Stream input)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (!input.CanRead) throw new InvalidOperationException("Input stream is not readable");
+
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+
+                return ms.ToArray();
+            }
+        }
 
         public static byte[] Base64ToBytes(string data)
         {

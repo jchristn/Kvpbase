@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks; 
@@ -42,7 +43,7 @@ namespace Kvpbase
         /// Data associated with the request.
         /// </summary>
         public byte[] Data { get; set; }
-
+         
         #endregion
 
         #region Private-Members
@@ -77,7 +78,7 @@ namespace Kvpbase
             Metadata = null;
             Type = msgType;
             Success = success;
-            Data = data;
+            Data = data; 
         }
 
         /// <summary>
@@ -100,9 +101,9 @@ namespace Kvpbase
             Metadata = md;
             Type = msgType;
             Success = success;
-            Data = data;
+            Data = data; 
         }
-
+         
         #endregion
 
         #region Public-Methods

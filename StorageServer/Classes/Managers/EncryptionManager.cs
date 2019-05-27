@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using SyslogLogging;
 using RestWrapper;
 
-namespace Kvpbase
+namespace Kvpbase.Classes.Managers
 {
     public class EncryptionManager
     {

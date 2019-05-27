@@ -1,6 +1,8 @@
 # Kvpbase Storage Server
 
-Object Storage Platform in C#
+[![StackShare](http://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/jchristn/kvpbase)
+
+Scalable, simple RESTful object storage platform, written in C#
 
 Kvpbase Storage Server is a RESTful object storage platform written in C# and available under the MIT license.  
 

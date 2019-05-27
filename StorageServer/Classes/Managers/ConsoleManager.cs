@@ -8,7 +8,13 @@ using SyslogLogging;
 using RestWrapper;
 using WatsonWebserver;
 
-namespace Kvpbase
+using Kvpbase.Classes.BackgroundThreads;
+using Kvpbase.Classes.Handlers;
+using Kvpbase.Classes.Messaging;
+
+using Kvpbase.Container;
+
+namespace Kvpbase.Classes.Managers
 {
     public class ConsoleManager
     {
@@ -500,7 +506,7 @@ namespace Kvpbase
                 }
             }
 
-            Container container = null;
+            Container.Container container = null;
             ContainerMetadata metadata = null;
             if (nodeId == 0)
             {
@@ -553,7 +559,7 @@ namespace Kvpbase
 
             if (nodeId == 0)
             {
-                Container container = null;
+                Container.Container container = null;
                 if (!_ContainerMgr.GetContainer(userGuid, containerName, out container))
                 {
                     Console.WriteLine("Unknown container");
@@ -610,7 +616,7 @@ namespace Kvpbase
 
             if (nodeId == 0)
             {
-                Container container = null;
+                Container.Container container = null;
                 if (!_ContainerMgr.GetContainer(userGuid, containerName, out container))
                 {
                     Console.WriteLine("Unknown container");
@@ -645,7 +651,7 @@ namespace Kvpbase
                 }
             }
 
-            Container container = null;
+            Container.Container container = null;
             ContainerSettings settings = null;
             ErrorCode error;
 
@@ -698,7 +704,7 @@ namespace Kvpbase
 
             if (nodeId == 0)
             {
-                Container container = null;
+                Container.Container container = null;
                 if (!_ContainerMgr.GetContainer(userGuid, containerName, out container))
                 {
                     Console.WriteLine("Unknown container");
@@ -732,7 +738,7 @@ namespace Kvpbase
             string userGuid = Common.InputString("User GUID:", "default", false);
             string containerName = Common.InputString("Container name:", "default", false);
 
-            Container currContainer = null;
+            Container.Container currContainer = null;
             if (!_ContainerMgr.GetContainer(userGuid, containerName, out currContainer))
             {
                 Console.WriteLine("Unknown container");

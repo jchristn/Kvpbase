@@ -150,14 +150,15 @@ namespace Kvpbase
 
                 #region Retrieve-Original-Data
 
+                byte[] updateData = Common.StreamToBytes(md.Http.DataStream); 
                 byte[] originalData = null;
                 string originalContentType = null;
-                if (!_ObjectHandler.Read(md, currContainer, md.Params.ObjectKey, Convert.ToInt32(md.Params.Index), md.Http.Data.Length, out originalContentType, out originalData, out error))
+                if (!_ObjectHandler.Read(md, currContainer, md.Params.ObjectKey, Convert.ToInt32(md.Params.Index), Convert.ToInt32(md.Http.ContentLength), out originalContentType, out originalData, out error))
                 {
                     if (error == ErrorCode.OutOfRange)
                     {
                         // continue, simply appending the data
-                        originalData = new byte[md.Http.Data.Length];
+                        originalData = new byte[md.Http.ContentLength];
                         for (int i = 0; i < originalData.Length; i++)
                         {
                             originalData[i] = 0x00;
@@ -177,7 +178,7 @@ namespace Kvpbase
 
                 try
                 {
-                    if (!_ObjectHandler.WriteRange(md, currContainer, md.Params.ObjectKey, Convert.ToInt64(md.Params.Index), md.Http.Data, out error))
+                    if (!_ObjectHandler.WriteRange(md, currContainer, md.Params.ObjectKey, Convert.ToInt64(md.Params.Index), updateData, out error))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to write range to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
                         cleanupRequired = true;

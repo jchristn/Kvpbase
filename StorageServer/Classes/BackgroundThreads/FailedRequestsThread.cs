@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using EmailWrapper;
 using SyslogLogging;
 
-namespace Kvpbase
+namespace Kvpbase.Classes.BackgroundThreads
 {
     public class FailedRequestsThread
     {
@@ -193,7 +193,7 @@ namespace Kvpbase
                 }
             }
 
-            ret += EmailBuilder.Bottom(settings.HomepageUrl, false, null);
+            ret += EmailBuilder.Bottom(false, null);
 
             return ret;
         }

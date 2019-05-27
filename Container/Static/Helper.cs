@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kvpbase
+namespace Kvpbase.Container
 {
     /// <summary>
     /// Useful static helper methods.
@@ -54,7 +54,7 @@ namespace Kvpbase
                     break;
 
                 case ErrorCode.ServerError:
-                case ErrorCode.FileAccessError:
+                case ErrorCode.IOError:
                 case ErrorCode.PermissionsError:
                 case ErrorCode.DiskFull:
                     id = 4;

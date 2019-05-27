@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using SyslogLogging;
 
-namespace Kvpbase
+using Kvpbase.Container;
+
+namespace Kvpbase.Classes.Handlers
 {
     public class ContainerHandler
     {
@@ -40,7 +42,7 @@ namespace Kvpbase
 
         public ContainerMetadata Enumerate(
             RequestMetadata md,
-            Container container, 
+            Container.Container container, 
             int? indexStart, 
             int? maxResults,
             string orderByClause)
@@ -145,7 +147,7 @@ namespace Kvpbase
 
         public void Update(
             RequestMetadata md,
-            Container container,
+            Container.Container container,
             ContainerSettings settings
             )
         {

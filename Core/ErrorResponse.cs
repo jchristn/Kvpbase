@@ -189,7 +189,7 @@ namespace Kvpbase
                 case 11:
                     Text = "Request too large; use smaller ranges.";
                     break;
-
+                    
                 default:
                     Text = "Unknown failure code.";
                     break;

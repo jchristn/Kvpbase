@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kvpbase
+namespace Kvpbase.Container
 {
     /// <summary>
     /// Metadata for a container.
