@@ -10,9 +10,9 @@
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.110" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Container\Container.csproj" />
-    <ProjectReference Include="..\Core\Core.csproj" />
+  <ItemGroup> 
+    <ProjectReference Include="..\Kvpbase.Containers\Kvpbase.Containers.csproj" />
+    <ProjectReference Include="..\Kvpbase.Core\Kvpbase.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

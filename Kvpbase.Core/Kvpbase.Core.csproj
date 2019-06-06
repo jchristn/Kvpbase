@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <RootNamespace>Kvpbase.Core</RootNamespace>
+    <AssemblyName>Kvpbase.Core</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>3.3.0</Version>
+    <Authors>Joel Christner</Authors>
+    <Product>Kvpbase Core Library</Product>
+    <Description>Core library and classes used in Kvpbase storage server.</Description>
+    <Copyright>(c)2019 Joel Christner</Copyright>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/kvpbase/storage-server</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
+    <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
+    <PackageReleaseNotes>Initial NuGet package for Kvpbase.Core</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
+    <PackageReference Include="Watson" Version="2.0.2" />
+  </ItemGroup>
+
+</Project>

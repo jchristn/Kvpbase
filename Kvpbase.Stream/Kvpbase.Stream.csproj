@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
+    <PackageId>Kvpbase.Stream</PackageId>
+    <Authors>Joel Christner</Authors>
+    <Product>KvpbaseStream</Product>
+    <Description>Stream proxy for objects stored on Kvpbase for primary storage data access use cases, written in C#</Description>
+    <Copyright>(c)2019 Joel Christner</Copyright>
+    <PackageProjectUrl>https://github.com/kvpbase/stream-proxy</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kvpbase/stream-proxy</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>kvpbase object storage blob primary cloud</PackageTags>
+    <PackageReleaseNotes>Retarget to support both .NET Core 2.0 and .NET Framework 4.6.2</PackageReleaseNotes>
+    <PackageLicenseUrl>https://github.com/kvpbase/stream-proxy/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="KvpbaseSDK" Version="3.1.5" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+  </ItemGroup>
+
+</Project>

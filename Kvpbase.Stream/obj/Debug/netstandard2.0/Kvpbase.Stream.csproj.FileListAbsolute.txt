@@ -1,0 +1,9 @@
+C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\bin\Debug\netstandard2.0\Kvpbase.Stream.deps.json
+C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\bin\Debug\netstandard2.0\Kvpbase.Stream.dll
+C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\bin\Debug\netstandard2.0\Kvpbase.Stream.pdb
+C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.csprojAssemblyReference.cache
+C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.csproj.CoreCompileInputs.cache
+C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.AssemblyInfoInputs.cache
+C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.AssemblyInfo.cs
+C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.dll
+C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.pdb

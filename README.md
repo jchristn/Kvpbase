@@ -1,5 +1,14 @@
 # Kvpbase Storage Server
 
+```
+   _             _
+  | |____ ___ __| |__  __ _ ___ ___
+  | / /\ V / '_ \ '_ \/ _` (_-</ -_)
+  |_\_\ \_/| .__/_.__/\__,_/__/\___|
+           |_|
+
+```
+
 [![StackShare](http://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/jchristn/kvpbase)
 
 Scalable, simple RESTful object storage platform, written in C#
@@ -84,17 +93,21 @@ The response is simply a 200/OK.
 
 ## Documentation
 
-Please read our documentation on Github [https://github.com/kvpbase/storage-server/wiki/Getting-Started] and our API documentation [http://www.kvpbase.com/docs].  Note that documentation updates to 3.0.0 are in progress.
+Please visit our documentation [https://github.com/kvpbase/storage-server/wiki] for details on APIs, configuration files, deployment scenarios, and more. 
 
-## New in v3.1.1
+## New in v3.3.0
 
-- Retarget to .NET Core 2.2 and .NET Framework 4.6.1
+- Support for stream processing instead of byte arrays (better memory usage, support for large objects)
+- Server settings MaxObjectSize and MaxTransferSize
+- Temporary files manager to overcome byte array size limitations (now using streams)
+- Removed task manager and enhanced resync manager
+- Updated dependencies
 
 ## Compatibility 
 
-### With 3.0.x
+### Moving from 3.0.x to 3.1.x or later
 
-- 3.1.0 is compatible with 3.0.x with minor changes to each container SQLite database.  Simply add the 'Tags' field to the 'Objects' table, with field type ```VARCHAR(256)```.
+- Add the 'Tags' field to the 'Objects' table, with field type ```VARCHAR(256)``` for each container database.
 
 ### With 2.x.x
 
@@ -130,6 +143,7 @@ Notes from previous versions (starting with v2.0.1) will be moved here.
 
 v3.x
 
+- Retarget to .NET Core 2.2 and .NET Framework 4.6.1
 - Updated dependencies
 - Bugfix for retrieving request metadata vs container/object metadata (new querystring parameter)
 - Support for object tags (on create/POST, on edit/PUT, and for enumeration)

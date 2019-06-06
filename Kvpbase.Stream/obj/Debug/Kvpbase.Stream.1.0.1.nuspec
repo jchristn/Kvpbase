@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Kvpbase.Stream</id>
+    <version>1.0.1</version>
+    <authors>Joel Christner</authors>
+    <owners>Joel Christner</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/kvpbase/stream-proxy/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/kvpbase/stream-proxy</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</iconUrl>
+    <description>Stream proxy for objects stored on Kvpbase for primary storage data access use cases, written in C#</description>
+    <releaseNotes>Retarget to support both .NET Core 2.0 and .NET Framework 4.6.2</releaseNotes>
+    <copyright>(c)2019 Joel Christner</copyright>
+    <tags>kvpbase object storage blob primary cloud</tags>
+    <repository type="Github" url="https://github.com/kvpbase/stream-proxy" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="KvpbaseSDK" version="3.1.5" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CSharp" version="4.5.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="KvpbaseSDK" version="3.1.5" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CSharp" version="4.5.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\bin\Debug\net462\Kvpbase.Stream.dll" target="lib\net462\Kvpbase.Stream.dll" />
+    <file src="C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\bin\Debug\netstandard2.0\Kvpbase.Stream.dll" target="lib\netstandard2.0\Kvpbase.Stream.dll" />
+  </files>
+</package>

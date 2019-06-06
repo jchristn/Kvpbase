@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFrameworks>netcoreapp2.2;net461</TargetFrameworks>
+    <RootNamespace>Kvpbase.StorageServer</RootNamespace>
+    <PackageId>Kvpbase.StorageServer</PackageId>
+    <Version>3.3.0</Version>
+    <Authors>Joel Christner</Authors>
+    <Product>Kvpbase Storage Server</Product>
+    <Description>Object storage system with integrated replication and a simple RESTful API.</Description>
+    <Copyright>(c)2019 Joel Christner</Copyright>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/kvpbase/storage-server</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
+    <PackageReleaseNotes>Support for streams to support larger objects (modified APIs and Container), redesigned resync worker, removed tasks, updated dependencies</PackageReleaseNotes>
+    <ApplicationIcon />
+    <StartupObject />
+    <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EmailWrapper" Version="1.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="RestWrapper" Version="2.0.2" />
+    <PackageReference Include="SyslogLogging" Version="1.0.10" />
+    <PackageReference Include="Watson" Version="2.0.2" />
+    <PackageReference Include="WatsonMesh" Version="1.2.1" />
+    <PackageReference Include="WatsonTcp" Version="1.3.6" />
+  </ItemGroup>
+
+  <ItemGroup> 
+    <ProjectReference Include="..\Kvpbase.Containers\Kvpbase.Containers.csproj" />
+    <ProjectReference Include="..\Kvpbase.Core\Kvpbase.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,16 @@
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Release\netcoreapp2.2\Kvpbase.StorageServer.deps.json
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Release\netcoreapp2.2\Kvpbase.StorageServer.runtimeconfig.json
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Release\netcoreapp2.2\Kvpbase.StorageServer.runtimeconfig.dev.json
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Release\netcoreapp2.2\Kvpbase.StorageServer.dll
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Release\netcoreapp2.2\Kvpbase.StorageServer.pdb
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Release\netcoreapp2.2\Kvpbase.Container.dll
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Release\netcoreapp2.2\Kvpbase.Core.dll
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Release\netcoreapp2.2\Kvpbase.Container.pdb
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Release\netcoreapp2.2\Kvpbase.Core.pdb
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\obj\Release\netcoreapp2.2\Kvpbase.StorageServer.csprojAssemblyReference.cache
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\obj\Release\netcoreapp2.2\Kvpbase.StorageServer.csproj.CoreCompileInputs.cache
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\obj\Release\netcoreapp2.2\Kvpbase.StorageServer.AssemblyInfoInputs.cache
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\obj\Release\netcoreapp2.2\Kvpbase.StorageServer.AssemblyInfo.cs
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\obj\Release\netcoreapp2.2\Kvpbase.StorageServer.csproj.CopyComplete
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\obj\Release\netcoreapp2.2\Kvpbase.StorageServer.dll
+C:\code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\obj\Release\netcoreapp2.2\Kvpbase.StorageServer.pdb

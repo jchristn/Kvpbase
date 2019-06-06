@@ -5,20 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Kvpbase.Container;
+using Kvpbase.Containers;
+using Kvpbase.Core;
 
 namespace Kvpbase
 {
     class Program
     {  
-        static Container.Container _Container;
+        static Container _Container;
         static ContainerSettings _ContainerSettings;
         static bool _RunForever = true;
 
         static void Main(string[] args)
         { 
             _ContainerSettings = new ContainerSettings();
-            _Container = new Container.Container(_ContainerSettings);
+            _Container = new Container(_ContainerSettings);
 
             while (_RunForever)
             {

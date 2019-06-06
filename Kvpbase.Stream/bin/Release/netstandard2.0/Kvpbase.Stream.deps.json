@@ -1,0 +1,113 @@
+{
+  "runtimeTarget": {
+    "name": ".NETStandard,Version=v2.0/",
+    "signature": "efe20bc665aec778e707564e4cbf939396924f27"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETStandard,Version=v2.0": {},
+    ".NETStandard,Version=v2.0/": {
+      "Kvpbase.Stream/1.0.1": {
+        "dependencies": {
+          "KvpbaseSDK": "3.1.5",
+          "Microsoft.CSharp": "4.5.0",
+          "NETStandard.Library": "2.0.3"
+        },
+        "runtime": {
+          "Kvpbase.Stream.dll": {}
+        }
+      },
+      "KvpbaseSDK/3.1.5": {
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.1",
+          "RestWrapper": "1.0.9"
+        },
+        "runtime": {
+          "lib/netstandard2.0/KvpbaseSDK.dll": {
+            "assemblyVersion": "3.1.5.0",
+            "fileVersion": "3.1.5.0"
+          }
+        }
+      },
+      "Microsoft.CSharp/4.5.0": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.CSharp.dll": {
+            "assemblyVersion": "4.0.4.0",
+            "fileVersion": "4.6.26515.6"
+          }
+        }
+      },
+      "Microsoft.NETCore.Platforms/1.1.0": {},
+      "NETStandard.Library/2.0.3": {
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0"
+        }
+      },
+      "Newtonsoft.Json/12.0.1": {
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "12.0.0.0",
+            "fileVersion": "12.0.1.22727"
+          }
+        }
+      },
+      "RestWrapper/1.0.9": {
+        "runtime": {
+          "lib/netstandard2.0/RestWrapper.dll": {
+            "assemblyVersion": "1.0.9.0",
+            "fileVersion": "1.0.9.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Kvpbase.Stream/1.0.1": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "KvpbaseSDK/3.1.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-y+AlNFT8h3QwjA5tf+dJal/Z2IlLWZ7DQiCsBVOCxSrSFH+epv8gxTOXk/rMxYRJVd1fW+lhkML1VvHBrX7UGw==",
+      "path": "kvpbasesdk/3.1.5",
+      "hashPath": "kvpbasesdk.3.1.5.nupkg.sha512"
+    },
+    "Microsoft.CSharp/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kaj6Wb4qoMuH3HySFJhxwQfe8R/sJsNJnANrvv8WdFPMoNbKY5htfNscv+LHCu5ipz+49m2e+WQXpLXr9XYemQ==",
+      "path": "microsoft.csharp/4.5.0",
+      "hashPath": "microsoft.csharp.4.5.0.nupkg.sha512"
+    },
+    "Microsoft.NETCore.Platforms/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-a/iSwnRZb+LHFk49hQOyThh/ZNC3vsbZsF65XwQIb863qF6msmhdQtxGXFL28Ob2NsCz/drEj28BJd/YPpLRBg==",
+      "path": "microsoft.netcore.platforms/1.1.0",
+      "hashPath": "microsoft.netcore.platforms.1.1.0.nupkg.sha512"
+    },
+    "NETStandard.Library/2.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
+      "path": "netstandard.library/2.0.3",
+      "hashPath": "netstandard.library.2.0.3.nupkg.sha512"
+    },
+    "Newtonsoft.Json/12.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jmVyoEyk0In8r+AObYQyFKVFm7uSRzE0XSHSbEtBJcZDMV6DqJoyB4FLcHwprPVhAh826so0db3DIKXVnpGoPA==",
+      "path": "newtonsoft.json/12.0.1",
+      "hashPath": "newtonsoft.json.12.0.1.nupkg.sha512"
+    },
+    "RestWrapper/1.0.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ycRBjjtvX85+IowkgfRPkSiqdYS3FS+MjNqQsIfYPqBH0o8A8dAatarm06rPQ/CIxhhfgds5oYH4HJxOxS3n5g==",
+      "path": "restwrapper/1.0.9",
+      "hashPath": "restwrapper.1.0.9.nupkg.sha512"
+    }
+  }
+}
