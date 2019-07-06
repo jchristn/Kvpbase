@@ -87,7 +87,7 @@ namespace Kvpbase
             #region Initial-Settings
 
             currSettings.ProductName = "Kvpbase";   
-            currSettings.EnableConsole = false;
+            currSettings.EnableConsole = true;
              
             currSettings.Files = new Settings.SettingsFiles();
             currSettings.Files.ApiKey = "./ApiKey.json";

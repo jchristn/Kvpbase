@@ -92,10 +92,107 @@ namespace Kvpbase
              
             ContainerMetadata meta = _ContainerHandler.Enumerate(md, currContainer, index, count, md.Params.OrderBy);
              
-            return new HttpResponse(md.Http, 200, null, "application/json",
-                Encoding.UTF8.GetBytes(Common.SerializeJson(meta, true)));
+            if (md.Params.Html)
+            {
+                return new HttpResponse(md.Http, 200, null, "text/html", Encoding.UTF8.GetBytes(DirectoryListingPage(meta)));
+            }
+            else
+            {
+                return new HttpResponse(md.Http, 200, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(meta, true)));
+            }
 
             #endregion 
         }
+
+        public static string DirectoryListingPage(ContainerMetadata meta)
+        {
+            string ret =
+                "<html>" +
+                "   <head>" +
+                "      <title>Kvpbase :: Directory of /" + meta.User + "/" + meta.Name + "</title>" +
+                "      <style>" +
+                "         body {" +
+                "         font-family: arial;" +
+                "         }" +
+                "         pre {" +
+                "         background-color: #e5e7ea;" +
+                "         color: #333333; " +
+                "         }" +
+                "         h3 {" +
+                "         color: #333333; " +
+                "         padding: 4px;" +
+                "         border: 4px;" +
+                "         }" +
+                "         p {" +
+                "         color: #333333; " +
+                "         padding: 4px;" +
+                "         border: 4px;" +
+                "         }" +
+                "         a {" +
+                "         color: #333333;" +
+                "         padding: 4px;" +
+                "         border: 4px;" +
+                "         text-decoration: none; " +
+                "         }" +
+                "         li {" +
+                "         padding: 6px;" +
+                "         border: 6px;" +
+                "         }" +
+                "         td {" +
+                "         padding: 4px;" +
+                "         text-align: left;" +
+                "         }" +
+                "         tr {" +
+                "         background-color: #ffffff;" +
+                "         padding: 4px;" +
+                "         text-align: left;" +
+                "         }" +
+                "         th {" +
+                "         background-color: #444444;" +
+                "         color: #ffffff;" +
+                "         padding: 4px;" +
+                "         text-align: left;" +
+                "         }" +
+                "      </style>" +
+                "   </head>" +
+                "   <body>" +
+                "      <pre>" +
+                WebUtility.HtmlEncode(Logo()) +
+                "  	   </pre>" +
+                "      <p>Directory of: /" + meta.User + "/" + meta.Name + "</p>" +
+                "      <p>" +
+                "      <table>" +
+                "         <tr>" +
+                "            <th>Object Key</th>" +
+                "            <th>Content Type</th>" +
+                "            <th>Size</th>" +
+                "            <th>Created (UTC)</th>" +
+                "         </tr>";
+
+            if (meta.Objects != null && meta.Objects.Count > 0)
+            { 
+                foreach (ObjectMetadata obj in meta.Objects)
+                {
+                    // <a href='/foo/bar' target='_blank'>foo.bar</a>
+                    ret +=
+                        "         <tr>" +
+                        "            <td><a href='/" + meta.User + "/" + meta.Name + "/" + obj.Key + "' target='_blank'>" + obj.Key + "</a></td>" +
+                        "            <td>" + obj.ContentType + "</td>" +
+                        "            <td>" + obj.ContentLength + "</td>" +
+                        "            <td>" + Convert.ToDateTime(obj.CreatedUtc).ToString(_TimestampFormat) + "</td>" +
+                        "         </tr>"; 
+                }
+            }
+
+            ret +=
+                "      </table>" +
+                "      </p>" +
+                "   </body>" +
+                "</html>";
+
+            return ret;
+        }
     }
 }
+ 

@@ -108,3 +108,4 @@ C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.Ass
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.csproj.CopyComplete
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.dll
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.pdb
+C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.csprojAssemblyReference.cache
