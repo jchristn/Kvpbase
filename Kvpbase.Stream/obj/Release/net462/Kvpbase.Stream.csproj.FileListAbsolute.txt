@@ -9,3 +9,4 @@ C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stre
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.csproj.CopyComplete
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.dll
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.pdb
+C:\Code\KVPbase\storageserver-3.3\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.csprojAssemblyReference.cache

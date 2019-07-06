@@ -259,13 +259,13 @@ namespace Kvpbase
 
                 if (req.RawUrlEntries != null && req.RawUrlEntries.Count > 0)
                 {
-                    if (String.Compare(req.RawUrlEntries[0].ToLower(), "favicon.ico") == 0)
+                    if (req.RawUrlWithoutQuery.Equals("/favicon.ico"))
                     {
                         resp = new HttpResponse(req, 200, null);
                         return resp;
                     }
-                
-                    if (String.Compare(req.RawUrlEntries[0].ToLower(), "robots.txt") == 0)
+
+                    if (req.RawUrlWithoutQuery.Equals("/robots.txt"))
                     {
                         resp = new HttpResponse(req, 200, null, "text/plain", Encoding.UTF8.GetBytes("User-Agent: *\r\nDisallow:\r\n"));
                         return resp;
@@ -411,30 +411,20 @@ namespace Kvpbase
                 if (req.RawUrlEntries.Count > 1) md.Params.Container = req.RawUrlEntries[1];
                 if (req.RawUrlEntries.Count > 2) md.Params.ObjectKey = req.RawUrlEntries[2];
 
-                if (req.QuerystringEntries.ContainsKey("_auditlog"))
-                {
-                    md.Params.AuditLog = Common.IsTrue(req.QuerystringEntries["_auditlog"]);
-                }
+                if (req.QuerystringEntries.ContainsKey("_auditlog")) 
+                    md.Params.AuditLog = Common.IsTrue(req.QuerystringEntries["_auditlog"]); 
 
-                if (req.QuerystringEntries.ContainsKey("_metadata"))
-                {
-                    md.Params.Metadata = Common.IsTrue(req.QuerystringEntries["_metadata"]);
-                }
+                if (req.QuerystringEntries.ContainsKey("_metadata")) 
+                    md.Params.Metadata = Common.IsTrue(req.QuerystringEntries["_metadata"]); 
 
-                if (req.QuerystringEntries.ContainsKey("_reqmetadata"))
-                {
-                    md.Params.RequestMetadata = Common.IsTrue(req.QuerystringEntries["_reqmetadata"]);
-                }
+                if (req.QuerystringEntries.ContainsKey("_reqmetadata")) 
+                    md.Params.RequestMetadata = Common.IsTrue(req.QuerystringEntries["_reqmetadata"]); 
 
-                if (req.QuerystringEntries.ContainsKey("_auditkey"))
-                {
-                    md.Params.AuditKey = req.QuerystringEntries["_auditkey"];
-                }
+                if (req.QuerystringEntries.ContainsKey("_auditkey")) 
+                    md.Params.AuditKey = req.QuerystringEntries["_auditkey"]; 
 
-                if (req.QuerystringEntries.ContainsKey("_action"))
-                {
-                    md.Params.Action = req.QuerystringEntries["_action"];
-                }
+                if (req.QuerystringEntries.ContainsKey("_action")) 
+                    md.Params.Action = req.QuerystringEntries["_action"]; 
 
                 int index; 
                 if (req.QuerystringEntries.ContainsKey("_index"))
@@ -454,25 +444,17 @@ namespace Kvpbase
                     }
                 }
                  
-                if (req.QuerystringEntries.ContainsKey("_rename"))
-                {
-                    md.Params.Rename = req.QuerystringEntries["_rename"];
-                }
+                if (req.QuerystringEntries.ContainsKey("_rename")) 
+                    md.Params.Rename = req.QuerystringEntries["_rename"]; 
                  
-                if (req.QuerystringEntries.ContainsKey("_config"))
-                {
-                    md.Params.Config = Common.IsTrue(req.QuerystringEntries["_config"]);
-                }
+                if (req.QuerystringEntries.ContainsKey("_config")) 
+                    md.Params.Config = Common.IsTrue(req.QuerystringEntries["_config"]); 
 
-                if (req.QuerystringEntries.ContainsKey("_stats"))
-                {
-                    md.Params.Stats = Common.IsTrue(req.QuerystringEntries["_stats"]);
-                }
+                if (req.QuerystringEntries.ContainsKey("_stats")) 
+                    md.Params.Stats = Common.IsTrue(req.QuerystringEntries["_stats"]); 
 
-                if (req.QuerystringEntries.ContainsKey("_html"))
-                {
-                    md.Params.Html = Common.IsTrue(req.QuerystringEntries["_html"]);
-                }
+                if (req.QuerystringEntries.ContainsKey("_html")) 
+                    md.Params.Html = Common.IsTrue(req.QuerystringEntries["_html"]); 
 
                 DateTime testTimestamp;
 
@@ -560,25 +542,17 @@ namespace Kvpbase
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_md5"))
-                {
-                    md.Params.Md5 = req.QuerystringEntries["_md5"];
-                }
+                if (req.QuerystringEntries.ContainsKey("_md5")) 
+                    md.Params.Md5 = req.QuerystringEntries["_md5"]; 
 
-                if (req.QuerystringEntries.ContainsKey("_orderby"))
-                {
-                    md.Params.OrderBy = req.QuerystringEntries["_orderby"];
-                }
+                if (req.QuerystringEntries.ContainsKey("_orderby")) 
+                    md.Params.OrderBy = req.QuerystringEntries["_orderby"]; 
 
-                if (req.QuerystringEntries.ContainsKey("_contenttype"))
-                {
-                    md.Params.ContentType = req.QuerystringEntries["_contenttype"];
-                }
+                if (req.QuerystringEntries.ContainsKey("_contenttype")) 
+                    md.Params.ContentType = req.QuerystringEntries["_contenttype"]; 
 
-                if (req.QuerystringEntries.ContainsKey("_tags"))
-                {
-                    md.Params.Tags = req.QuerystringEntries["_tags"];
-                }
+                if (req.QuerystringEntries.ContainsKey("_tags")) 
+                    md.Params.Tags = req.QuerystringEntries["_tags"]; 
 
                 long testLong = 0;
                 if (req.QuerystringEntries.ContainsKey("_sizemin"))
@@ -640,10 +614,8 @@ namespace Kvpbase
                     "[" + sw.ElapsedMilliseconds + "ms]";
                 _Logging.Log(LoggingModule.Severity.Info, msg);
 
-                if (Common.IsTrue(_Settings.Syslog.LogHttpRequests))
-                {
-                    _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived sending response: " + Environment.NewLine + resp.ToString());
-                }
+                if (Common.IsTrue(_Settings.Syslog.LogHttpRequests)) 
+                    _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived sending response: " + Environment.NewLine + resp.ToString()); 
             }
         }
 
