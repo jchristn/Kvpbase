@@ -36,8 +36,7 @@ namespace Kvpbase.Classes.Managers
         private ContainerManager _ContainerMgr { get; set; }
         private ContainerHandler _Containers { get; set; }
         private ObjectHandler _Objects { get; set; }
-        private ResyncManager _ResyncMgr { get; set; }
-        private Func<bool> _ExitDelegate;
+        private ResyncManager _ResyncMgr { get; set; } 
 
         private static string _TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
 
@@ -56,8 +55,7 @@ namespace Kvpbase.Classes.Managers
             ContainerManager containerMgr,
             ContainerHandler containers,
             ObjectHandler objects,
-            ResyncManager resync,
-            Func<bool> exitApplication)
+            ResyncManager resync)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings)); 
             if (logging == null) throw new ArgumentNullException(nameof(logging));
@@ -69,8 +67,7 @@ namespace Kvpbase.Classes.Managers
             if (containerMgr == null) throw new ArgumentNullException(nameof(containerMgr));
             if (containers == null) throw new ArgumentNullException(nameof(containers));
             if (objects == null) throw new ArgumentNullException(nameof(objects));
-            if (resync == null) throw new ArgumentNullException(nameof(resync));
-            if (exitApplication == null) throw new ArgumentNullException(nameof(exitApplication));
+            if (resync == null) throw new ArgumentNullException(nameof(resync)); 
 
             _Enabled = true;
 
@@ -84,29 +81,16 @@ namespace Kvpbase.Classes.Managers
             _ContainerMgr = containerMgr;
             _Containers = containers;
             _Objects = objects;
-            _ResyncMgr = resync;
-            _ExitDelegate = exitApplication;
-
-            Task.Run(() => ConsoleWorker());
+            _ResyncMgr = resync; 
         }
 
         #endregion
 
         #region Public-Methods
-
-        public void Stop()
+         
+        public void Worker()
         {
-            _Enabled = false;
-            return;
-        }
-
-        #endregion
-
-        #region Private-Methods
-
-        private void ConsoleWorker()
-        {
-            string userInput = ""; 
+            string userInput = "";
 
             while (_Enabled)
             {
@@ -128,14 +112,13 @@ namespace Kvpbase.Classes.Managers
 
                     case "q":
                     case "quit":
-                        _Enabled = false;
-                        _ExitDelegate();
+                        _Enabled = false; 
                         break;
-                         
+
                     case "topology":
                         ListTopology();
                         break;
-                        
+
                     case "send async":
                         SendAsyncConsoleMessage();
                         break;
@@ -146,13 +129,6 @@ namespace Kvpbase.Classes.Managers
 
                     case "active":
                         ListActiveUrls();
-                        break;
-                         
-                    case "version":
-                        System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-                        string version = fvi.FileVersion;
-                        Console.WriteLine(version);
                         break;
 
                     case "debug_on":
@@ -238,6 +214,10 @@ namespace Kvpbase.Classes.Managers
             }
         }
 
+        #endregion
+
+        #region Private-Methods
+
         private void Menu()
         {
             Console.WriteLine(Common.Line(79, "-"));
@@ -264,8 +244,7 @@ namespace Kvpbase.Classes.Managers
             Console.WriteLine("  sync start all            start all synchronization tasks");
             Console.WriteLine("  sync stats                display statistics for a given synchronization task");
             Console.WriteLine("  sync stop                 stop a synchronization task");
-            Console.WriteLine("  sync remove               stop and remove a synchronization task");
-            Console.WriteLine("  version                   show the product version");
+            Console.WriteLine("  sync remove               stop and remove a synchronization task"); 
             Console.WriteLine("");
             return;
         }

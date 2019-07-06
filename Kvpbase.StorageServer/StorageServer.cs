@@ -46,6 +46,7 @@ namespace Kvpbase
         public static Server _Server;
 
         public static string _TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
+        public static string _Version = null;
 
         public static void Main(string[] args)
         { 
@@ -140,40 +141,39 @@ namespace Kvpbase
                 RequestReceived);
 
             _Server.ReadInputStream = false;
-
-            if (Common.IsTrue(_Settings.EnableConsole))
-            {
-                _ConsoleMgr = new ConsoleManager(
-                    _Settings,
-                    _Logging,
-                    _TopologyMgr, 
-                    _UserMgr,
-                    _UrlLockMgr,
-                    _EncryptionMgr,
-                    _OutboundMessageHandler,
-                    _ContainerMgr,
-                    _ContainerHandler,
-                    _ObjectHandler,
-                    _ResyncMgr,
-                    ExitApplication);
-            }
-            else
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "StorageServer not using interactive mode, console disabled");
-            }
+             
+            _ConsoleMgr = new ConsoleManager(
+                _Settings,
+                _Logging,
+                _TopologyMgr, 
+                _UserMgr,
+                _UrlLockMgr,
+                _EncryptionMgr,
+                _OutboundMessageHandler,
+                _ContainerMgr,
+                _ContainerHandler,
+                _ObjectHandler,
+                _ResyncMgr);
 
             #endregion
 
             #region Wait-for-Server-Thread
-            
-            EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, null);
-            bool waitHandleSignal = false;
-            do
+
+            if (_Settings.EnableConsole)
             {
-                waitHandleSignal = waitHandle.WaitOne(1000);
+                _ConsoleMgr.Worker();
             }
-            while (!waitHandleSignal);
-             
+            else
+            {
+                EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, null);
+                bool waitHandleSignal = false;
+                do
+                {
+                    waitHandleSignal = waitHandle.WaitOne(1000);
+                }
+                while (!waitHandleSignal);
+            }
+
             _Logging.Log(LoggingModule.Severity.Debug, "StorageServer exiting");
 
             #endregion
@@ -185,18 +185,12 @@ namespace Kvpbase
 
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            string version = fvi.FileVersion;
+            _Version = fvi.FileVersion;
 
             string msg =
+                Logo() + 
                 Environment.NewLine +
-                @"   _             _                    " + Environment.NewLine +
-                @"  | |____ ___ __| |__  __ _ ___ ___   " + Environment.NewLine +
-                @"  | / /\ V / '_ \ '_ \/ _` (_-</ -_)  " + Environment.NewLine +
-                @"  |_\_\ \_/| .__/_.__/\__,_/__/\___|  " + Environment.NewLine +
-                @"           |_|                        " + Environment.NewLine +
-                @"                                      " + Environment.NewLine +
-                Environment.NewLine +
-                "  " + _Settings.ProductName + " v" + version + Environment.NewLine +
+                "  " + _Settings.ProductName + " v" + _Version + Environment.NewLine +
                 Environment.NewLine;
 
             Console.WriteLine(msg);
@@ -469,10 +463,15 @@ namespace Kvpbase
                 {
                     md.Params.Config = Common.IsTrue(req.QuerystringEntries["_config"]);
                 }
-                 
+
                 if (req.QuerystringEntries.ContainsKey("_stats"))
                 {
                     md.Params.Stats = Common.IsTrue(req.QuerystringEntries["_stats"]);
+                }
+
+                if (req.QuerystringEntries.ContainsKey("_html"))
+                {
+                    md.Params.Html = Common.IsTrue(req.QuerystringEntries["_html"]);
                 }
 
                 DateTime testTimestamp;
@@ -716,11 +715,14 @@ namespace Kvpbase
                 "          body {" + Environment.NewLine +
                 "            font-family: arial;" + Environment.NewLine +
                 "          }" + Environment.NewLine +
-                "          h3 {" + Environment.NewLine +
+                "          pre {" + Environment.NewLine +
                 "            background-color: #e5e7ea;" + Environment.NewLine +
                 "            color: #333333; " + Environment.NewLine +
-                "            padding: 16px;" + Environment.NewLine +
-                "            border: 16px;" + Environment.NewLine +
+                "          }" + Environment.NewLine +
+                "          h3 {" + Environment.NewLine +
+                "            color: #333333; " + Environment.NewLine +
+                "            padding: 4px;" + Environment.NewLine +
+                "            border: 4px;" + Environment.NewLine +
                 "          }" + Environment.NewLine +
                 "          p {" + Environment.NewLine +
                 "            color: #333333; " + Environment.NewLine +
@@ -741,7 +743,9 @@ namespace Kvpbase
                 "      </style>" + Environment.NewLine +
                 "   </head>" + Environment.NewLine +
                 "   <body>" + Environment.NewLine +
-                "      <h3>Kvpbase Storage Server</h3>" + Environment.NewLine +
+                "      <pre>" + Environment.NewLine +
+                WebUtility.HtmlEncode(Logo()) +
+                "      </pre>" + Environment.NewLine +
                 "      <p>Congratulations, your Kvpbase Storage Server node is running!</p>" + Environment.NewLine +
                 "      <p>" + Environment.NewLine + 
                 "        <a href='" + link + "' target='_blank'>SDKs and Source Code</a>" + Environment.NewLine +
@@ -750,6 +754,22 @@ namespace Kvpbase
                 "</html>";
 
             return html;
+        }
+        
+        static string Logo()
+        {
+            // http://patorjk.com/software/taag/#p=display&f=Small&t=kvpbase
+
+            string ret =
+                Environment.NewLine +
+                @"   _             _                    " + Environment.NewLine +
+                @"  | |____ ___ __| |__  __ _ ___ ___   " + Environment.NewLine +
+                @"  | / /\ V / '_ \ '_ \/ _` (_-</ -_)  " + Environment.NewLine +
+                @"  |_\_\ \_/| .__/_.__/\__,_/__/\___|  " + Environment.NewLine +
+                @"           |_|                        " + Environment.NewLine +
+                @"                                      " + Environment.NewLine;
+
+            return ret;
         }
 
         static bool ExitApplication()

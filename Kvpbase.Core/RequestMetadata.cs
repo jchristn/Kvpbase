@@ -238,6 +238,11 @@ namespace Kvpbase.Core
             public bool Stats { get; set; }
 
             /// <summary>
+            /// Indicates if HTML output is desired.
+            /// </summary>
+            public bool Html { get; set; }
+
+            /// <summary>
             /// Indicates if the request is an audit log query.
             /// </summary>
             public bool AuditLog { get; set; }
@@ -328,6 +333,7 @@ namespace Kvpbase.Core
                 Rename = null;
                 Config = false;
                 Stats = false;
+                Html = false;
                 AuditLog = false;
                 Metadata = false;
                 RequestMetadata = false;

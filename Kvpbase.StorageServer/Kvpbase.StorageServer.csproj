@@ -5,7 +5,7 @@
     <TargetFrameworks>netcoreapp2.2;net461</TargetFrameworks>
     <RootNamespace>Kvpbase.StorageServer</RootNamespace>
     <PackageId>Kvpbase.StorageServer</PackageId>
-    <Version>3.3.0</Version>
+    <Version>3.3.1</Version>
     <Authors>Joel Christner</Authors>
     <Product>Kvpbase Storage Server</Product>
     <Description>Object storage system with integrated replication and a simple RESTful API.</Description>
@@ -19,6 +19,7 @@
     <ApplicationIcon />
     <StartupObject />
     <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

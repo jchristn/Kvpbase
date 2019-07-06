@@ -2924,13 +2924,13 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "3.3.0",
+    "version": "3.3.1",
     "restore": {
-      "projectUniqueName": "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
+      "projectUniqueName": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
       "projectName": "Kvpbase.StorageServer",
-      "projectPath": "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
+      "projectPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
       "packagesPath": "C:\\Users\\joelc\\.nuget\\packages\\",
-      "outputPath": "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.StorageServer\\obj\\",
+      "outputPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.StorageServer\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
@@ -2946,26 +2946,27 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {},
+        "https://nuget.pkg.github.com/jchristn/index.json": {}
       },
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj": {
-              "projectPath": "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj"
+            "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj": {
+              "projectPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj"
             },
-            "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj": {
-              "projectPath": "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj"
+            "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj": {
+              "projectPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj"
             }
           }
         },
         "net461": {
           "projectReferences": {
-            "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj": {
-              "projectPath": "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj"
+            "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj": {
+              "projectPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj"
             },
-            "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj": {
-              "projectPath": "C:\\code\\KVPbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj"
+            "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj": {
+              "projectPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj"
             }
           }
         }

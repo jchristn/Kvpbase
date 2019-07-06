@@ -28,7 +28,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\code\KVPbase\storageserver-3.3\Kvpbase.Core\bin\Release\net461\Kvpbase.Core.dll" target="lib\net461\Kvpbase.Core.dll" />
-    <file src="C:\code\KVPbase\storageserver-3.3\Kvpbase.Core\bin\Release\netstandard2.0\Kvpbase.Core.dll" target="lib\netstandard2.0\Kvpbase.Core.dll" />
+    <file src="C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\bin\Release\net461\Kvpbase.Core.dll" target="lib\net461\Kvpbase.Core.dll" />
+    <file src="C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\bin\Release\netstandard2.0\Kvpbase.Core.dll" target="lib\netstandard2.0\Kvpbase.Core.dll" />
   </files>
 </package>
