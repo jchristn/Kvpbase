@@ -37,7 +37,7 @@ namespace Kvpbase
             }
             else
             {
-                return new HttpResponse(md.Http, 200, null, null, null);
+                return new HttpResponse(md.Http, 200, null);
             }
             
             #endregion

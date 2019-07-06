@@ -63,14 +63,14 @@ namespace Kvpbase
                 currContainer.ClearAuditLog();
                 _OutboundMessageHandler.ContainerClearAuditLog(md, currContainer.Settings);
                 _Logging.Log(LoggingModule.Severity.Info, "HttpDeleteContainer cleared audit log for container " + md.Params.UserGuid + "/" + md.Params.Container);
-                return new HttpResponse(md.Http, 204, null, "application/json", null);
+                return new HttpResponse(md.Http, 204, null);
             }
             else
             {
                 _ContainerHandler.Delete(md.Params.UserGuid, md.Params.Container);
                 _OutboundMessageHandler.ContainerDelete(md, currContainer.Settings);
                 _Logging.Log(LoggingModule.Severity.Info, "HttpDeleteContainer deleted container " + md.Params.UserGuid + "/" + md.Params.Container);
-                return new HttpResponse(md.Http, 204, null, "application/json", null);
+                return new HttpResponse(md.Http, 204, null);
             }
 
             #endregion

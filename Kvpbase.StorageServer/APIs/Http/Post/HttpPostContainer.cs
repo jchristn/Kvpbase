@@ -97,7 +97,7 @@ namespace Kvpbase
                 }
 
                 _Logging.Log(LoggingModule.Severity.Debug, "HttpPostContainer successfully created container " + settings.User + "/" + settings.Name);
-                return new HttpResponse(md.Http, 201, null, "application/json", null);
+                return new HttpResponse(md.Http, 201, null);
 
                 #endregion
             }

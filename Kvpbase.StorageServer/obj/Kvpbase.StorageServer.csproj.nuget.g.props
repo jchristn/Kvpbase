@@ -17,6 +17,6 @@
   </ImportGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' AND '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgEntityFramework Condition=" '$(PkgEntityFramework)' == '' ">C:\Users\joelc\.nuget\packages\entityframework\6.2.0</PkgEntityFramework>
-    <PkgSystem_Data_SQLite_EF6 Condition=" '$(PkgSystem_Data_SQLite_EF6)' == '' ">C:\Users\joelc\.nuget\packages\system.data.sqlite.ef6\1.0.110</PkgSystem_Data_SQLite_EF6>
+    <PkgSystem_Data_SQLite_EF6 Condition=" '$(PkgSystem_Data_SQLite_EF6)' == '' ">C:\Users\joelc\.nuget\packages\system.data.sqlite.ef6\1.0.111</PkgSystem_Data_SQLite_EF6>
   </PropertyGroup>
 </Project>

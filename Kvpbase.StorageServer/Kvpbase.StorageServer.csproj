@@ -5,7 +5,7 @@
     <TargetFrameworks>netcoreapp2.2;net461</TargetFrameworks>
     <RootNamespace>Kvpbase.StorageServer</RootNamespace>
     <PackageId>Kvpbase.StorageServer</PackageId>
-    <Version>3.3.1</Version>
+    <Version>3.3.2</Version>
     <Authors>Joel Christner</Authors>
     <Product>Kvpbase Storage Server</Product>
     <Description>Object storage system with integrated replication and a simple RESTful API.</Description>
@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
-    <PackageReleaseNotes>Support for streams to support larger objects (modified APIs and Container), redesigned resync worker, removed tasks, updated dependencies</PackageReleaseNotes>
+    <PackageReleaseNotes>Dependency fix</PackageReleaseNotes>
     <ApplicationIcon />
     <StartupObject />
     <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
@@ -25,11 +25,11 @@
   <ItemGroup>
     <PackageReference Include="EmailWrapper" Version="1.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="RestWrapper" Version="2.0.2" />
-    <PackageReference Include="SyslogLogging" Version="1.0.10" />
-    <PackageReference Include="Watson" Version="2.0.2" />
-    <PackageReference Include="WatsonMesh" Version="1.2.1" />
-    <PackageReference Include="WatsonTcp" Version="1.3.6" />
+    <PackageReference Include="RestWrapper" Version="2.0.4" />
+    <PackageReference Include="SyslogLogging" Version="1.0.12" />
+    <PackageReference Include="Watson" Version="2.1.2" />
+    <PackageReference Include="WatsonMesh" Version="1.2.7" />
+    <PackageReference Include="WatsonTcp" Version="1.3.12" />
   </ItemGroup>
 
   <ItemGroup> 

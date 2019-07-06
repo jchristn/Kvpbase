@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETStandard,Version=v2.0/",
-    "signature": "5ca0d0f6f8aeaa4d3db681a4c71ccaeaabd40c89"
+    "signature": "49da388ed2c343a1bf80a7a4ead47c7680063345"
   },
   "compilationOptions": {},
   "targets": {
@@ -9,24 +9,32 @@
     ".NETStandard,Version=v2.0/": {
       "ContainerTest/1.0.0": {
         "dependencies": {
-          "Kvpbase.Containers": "3.3.0",
-          "Kvpbase.Core": "3.3.0",
+          "Kvpbase.Containers": "3.3.2",
+          "Kvpbase.Core": "3.3.2",
           "NETStandard.Library": "2.0.3",
           "SQLite.Interop.dll": "1.0.103",
-          "System.Data.SQLite.Core": "1.0.110"
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "runtime": {
           "ContainerTest.dll": {}
         }
       },
-      "Caching.dll/1.3.1": {
+      "Caching.dll/1.3.3": {
         "dependencies": {
           "Microsoft.CSharp": "4.5.0"
         },
         "runtime": {
           "lib/netstandard2.0/Caching.dll": {
-            "assemblyVersion": "1.3.1.0",
-            "fileVersion": "1.3.1.0"
+            "assemblyVersion": "1.3.3.0",
+            "fileVersion": "1.3.3.0"
+          }
+        }
+      },
+      "ChunkDecoder/1.0.2": {
+        "runtime": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {
+            "assemblyVersion": "1.0.2.0",
+            "fileVersion": "1.0.2.0"
           }
         }
       },
@@ -60,38 +68,38 @@
           }
         }
       },
-      "RegexMatcher/1.0.1": {
+      "RegexMatcher/1.0.2": {
         "runtime": {
           "lib/netstandard2.0/RegexMatcher.dll": {
-            "assemblyVersion": "1.0.1.0",
-            "fileVersion": "1.0.1.0"
+            "assemblyVersion": "1.0.2.0",
+            "fileVersion": "1.0.2.0"
           }
         }
       },
       "SQLite.Interop.dll/1.0.103": {},
-      "SqliteHelper/1.0.11": {
+      "SqliteHelper/1.0.13": {
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
-          "System.Data.SQLite": "1.0.110",
-          "System.Data.SQLite.Core": "1.0.110"
+          "System.Data.SQLite": "1.0.111",
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "runtime": {
           "lib/netstandard2.0/SqliteWrapper.dll": {
-            "assemblyVersion": "1.0.11.0",
-            "fileVersion": "1.0.11.0"
+            "assemblyVersion": "1.0.13.0",
+            "fileVersion": "1.0.13.0"
           }
         }
       },
-      "System.Data.SQLite/1.0.110": {
+      "System.Data.SQLite/1.0.111": {
         "dependencies": {
-          "System.Data.SQLite.Core": "1.0.110"
+          "System.Data.SQLite.Core": "1.0.111"
         }
       },
-      "System.Data.SQLite.Core/1.0.110": {
+      "System.Data.SQLite.Core/1.0.111": {
         "runtime": {
           "lib/netstandard2.0/System.Data.SQLite.dll": {
-            "assemblyVersion": "1.0.110.0",
-            "fileVersion": "1.0.110.0"
+            "assemblyVersion": "1.0.111.0",
+            "fileVersion": "1.0.111.0"
           }
         }
       },
@@ -103,39 +111,40 @@
           }
         }
       },
-      "Watson/2.0.2": {
+      "Watson/2.1.2": {
         "dependencies": {
+          "ChunkDecoder": "1.0.2",
           "IpMatcher": "1.0.1",
           "Newtonsoft.Json": "12.0.2",
-          "RegexMatcher": "1.0.1"
+          "RegexMatcher": "1.0.2"
         },
         "runtime": {
           "lib/netstandard2.0/WatsonWebserver.dll": {
-            "assemblyVersion": "2.0.2.0",
-            "fileVersion": "2.0.2.0"
+            "assemblyVersion": "2.1.2.0",
+            "fileVersion": "2.1.2.0"
           }
         }
       },
-      "Kvpbase.Containers/3.3.0": {
+      "Kvpbase.Containers/3.3.2": {
         "dependencies": {
-          "Caching.dll": "1.3.1",
-          "Kvpbase.Core": "3.3.0",
+          "Caching.dll": "1.3.3",
+          "Kvpbase.Core": "3.3.2",
           "Microsoft.CSharp": "4.5.0",
           "Newtonsoft.Json": "12.0.2",
           "SQLite.Interop.dll": "1.0.103",
-          "SqliteHelper": "1.0.11",
-          "System.Data.SQLite": "1.0.110",
-          "System.Data.SQLite.Core": "1.0.110"
+          "SqliteHelper": "1.0.13",
+          "System.Data.SQLite": "1.0.111",
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "runtime": {
           "Kvpbase.Container.dll": {}
         }
       },
-      "Kvpbase.Core/3.3.0": {
+      "Kvpbase.Core/3.3.2": {
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.0.2"
+          "Watson": "2.1.2"
         },
         "runtime": {
           "Kvpbase.Core.dll": {}
@@ -149,12 +158,19 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Caching.dll/1.3.1": {
+    "Caching.dll/1.3.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-FBSM1oNz6zaiyI0rmZS63P2204qI4ULSYgxBzs2vx1mzx4VLUQ9ONERbtOy3wyHeOSM+7sFNjdL//7aipsjrkw==",
-      "path": "caching.dll/1.3.1",
-      "hashPath": "caching.dll.1.3.1.nupkg.sha512"
+      "sha512": "sha512-wT9eRumAhuHVy6fVyYhX/qNPnAuBD1/+wwOCEe0/etCxEpc1ehUs2aTu9HWVFUOJmzQwBPr/BY2bzxLW3D2/IQ==",
+      "path": "caching.dll/1.3.3",
+      "hashPath": "caching.dll.1.3.3.nupkg.sha512"
+    },
+    "ChunkDecoder/1.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-UBLedsOxBcxQmN/Fz7VR8jad+XTdnhsoqBOzp3Aquz3STYnwf+98AiQm9aD1poh1gCQGGp3ZHpiw+17Lkoi6kA==",
+      "path": "chunkdecoder/1.0.2",
+      "hashPath": "chunkdecoder.1.0.2.nupkg.sha512"
     },
     "IpMatcher/1.0.1": {
       "type": "package",
@@ -191,12 +207,12 @@
       "path": "newtonsoft.json/12.0.2",
       "hashPath": "newtonsoft.json.12.0.2.nupkg.sha512"
     },
-    "RegexMatcher/1.0.1": {
+    "RegexMatcher/1.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-lAGEZDOSv6TvKBmi/ers840aHepcaIWlDYLN2q2F3OOoEa2MHnxLo1tneoBJHSxoUpENdS7MQK/754otk3ASMA==",
-      "path": "regexmatcher/1.0.1",
-      "hashPath": "regexmatcher.1.0.1.nupkg.sha512"
+      "sha512": "sha512-gbNpAHo+3HjiX4YSirmR7ujsURje2pk3moWmb64aB2SXfa75BUFf0ffDld6zJ5KmubO9ST+86O/bejBU5y4eWg==",
+      "path": "regexmatcher/1.0.2",
+      "hashPath": "regexmatcher.1.0.2.nupkg.sha512"
     },
     "SQLite.Interop.dll/1.0.103": {
       "type": "package",
@@ -205,26 +221,26 @@
       "path": "sqlite.interop.dll/1.0.103",
       "hashPath": "sqlite.interop.dll.1.0.103.nupkg.sha512"
     },
-    "SqliteHelper/1.0.11": {
+    "SqliteHelper/1.0.13": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-viAp3li4gBdlzatDxxbQ0kKfTaLwjN/QZcQKd3CFf2psxw2cRo6Fo28jaiul+VwQvATZR0dRbs9QpuWEtc5/ug==",
-      "path": "sqlitehelper/1.0.11",
-      "hashPath": "sqlitehelper.1.0.11.nupkg.sha512"
+      "sha512": "sha512-kiQYiyjXM3vWbZSXNRqNQIyIUAfMSoJMchTm40ymxQcIHW4mVJjgZpT8WLbCWGiotxCPLwTCK6vwVjbc3FGgXQ==",
+      "path": "sqlitehelper/1.0.13",
+      "hashPath": "sqlitehelper.1.0.13.nupkg.sha512"
     },
-    "System.Data.SQLite/1.0.110": {
+    "System.Data.SQLite/1.0.111": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-YFUBQ4BzxzLhq/TOVg8wipF+YbpFHrfMx1dkhgpfTDsiLnpt/2oqRmI0ti48rNhNjR0ZPW5TLCdNA4zrHiNy0g==",
-      "path": "system.data.sqlite/1.0.110",
-      "hashPath": "system.data.sqlite.1.0.110.nupkg.sha512"
+      "sha512": "sha512-Erg05KGL/sntCBd2ApJGK1A5e1CjyBRlizAXWjrHCH5mvH/V/je1iOZ+2B3NHXDhQZuwi5Zp4KCIm4w1YAALyQ==",
+      "path": "system.data.sqlite/1.0.111",
+      "hashPath": "system.data.sqlite.1.0.111.nupkg.sha512"
     },
-    "System.Data.SQLite.Core/1.0.110": {
+    "System.Data.SQLite.Core/1.0.111": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-x7xZ0oBWycJch9ShAFwTQRPJ2HEo5NmXyhx/LFJvSbCBQVXnHc9rIAeLo1VXzDFbfbtPl3HFpFhriEnUkS2L0Q==",
-      "path": "system.data.sqlite.core/1.0.110",
-      "hashPath": "system.data.sqlite.core.1.0.110.nupkg.sha512"
+      "sha512": "sha512-HfCHIp+Pyvoy81BPmH/9FTTe8HSf4A6LibGDmTT5O4NZVo6g9LitcxHEx31F20dglPhTPb1smuFc2j5CC/7uBw==",
+      "path": "system.data.sqlite.core/1.0.111",
+      "hashPath": "system.data.sqlite.core.1.0.111.nupkg.sha512"
     },
     "System.Drawing.Common/4.5.1": {
       "type": "package",
@@ -233,19 +249,19 @@
       "path": "system.drawing.common/4.5.1",
       "hashPath": "system.drawing.common.4.5.1.nupkg.sha512"
     },
-    "Watson/2.0.2": {
+    "Watson/2.1.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-DxrAFA+JsAI/nc2DJX7JkQksN+TYLXAR/1EbYyt+BpNHA/ouLb3YFcAoylLq5Wiao4FkDHO3DZhq7PP+1/Iigg==",
-      "path": "watson/2.0.2",
-      "hashPath": "watson.2.0.2.nupkg.sha512"
+      "sha512": "sha512-C07+jvPPdR3qQdG9vO9p/3l4/Js8OAtxmpJt0F2mfjScRGdkmLge+yWijfqdBaGDPdmz1nAe09jNYkKBYiBSlw==",
+      "path": "watson/2.1.2",
+      "hashPath": "watson.2.1.2.nupkg.sha512"
     },
-    "Kvpbase.Containers/3.3.0": {
+    "Kvpbase.Containers/3.3.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Kvpbase.Core/3.3.0": {
+    "Kvpbase.Core/3.3.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

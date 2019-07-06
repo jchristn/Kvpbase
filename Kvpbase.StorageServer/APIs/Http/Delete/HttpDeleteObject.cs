@@ -80,7 +80,7 @@ namespace Kvpbase
             {
                 _Logging.Log(LoggingModule.Severity.Debug, "HttpDeleteObject deleted object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                 _OutboundMessageHandler.ObjectDelete(md, currContainer.Settings);
-                return new HttpResponse(md.Http, 204, null, null, null);
+                return new HttpResponse(md.Http, 204, null);
             } 
             
             #endregion 

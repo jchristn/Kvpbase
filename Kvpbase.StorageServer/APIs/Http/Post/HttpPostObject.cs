@@ -125,7 +125,7 @@ namespace Kvpbase
                             Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true)));
                     }
 
-                    return new HttpResponse(md.Http, 201, null, null, null);
+                    return new HttpResponse(md.Http, 201, null);
                 }
 
                 #endregion

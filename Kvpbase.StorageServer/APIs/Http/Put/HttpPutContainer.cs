@@ -129,7 +129,7 @@ namespace Kvpbase
 
                 _OutboundMessageHandler.ContainerUpdate(md, settings);
 
-                return new HttpResponse(md.Http, 200, null, "application/json", null);
+                return new HttpResponse(md.Http, 200, null);
 
                 #endregion
 

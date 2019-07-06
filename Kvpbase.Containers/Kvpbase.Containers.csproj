@@ -6,7 +6,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>Kvpbase.Container</AssemblyName>
     <PackageId>Kvpbase.Containers</PackageId>
-    <Version>3.3.0</Version>
+    <Version>3.3.2</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Kvpbase Containers</Product>
@@ -17,18 +17,18 @@
     <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
-    <PackageReleaseNotes>Initial NuGet package for Kvpbase.Containers</PackageReleaseNotes>
+    <PackageReleaseNotes>Dependency fix</PackageReleaseNotes>
     <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Caching.dll" Version="1.3.1" />
+    <PackageReference Include="Caching.dll" Version="1.3.3" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="SQLite.Interop.dll" Version="1.0.103" />
-    <PackageReference Include="SqliteHelper" Version="1.0.11" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.110" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.110" />
+    <PackageReference Include="SqliteHelper" Version="1.0.13" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.111" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.111" />
   </ItemGroup>
 
   <ItemGroup> 

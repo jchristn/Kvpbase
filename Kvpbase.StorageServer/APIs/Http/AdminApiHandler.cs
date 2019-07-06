@@ -39,12 +39,12 @@ namespace Kvpbase
                 case HttpMethod.GET:
                     #region get
 
-                    if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/admin/disks", false))
+                    if (md.Http.RawUrlWithoutQuery.Equals("/admin/disks"))
                     {
                         return HttpGetDisks(md);
                     }
 
-                    if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/admin/topology", false))
+                    if (md.Http.RawUrlWithoutQuery.Equals("/admin/topology"))
                     {
                         return HttpGetTopology(md);
                     }

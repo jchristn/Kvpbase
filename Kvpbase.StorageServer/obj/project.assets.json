@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v2.2": {
-      "Caching.dll/1.3.1": {
+      "Caching.dll/1.3.3": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.5.0"
@@ -12,6 +12,15 @@
         },
         "runtime": {
           "lib/netstandard2.0/Caching.dll": {}
+        }
+      },
+      "ChunkDecoder/1.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
         }
       },
       "EmailWrapper/1.0.2": {
@@ -277,7 +286,7 @@
           "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         }
       },
-      "RegexMatcher/1.0.1": {
+      "RegexMatcher/1.0.2": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/RegexMatcher.dll": {}
@@ -295,7 +304,7 @@
           "lib/netstandard2.0/RestSharp.dll": {}
         }
       },
-      "RestWrapper/2.0.2": {
+      "RestWrapper/2.0.4": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2"
@@ -310,12 +319,12 @@
       "SQLite.Interop.dll/1.0.103": {
         "type": "package"
       },
-      "SqliteHelper/1.0.11": {
+      "SqliteHelper/1.0.13": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
-          "System.Data.SQLite": "1.0.110",
-          "System.Data.SQLite.Core": "1.0.110"
+          "System.Data.SQLite": "1.0.111",
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "compile": {
           "lib/netstandard2.0/SqliteWrapper.dll": {}
@@ -324,7 +333,7 @@
           "lib/netstandard2.0/SqliteWrapper.dll": {}
         }
       },
-      "SyslogLogging/1.0.10": {
+      "SyslogLogging/1.0.12": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/LoggingModule.dll": {}
@@ -333,13 +342,13 @@
           "lib/netstandard2.0/LoggingModule.dll": {}
         }
       },
-      "System.Data.SQLite/1.0.110": {
+      "System.Data.SQLite/1.0.111": {
         "type": "package",
         "dependencies": {
-          "System.Data.SQLite.Core": "1.0.110"
+          "System.Data.SQLite.Core": "1.0.111"
         }
       },
-      "System.Data.SQLite.Core/1.0.110": {
+      "System.Data.SQLite.Core/1.0.111": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/System.Data.SQLite.dll": {}
@@ -389,12 +398,13 @@
           }
         }
       },
-      "Watson/2.0.2": {
+      "Watson/2.1.2": {
         "type": "package",
         "dependencies": {
+          "ChunkDecoder": "1.0.2",
           "IpMatcher": "1.0.1",
-          "Newtonsoft.Json": "12.0.1",
-          "RegexMatcher": "1.0.1"
+          "Newtonsoft.Json": "11.0.1",
+          "RegexMatcher": "1.0.2"
         },
         "compile": {
           "lib/netstandard2.0/WatsonWebserver.dll": {}
@@ -403,11 +413,11 @@
           "lib/netstandard2.0/WatsonWebserver.dll": {}
         }
       },
-      "WatsonMesh/1.2.1": {
+      "WatsonMesh/1.2.7": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
-          "WatsonTcp": "1.3.5"
+          "WatsonTcp": "1.3.12"
         },
         "compile": {
           "lib/netstandard2.0/WatsonMesh.dll": {}
@@ -416,7 +426,7 @@
           "lib/netstandard2.0/WatsonMesh.dll": {}
         }
       },
-      "WatsonTcp/1.3.6": {
+      "WatsonTcp/1.3.12": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2"
@@ -428,18 +438,18 @@
           "lib/netstandard2.0/WatsonTcp.dll": {}
         }
       },
-      "Kvpbase.Containers/3.3.0": {
+      "Kvpbase.Containers/3.3.2": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Caching.dll": "1.3.1",
-          "Kvpbase.Core": "3.3.0",
+          "Caching.dll": "1.3.3",
+          "Kvpbase.Core": "3.3.2",
           "Microsoft.CSharp": "4.5.0",
           "Newtonsoft.Json": "12.0.2",
           "SQLite.Interop.dll": "1.0.103",
-          "SqliteHelper": "1.0.11",
-          "System.Data.SQLite": "1.0.110",
-          "System.Data.SQLite.Core": "1.0.110"
+          "SqliteHelper": "1.0.13",
+          "System.Data.SQLite": "1.0.111",
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Containers.dll": {}
@@ -448,13 +458,13 @@
           "bin/placeholder/Kvpbase.Containers.dll": {}
         }
       },
-      "Kvpbase.Core/3.3.0": {
+      "Kvpbase.Core/3.3.2": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.0.2"
+          "Watson": "2.1.2"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Core.dll": {}
@@ -465,7 +475,7 @@
       }
     },
     ".NETCoreApp,Version=v2.2/win7-x86": {
-      "Caching.dll/1.3.1": {
+      "Caching.dll/1.3.3": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.5.0"
@@ -475,6 +485,15 @@
         },
         "runtime": {
           "lib/netstandard2.0/Caching.dll": {}
+        }
+      },
+      "ChunkDecoder/1.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
         }
       },
       "EmailWrapper/1.0.2": {
@@ -740,7 +759,7 @@
           "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         }
       },
-      "RegexMatcher/1.0.1": {
+      "RegexMatcher/1.0.2": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/RegexMatcher.dll": {}
@@ -758,7 +777,7 @@
           "lib/netstandard2.0/RestSharp.dll": {}
         }
       },
-      "RestWrapper/2.0.2": {
+      "RestWrapper/2.0.4": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2"
@@ -1018,12 +1037,12 @@
       "SQLite.Interop.dll/1.0.103": {
         "type": "package"
       },
-      "SqliteHelper/1.0.11": {
+      "SqliteHelper/1.0.13": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
-          "System.Data.SQLite": "1.0.110",
-          "System.Data.SQLite.Core": "1.0.110"
+          "System.Data.SQLite": "1.0.111",
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "compile": {
           "lib/netstandard2.0/SqliteWrapper.dll": {}
@@ -1032,7 +1051,7 @@
           "lib/netstandard2.0/SqliteWrapper.dll": {}
         }
       },
-      "SyslogLogging/1.0.10": {
+      "SyslogLogging/1.0.12": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/LoggingModule.dll": {}
@@ -1041,13 +1060,13 @@
           "lib/netstandard2.0/LoggingModule.dll": {}
         }
       },
-      "System.Data.SQLite/1.0.110": {
+      "System.Data.SQLite/1.0.111": {
         "type": "package",
         "dependencies": {
-          "System.Data.SQLite.Core": "1.0.110"
+          "System.Data.SQLite.Core": "1.0.111"
         }
       },
-      "System.Data.SQLite.Core/1.0.110": {
+      "System.Data.SQLite.Core/1.0.111": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/System.Data.SQLite.dll": {}
@@ -1072,12 +1091,13 @@
           "runtimes/win/lib/netcoreapp2.0/System.Drawing.Common.dll": {}
         }
       },
-      "Watson/2.0.2": {
+      "Watson/2.1.2": {
         "type": "package",
         "dependencies": {
+          "ChunkDecoder": "1.0.2",
           "IpMatcher": "1.0.1",
-          "Newtonsoft.Json": "12.0.1",
-          "RegexMatcher": "1.0.1"
+          "Newtonsoft.Json": "11.0.1",
+          "RegexMatcher": "1.0.2"
         },
         "compile": {
           "lib/netstandard2.0/WatsonWebserver.dll": {}
@@ -1086,11 +1106,11 @@
           "lib/netstandard2.0/WatsonWebserver.dll": {}
         }
       },
-      "WatsonMesh/1.2.1": {
+      "WatsonMesh/1.2.7": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
-          "WatsonTcp": "1.3.5"
+          "WatsonTcp": "1.3.12"
         },
         "compile": {
           "lib/netstandard2.0/WatsonMesh.dll": {}
@@ -1099,7 +1119,7 @@
           "lib/netstandard2.0/WatsonMesh.dll": {}
         }
       },
-      "WatsonTcp/1.3.6": {
+      "WatsonTcp/1.3.12": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2"
@@ -1111,18 +1131,18 @@
           "lib/netstandard2.0/WatsonTcp.dll": {}
         }
       },
-      "Kvpbase.Containers/3.3.0": {
+      "Kvpbase.Containers/3.3.2": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Caching.dll": "1.3.1",
-          "Kvpbase.Core": "3.3.0",
+          "Caching.dll": "1.3.3",
+          "Kvpbase.Core": "3.3.2",
           "Microsoft.CSharp": "4.5.0",
           "Newtonsoft.Json": "12.0.2",
           "SQLite.Interop.dll": "1.0.103",
-          "SqliteHelper": "1.0.11",
-          "System.Data.SQLite": "1.0.110",
-          "System.Data.SQLite.Core": "1.0.110"
+          "SqliteHelper": "1.0.13",
+          "System.Data.SQLite": "1.0.111",
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Containers.dll": {}
@@ -1131,13 +1151,13 @@
           "bin/placeholder/Kvpbase.Containers.dll": {}
         }
       },
-      "Kvpbase.Core/3.3.0": {
+      "Kvpbase.Core/3.3.2": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.0.2"
+          "Watson": "2.1.2"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Core.dll": {}
@@ -1148,7 +1168,7 @@
       }
     },
     ".NETFramework,Version=v4.6.1": {
-      "Caching.dll/1.3.1": {
+      "Caching.dll/1.3.3": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.5.0"
@@ -1158,6 +1178,15 @@
         },
         "runtime": {
           "lib/net452/Caching.dll": {}
+        }
+      },
+      "ChunkDecoder/1.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
         }
       },
       "EmailWrapper/1.0.2": {
@@ -1216,7 +1245,7 @@
           "lib/net45/Newtonsoft.Json.dll": {}
         }
       },
-      "RegexMatcher/1.0.1": {
+      "RegexMatcher/1.0.2": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/RegexMatcher.dll": {}
@@ -1237,7 +1266,7 @@
           "lib/net452/RestSharp.dll": {}
         }
       },
-      "RestWrapper/2.0.2": {
+      "RestWrapper/2.0.4": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2"
@@ -1252,12 +1281,12 @@
       "SQLite.Interop.dll/1.0.103": {
         "type": "package"
       },
-      "SqliteHelper/1.0.11": {
+      "SqliteHelper/1.0.13": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
-          "System.Data.SQLite": "1.0.110",
-          "System.Data.SQLite.Core": "1.0.110"
+          "System.Data.SQLite": "1.0.111",
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "compile": {
           "lib/net452/SqliteWrapper.dll": {}
@@ -1266,7 +1295,7 @@
           "lib/net452/SqliteWrapper.dll": {}
         }
       },
-      "SyslogLogging/1.0.10": {
+      "SyslogLogging/1.0.12": {
         "type": "package",
         "compile": {
           "lib/net452/LoggingModule.dll": {}
@@ -1275,15 +1304,15 @@
           "lib/net452/LoggingModule.dll": {}
         }
       },
-      "System.Data.SQLite/1.0.110": {
+      "System.Data.SQLite/1.0.111": {
         "type": "package",
         "dependencies": {
-          "System.Data.SQLite.Core": "1.0.110",
-          "System.Data.SQLite.EF6": "1.0.110",
-          "System.Data.SQLite.Linq": "1.0.110"
+          "System.Data.SQLite.Core": "1.0.111",
+          "System.Data.SQLite.EF6": "1.0.111",
+          "System.Data.SQLite.Linq": "1.0.111"
         }
       },
-      "System.Data.SQLite.Core/1.0.110": {
+      "System.Data.SQLite.Core/1.0.111": {
         "type": "package",
         "compile": {
           "lib/net46/System.Data.SQLite.dll": {}
@@ -1313,7 +1342,7 @@
           }
         }
       },
-      "System.Data.SQLite.EF6/1.0.110": {
+      "System.Data.SQLite.EF6/1.0.111": {
         "type": "package",
         "dependencies": {
           "EntityFramework": "6.2.0"
@@ -1325,7 +1354,7 @@
           "lib/net46/System.Data.SQLite.EF6.dll": {}
         }
       },
-      "System.Data.SQLite.Linq/1.0.110": {
+      "System.Data.SQLite.Linq/1.0.111": {
         "type": "package",
         "compile": {
           "lib/net46/System.Data.SQLite.Linq.dll": {}
@@ -1348,12 +1377,13 @@
           "lib/net461/System.Drawing.Common.dll": {}
         }
       },
-      "Watson/2.0.2": {
+      "Watson/2.1.2": {
         "type": "package",
         "dependencies": {
+          "ChunkDecoder": "1.0.2",
           "IpMatcher": "1.0.1",
-          "Newtonsoft.Json": "12.0.1",
-          "RegexMatcher": "1.0.1"
+          "Newtonsoft.Json": "11.0.1",
+          "RegexMatcher": "1.0.2"
         },
         "compile": {
           "lib/netstandard2.0/WatsonWebserver.dll": {}
@@ -1362,11 +1392,11 @@
           "lib/netstandard2.0/WatsonWebserver.dll": {}
         }
       },
-      "WatsonMesh/1.2.1": {
+      "WatsonMesh/1.2.7": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
-          "WatsonTcp": "1.3.5"
+          "WatsonTcp": "1.3.12"
         },
         "compile": {
           "lib/net461/WatsonMesh.dll": {}
@@ -1375,7 +1405,7 @@
           "lib/net461/WatsonMesh.dll": {}
         }
       },
-      "WatsonTcp/1.3.6": {
+      "WatsonTcp/1.3.12": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2"
@@ -1387,18 +1417,18 @@
           "lib/net452/WatsonTcp.dll": {}
         }
       },
-      "Kvpbase.Containers/3.3.0": {
+      "Kvpbase.Containers/3.3.2": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6.1",
         "dependencies": {
-          "Caching.dll": "1.3.1",
-          "Kvpbase.Core": "3.3.0",
+          "Caching.dll": "1.3.3",
+          "Kvpbase.Core": "3.3.2",
           "Microsoft.CSharp": "4.5.0",
           "Newtonsoft.Json": "12.0.2",
           "SQLite.Interop.dll": "1.0.103",
-          "SqliteHelper": "1.0.11",
-          "System.Data.SQLite": "1.0.110",
-          "System.Data.SQLite.Core": "1.0.110"
+          "SqliteHelper": "1.0.13",
+          "System.Data.SQLite": "1.0.111",
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Containers.dll": {}
@@ -1407,13 +1437,13 @@
           "bin/placeholder/Kvpbase.Containers.dll": {}
         }
       },
-      "Kvpbase.Core/3.3.0": {
+      "Kvpbase.Core/3.3.2": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6.1",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.0.2"
+          "Watson": "2.1.2"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Core.dll": {}
@@ -1424,7 +1454,7 @@
       }
     },
     ".NETFramework,Version=v4.6.1/win7-x86": {
-      "Caching.dll/1.3.1": {
+      "Caching.dll/1.3.3": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.5.0"
@@ -1434,6 +1464,15 @@
         },
         "runtime": {
           "lib/net452/Caching.dll": {}
+        }
+      },
+      "ChunkDecoder/1.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
         }
       },
       "EmailWrapper/1.0.2": {
@@ -1492,7 +1531,7 @@
           "lib/net45/Newtonsoft.Json.dll": {}
         }
       },
-      "RegexMatcher/1.0.1": {
+      "RegexMatcher/1.0.2": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/RegexMatcher.dll": {}
@@ -1513,7 +1552,7 @@
           "lib/net452/RestSharp.dll": {}
         }
       },
-      "RestWrapper/2.0.2": {
+      "RestWrapper/2.0.4": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2"
@@ -1528,12 +1567,12 @@
       "SQLite.Interop.dll/1.0.103": {
         "type": "package"
       },
-      "SqliteHelper/1.0.11": {
+      "SqliteHelper/1.0.13": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
-          "System.Data.SQLite": "1.0.110",
-          "System.Data.SQLite.Core": "1.0.110"
+          "System.Data.SQLite": "1.0.111",
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "compile": {
           "lib/net452/SqliteWrapper.dll": {}
@@ -1542,7 +1581,7 @@
           "lib/net452/SqliteWrapper.dll": {}
         }
       },
-      "SyslogLogging/1.0.10": {
+      "SyslogLogging/1.0.12": {
         "type": "package",
         "compile": {
           "lib/net452/LoggingModule.dll": {}
@@ -1551,15 +1590,15 @@
           "lib/net452/LoggingModule.dll": {}
         }
       },
-      "System.Data.SQLite/1.0.110": {
+      "System.Data.SQLite/1.0.111": {
         "type": "package",
         "dependencies": {
-          "System.Data.SQLite.Core": "1.0.110",
-          "System.Data.SQLite.EF6": "1.0.110",
-          "System.Data.SQLite.Linq": "1.0.110"
+          "System.Data.SQLite.Core": "1.0.111",
+          "System.Data.SQLite.EF6": "1.0.111",
+          "System.Data.SQLite.Linq": "1.0.111"
         }
       },
-      "System.Data.SQLite.Core/1.0.110": {
+      "System.Data.SQLite.Core/1.0.111": {
         "type": "package",
         "compile": {
           "lib/net46/System.Data.SQLite.dll": {}
@@ -1571,7 +1610,7 @@
           "build/net46/_._": {}
         }
       },
-      "System.Data.SQLite.EF6/1.0.110": {
+      "System.Data.SQLite.EF6/1.0.111": {
         "type": "package",
         "dependencies": {
           "EntityFramework": "6.2.0"
@@ -1583,7 +1622,7 @@
           "lib/net46/System.Data.SQLite.EF6.dll": {}
         }
       },
-      "System.Data.SQLite.Linq/1.0.110": {
+      "System.Data.SQLite.Linq/1.0.111": {
         "type": "package",
         "compile": {
           "lib/net46/System.Data.SQLite.Linq.dll": {}
@@ -1606,12 +1645,13 @@
           "lib/net461/System.Drawing.Common.dll": {}
         }
       },
-      "Watson/2.0.2": {
+      "Watson/2.1.2": {
         "type": "package",
         "dependencies": {
+          "ChunkDecoder": "1.0.2",
           "IpMatcher": "1.0.1",
-          "Newtonsoft.Json": "12.0.1",
-          "RegexMatcher": "1.0.1"
+          "Newtonsoft.Json": "11.0.1",
+          "RegexMatcher": "1.0.2"
         },
         "compile": {
           "lib/netstandard2.0/WatsonWebserver.dll": {}
@@ -1620,11 +1660,11 @@
           "lib/netstandard2.0/WatsonWebserver.dll": {}
         }
       },
-      "WatsonMesh/1.2.1": {
+      "WatsonMesh/1.2.7": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
-          "WatsonTcp": "1.3.5"
+          "WatsonTcp": "1.3.12"
         },
         "compile": {
           "lib/net461/WatsonMesh.dll": {}
@@ -1633,7 +1673,7 @@
           "lib/net461/WatsonMesh.dll": {}
         }
       },
-      "WatsonTcp/1.3.6": {
+      "WatsonTcp/1.3.12": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2"
@@ -1645,18 +1685,18 @@
           "lib/net452/WatsonTcp.dll": {}
         }
       },
-      "Kvpbase.Containers/3.3.0": {
+      "Kvpbase.Containers/3.3.2": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6.1",
         "dependencies": {
-          "Caching.dll": "1.3.1",
-          "Kvpbase.Core": "3.3.0",
+          "Caching.dll": "1.3.3",
+          "Kvpbase.Core": "3.3.2",
           "Microsoft.CSharp": "4.5.0",
           "Newtonsoft.Json": "12.0.2",
           "SQLite.Interop.dll": "1.0.103",
-          "SqliteHelper": "1.0.11",
-          "System.Data.SQLite": "1.0.110",
-          "System.Data.SQLite.Core": "1.0.110"
+          "SqliteHelper": "1.0.13",
+          "System.Data.SQLite": "1.0.111",
+          "System.Data.SQLite.Core": "1.0.111"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Containers.dll": {}
@@ -1665,13 +1705,13 @@
           "bin/placeholder/Kvpbase.Containers.dll": {}
         }
       },
-      "Kvpbase.Core/3.3.0": {
+      "Kvpbase.Core/3.3.2": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6.1",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.0.2"
+          "Watson": "2.1.2"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Core.dll": {}
@@ -1683,17 +1723,29 @@
     }
   },
   "libraries": {
-    "Caching.dll/1.3.1": {
-      "sha512": "FBSM1oNz6zaiyI0rmZS63P2204qI4ULSYgxBzs2vx1mzx4VLUQ9ONERbtOy3wyHeOSM+7sFNjdL//7aipsjrkw==",
+    "Caching.dll/1.3.3": {
+      "sha512": "wT9eRumAhuHVy6fVyYhX/qNPnAuBD1/+wwOCEe0/etCxEpc1ehUs2aTu9HWVFUOJmzQwBPr/BY2bzxLW3D2/IQ==",
       "type": "package",
-      "path": "caching.dll/1.3.1",
+      "path": "caching.dll/1.3.3",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "caching.dll.1.3.1.nupkg.sha512",
+        "caching.dll.1.3.3.nupkg.sha512",
         "caching.dll.nuspec",
         "lib/net452/Caching.dll",
         "lib/netstandard2.0/Caching.dll"
+      ]
+    },
+    "ChunkDecoder/1.0.2": {
+      "sha512": "UBLedsOxBcxQmN/Fz7VR8jad+XTdnhsoqBOzp3Aquz3STYnwf+98AiQm9aD1poh1gCQGGp3ZHpiw+17Lkoi6kA==",
+      "type": "package",
+      "path": "chunkdecoder/1.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "chunkdecoder.1.0.2.nupkg.sha512",
+        "chunkdecoder.nuspec",
+        "lib/netstandard2.0/ChunkDecoder.dll"
       ]
     },
     "EmailWrapper/1.0.2": {
@@ -2338,16 +2390,16 @@
         "newtonsoft.json.nuspec"
       ]
     },
-    "RegexMatcher/1.0.1": {
-      "sha512": "lAGEZDOSv6TvKBmi/ers840aHepcaIWlDYLN2q2F3OOoEa2MHnxLo1tneoBJHSxoUpENdS7MQK/754otk3ASMA==",
+    "RegexMatcher/1.0.2": {
+      "sha512": "gbNpAHo+3HjiX4YSirmR7ujsURje2pk3moWmb64aB2SXfa75BUFf0ffDld6zJ5KmubO9ST+86O/bejBU5y4eWg==",
       "type": "package",
-      "path": "regexmatcher/1.0.1",
+      "path": "regexmatcher/1.0.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net462/RegexMatcher.dll",
         "lib/netstandard2.0/RegexMatcher.dll",
-        "regexmatcher.1.0.1.nupkg.sha512",
+        "regexmatcher.1.0.2.nupkg.sha512",
         "regexmatcher.nuspec"
       ]
     },
@@ -2366,16 +2418,16 @@
         "restsharp.nuspec"
       ]
     },
-    "RestWrapper/2.0.2": {
-      "sha512": "txS6l+QyRpAwibYyzKLuxtHeqwIBilkUHCSNuEc5jKMqgpV4lVWYBuwBBelk++tAXITkLYl7YZaxYbowR8LKyQ==",
+    "RestWrapper/2.0.4": {
+      "sha512": "jn9+lBTcpQNXLjgJ1rJjBGauTM3ti9xHPAzjtZrX0xq3jHDCqI8P/kDbYdNXzV089wBHSbLypsByWVUG7zdHoQ==",
       "type": "package",
-      "path": "restwrapper/2.0.2",
+      "path": "restwrapper/2.0.4",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net452/RestWrapper.dll",
         "lib/netstandard2.0/RestWrapper.dll",
-        "restwrapper.2.0.2.nupkg.sha512",
+        "restwrapper.2.0.4.nupkg.sha512",
         "restwrapper.nuspec"
       ]
     },
@@ -2664,47 +2716,47 @@
         "sqlite.interop.dll.nuspec"
       ]
     },
-    "SqliteHelper/1.0.11": {
-      "sha512": "viAp3li4gBdlzatDxxbQ0kKfTaLwjN/QZcQKd3CFf2psxw2cRo6Fo28jaiul+VwQvATZR0dRbs9QpuWEtc5/ug==",
+    "SqliteHelper/1.0.13": {
+      "sha512": "kiQYiyjXM3vWbZSXNRqNQIyIUAfMSoJMchTm40ymxQcIHW4mVJjgZpT8WLbCWGiotxCPLwTCK6vwVjbc3FGgXQ==",
       "type": "package",
-      "path": "sqlitehelper/1.0.11",
+      "path": "sqlitehelper/1.0.13",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net452/SqliteWrapper.dll",
         "lib/netstandard2.0/SqliteWrapper.dll",
-        "sqlitehelper.1.0.11.nupkg.sha512",
+        "sqlitehelper.1.0.13.nupkg.sha512",
         "sqlitehelper.nuspec"
       ]
     },
-    "SyslogLogging/1.0.10": {
-      "sha512": "yi5UmWevLYRhZy1FR5YbyobICaOIxrpJX9vzCWXDR6W7xUycPT3EtNpYiLI7B5rxf2a3J8rOk++CRtIwEUwJtg==",
+    "SyslogLogging/1.0.12": {
+      "sha512": "cBWaJZ7wZfRs82S1RCHUJGfhxJZTDBtNx5hw6t3+8e81GGmg34wXCQyKVbSbV1TYBRUHxhuxQBmKBzGfXVEGvg==",
       "type": "package",
-      "path": "sysloglogging/1.0.10",
+      "path": "sysloglogging/1.0.12",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net452/LoggingModule.dll",
         "lib/netstandard2.0/LoggingModule.dll",
-        "sysloglogging.1.0.10.nupkg.sha512",
+        "sysloglogging.1.0.12.nupkg.sha512",
         "sysloglogging.nuspec"
       ]
     },
-    "System.Data.SQLite/1.0.110": {
-      "sha512": "YFUBQ4BzxzLhq/TOVg8wipF+YbpFHrfMx1dkhgpfTDsiLnpt/2oqRmI0ti48rNhNjR0ZPW5TLCdNA4zrHiNy0g==",
+    "System.Data.SQLite/1.0.111": {
+      "sha512": "Erg05KGL/sntCBd2ApJGK1A5e1CjyBRlizAXWjrHCH5mvH/V/je1iOZ+2B3NHXDhQZuwi5Zp4KCIm4w1YAALyQ==",
       "type": "package",
-      "path": "system.data.sqlite/1.0.110",
+      "path": "system.data.sqlite/1.0.111",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "system.data.sqlite.1.0.110.nupkg.sha512",
+        "system.data.sqlite.1.0.111.nupkg.sha512",
         "system.data.sqlite.nuspec"
       ]
     },
-    "System.Data.SQLite.Core/1.0.110": {
-      "sha512": "x7xZ0oBWycJch9ShAFwTQRPJ2HEo5NmXyhx/LFJvSbCBQVXnHc9rIAeLo1VXzDFbfbtPl3HFpFhriEnUkS2L0Q==",
+    "System.Data.SQLite.Core/1.0.111": {
+      "sha512": "HfCHIp+Pyvoy81BPmH/9FTTe8HSf4A6LibGDmTT5O4NZVo6g9LitcxHEx31F20dglPhTPb1smuFc2j5CC/7uBw==",
       "type": "package",
-      "path": "system.data.sqlite.core/1.0.110",
+      "path": "system.data.sqlite.core/1.0.111",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2745,14 +2797,14 @@
         "runtimes/osx-x64/native/netstandard2.0/SQLite.Interop.dll",
         "runtimes/win-x64/native/netstandard2.0/SQLite.Interop.dll",
         "runtimes/win-x86/native/netstandard2.0/SQLite.Interop.dll",
-        "system.data.sqlite.core.1.0.110.nupkg.sha512",
+        "system.data.sqlite.core.1.0.111.nupkg.sha512",
         "system.data.sqlite.core.nuspec"
       ]
     },
-    "System.Data.SQLite.EF6/1.0.110": {
-      "sha512": "Z8ByCBNBXFTfMzIoff4RnQK5CSX5EaX+ucnS5BPYXcbK/AIMnr/zvCKRVmiG2/7si3XS/rte1ZSjIfGPOCMpLQ==",
+    "System.Data.SQLite.EF6/1.0.111": {
+      "sha512": "w9Hpmuqa/kRLLdPHqZkv5g0eCqwYTKSf6sle2Lb0LNymEOjMIXKtsnt3/+5oHnJBmx+fxmkX27fP61naP/FQ0Q==",
       "type": "package",
-      "path": "system.data.sqlite.ef6/1.0.110",
+      "path": "system.data.sqlite.ef6/1.0.111",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
@@ -2777,7 +2829,7 @@
         "lib/net45/System.Data.SQLite.EF6.dll",
         "lib/net451/System.Data.SQLite.EF6.dll",
         "lib/net46/System.Data.SQLite.EF6.dll",
-        "system.data.sqlite.ef6.1.0.110.nupkg.sha512",
+        "system.data.sqlite.ef6.1.0.111.nupkg.sha512",
         "system.data.sqlite.ef6.nuspec",
         "tools/net40/install.ps1",
         "tools/net45/install.ps1",
@@ -2785,10 +2837,10 @@
         "tools/net46/install.ps1"
       ]
     },
-    "System.Data.SQLite.Linq/1.0.110": {
-      "sha512": "CQisDxizq0eAgMsJ2XRz3kARJOGqff1em2FDutKV2BQB0u698onuWVivYd4/OgDekYGYVecElYEMKZR8PZqfuQ==",
+    "System.Data.SQLite.Linq/1.0.111": {
+      "sha512": "cGg1p7OsIsPCAUoNQoKkqtWi785QhUrzzI+Yg3fr0IbpI/yHvXGuf1HxJW4n+/2cJ6mvHY8VjvxA9Mqe4lVBaQ==",
       "type": "package",
-      "path": "system.data.sqlite.linq/1.0.110",
+      "path": "system.data.sqlite.linq/1.0.111",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2807,7 +2859,7 @@
         "lib/net45/System.Data.SQLite.Linq.dll",
         "lib/net451/System.Data.SQLite.Linq.dll",
         "lib/net46/System.Data.SQLite.Linq.dll",
-        "system.data.sqlite.linq.1.0.110.nupkg.sha512",
+        "system.data.sqlite.linq.1.0.111.nupkg.sha512",
         "system.data.sqlite.linq.nuspec"
       ]
     },
@@ -2844,51 +2896,51 @@
         "version.txt"
       ]
     },
-    "Watson/2.0.2": {
-      "sha512": "DxrAFA+JsAI/nc2DJX7JkQksN+TYLXAR/1EbYyt+BpNHA/ouLb3YFcAoylLq5Wiao4FkDHO3DZhq7PP+1/Iigg==",
+    "Watson/2.1.2": {
+      "sha512": "C07+jvPPdR3qQdG9vO9p/3l4/Js8OAtxmpJt0F2mfjScRGdkmLge+yWijfqdBaGDPdmz1nAe09jNYkKBYiBSlw==",
       "type": "package",
-      "path": "watson/2.0.2",
+      "path": "watson/2.1.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net462/WatsonWebserver.dll",
         "lib/netstandard2.0/WatsonWebserver.dll",
-        "watson.2.0.2.nupkg.sha512",
+        "watson.2.1.2.nupkg.sha512",
         "watson.nuspec"
       ]
     },
-    "WatsonMesh/1.2.1": {
-      "sha512": "7pcWZRZk2OUQ/N6EjQyzhQlC8sYSGD0uKPeGQorfvXvke96YkaXdDjN/QUD/BTGhJcLKgA+R2d3+hxSVBcatxQ==",
+    "WatsonMesh/1.2.7": {
+      "sha512": "87/ENPEeFkvu9CleeTvesAjL4c6c05jGZjkkTMe7sY6/WMnrMz4pdQcUgCv7GHtxYOfQrK1b8b1bsi8EqG2t5w==",
       "type": "package",
-      "path": "watsonmesh/1.2.1",
+      "path": "watsonmesh/1.2.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net461/WatsonMesh.dll",
         "lib/netstandard2.0/WatsonMesh.dll",
-        "watsonmesh.1.2.1.nupkg.sha512",
+        "watsonmesh.1.2.7.nupkg.sha512",
         "watsonmesh.nuspec"
       ]
     },
-    "WatsonTcp/1.3.6": {
-      "sha512": "3J+pE/WoW1oHZZ+5lQY7C603x4SUOwXsrRa9jz3QZwHYXHV+mr9mFnMvth4JCLLloKAhxx5ahagJPxDsTKhQTA==",
+    "WatsonTcp/1.3.12": {
+      "sha512": "tLf8YF1w7+f5sVj7doJ4QEPqBX59IoL2Rlgm6hZHgRZy87z+Iwwr3l0yZ05Yr7049XJjnNL7F7dI2m39l7QbhA==",
       "type": "package",
-      "path": "watsontcp/1.3.6",
+      "path": "watsontcp/1.3.12",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net452/WatsonTcp.dll",
         "lib/netstandard2.0/WatsonTcp.dll",
-        "watsontcp.1.3.6.nupkg.sha512",
+        "watsontcp.1.3.12.nupkg.sha512",
         "watsontcp.nuspec"
       ]
     },
-    "Kvpbase.Containers/3.3.0": {
+    "Kvpbase.Containers/3.3.2": {
       "type": "project",
       "path": "../Kvpbase.Containers/Kvpbase.Containers.csproj",
       "msbuildProject": "../Kvpbase.Containers/Kvpbase.Containers.csproj"
     },
-    "Kvpbase.Core/3.3.0": {
+    "Kvpbase.Core/3.3.2": {
       "type": "project",
       "path": "../Kvpbase.Core/Kvpbase.Core.csproj",
       "msbuildProject": "../Kvpbase.Core/Kvpbase.Core.csproj"
@@ -2897,26 +2949,26 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.2": [
       "EmailWrapper >= 1.0.2",
-      "Kvpbase.Containers >= 3.3.0",
-      "Kvpbase.Core >= 3.3.0",
+      "Kvpbase.Containers >= 3.3.2",
+      "Kvpbase.Core >= 3.3.2",
       "Microsoft.NETCore.App >= 2.2.0",
       "Newtonsoft.Json >= 12.0.2",
-      "RestWrapper >= 2.0.2",
-      "SyslogLogging >= 1.0.10",
-      "Watson >= 2.0.2",
-      "WatsonMesh >= 1.2.1",
-      "WatsonTcp >= 1.3.6"
+      "RestWrapper >= 2.0.4",
+      "SyslogLogging >= 1.0.12",
+      "Watson >= 2.1.2",
+      "WatsonMesh >= 1.2.7",
+      "WatsonTcp >= 1.3.12"
     ],
     ".NETFramework,Version=v4.6.1": [
       "EmailWrapper >= 1.0.2",
-      "Kvpbase.Containers >= 3.3.0",
-      "Kvpbase.Core >= 3.3.0",
+      "Kvpbase.Containers >= 3.3.2",
+      "Kvpbase.Core >= 3.3.2",
       "Newtonsoft.Json >= 12.0.2",
-      "RestWrapper >= 2.0.2",
-      "SyslogLogging >= 1.0.10",
-      "Watson >= 2.0.2",
-      "WatsonMesh >= 1.2.1",
-      "WatsonTcp >= 1.3.6"
+      "RestWrapper >= 2.0.4",
+      "SyslogLogging >= 1.0.12",
+      "Watson >= 2.1.2",
+      "WatsonMesh >= 1.2.7",
+      "WatsonTcp >= 1.3.12"
     ]
   },
   "packageFolders": {
@@ -2924,7 +2976,7 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "3.3.1",
+    "version": "3.3.2",
     "restore": {
       "projectUniqueName": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
       "projectName": "Kvpbase.StorageServer",
@@ -2996,23 +3048,23 @@
           },
           "RestWrapper": {
             "target": "Package",
-            "version": "[2.0.2, )"
+            "version": "[2.0.4, )"
           },
           "SyslogLogging": {
             "target": "Package",
-            "version": "[1.0.10, )"
+            "version": "[1.0.12, )"
           },
           "Watson": {
             "target": "Package",
-            "version": "[2.0.2, )"
+            "version": "[2.1.2, )"
           },
           "WatsonMesh": {
             "target": "Package",
-            "version": "[1.2.1, )"
+            "version": "[1.2.7, )"
           },
           "WatsonTcp": {
             "target": "Package",
-            "version": "[1.3.6, )"
+            "version": "[1.3.12, )"
           }
         },
         "imports": [
@@ -3033,23 +3085,23 @@
           },
           "RestWrapper": {
             "target": "Package",
-            "version": "[2.0.2, )"
+            "version": "[2.0.4, )"
           },
           "SyslogLogging": {
             "target": "Package",
-            "version": "[1.0.10, )"
+            "version": "[1.0.12, )"
           },
           "Watson": {
             "target": "Package",
-            "version": "[2.0.2, )"
+            "version": "[2.1.2, )"
           },
           "WatsonMesh": {
             "target": "Package",
-            "version": "[1.2.1, )"
+            "version": "[1.2.7, )"
           },
           "WatsonTcp": {
             "target": "Package",
-            "version": "[1.3.6, )"
+            "version": "[1.3.12, )"
           }
         }
       }

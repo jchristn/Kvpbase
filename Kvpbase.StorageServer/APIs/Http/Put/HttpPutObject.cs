@@ -109,7 +109,7 @@ namespace Kvpbase
                                 Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true))); 
                         }
 
-                        return new HttpResponse(md.Http, 200, null, null, null);
+                        return new HttpResponse(md.Http, 200, null);
                     }
                 }
                 finally
@@ -204,7 +204,7 @@ namespace Kvpbase
                                 Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true)));
                         }
 
-                        return new HttpResponse(md.Http, 200, null, null, null);
+                        return new HttpResponse(md.Http, 200, null);
                     }
                 }
                 finally
@@ -267,7 +267,7 @@ namespace Kvpbase
                                 Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true)));
                         }
 
-                        return new HttpResponse(md.Http, 200, null, null, null);
+                        return new HttpResponse(md.Http, 200, null);
                     }
                 }
                 finally

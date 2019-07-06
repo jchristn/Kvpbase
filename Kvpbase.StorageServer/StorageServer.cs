@@ -261,7 +261,7 @@ namespace Kvpbase
                 {
                     if (String.Compare(req.RawUrlEntries[0].ToLower(), "favicon.ico") == 0)
                     {
-                        resp = new HttpResponse(req, 200, null, null, null);
+                        resp = new HttpResponse(req, 200, null);
                         return resp;
                     }
                 
@@ -702,7 +702,7 @@ namespace Kvpbase
             }
 
             _Logging.Log(LoggingModule.Severity.Debug, "OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": exiting successfully from OptionsHandler");
-            return new HttpResponse(req, 200, responseHeaders, null, null);
+            return new HttpResponse(req, 200, responseHeaders);
         }
 
         static string DefaultPage(string link)

@@ -2,6 +2,15 @@
   "version": 3,
   "targets": {
     ".NETFramework,Version=v4.6.1": {
+      "ChunkDecoder/1.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
+        }
+      },
       "IpMatcher/1.0.1": {
         "type": "package",
         "compile": {
@@ -20,7 +29,7 @@
           "lib/net45/Newtonsoft.Json.dll": {}
         }
       },
-      "RegexMatcher/1.0.1": {
+      "RegexMatcher/1.0.2": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/RegexMatcher.dll": {}
@@ -43,12 +52,13 @@
           "lib/net461/System.Drawing.Common.dll": {}
         }
       },
-      "Watson/2.0.2": {
+      "Watson/2.1.2": {
         "type": "package",
         "dependencies": {
+          "ChunkDecoder": "1.0.2",
           "IpMatcher": "1.0.1",
-          "Newtonsoft.Json": "12.0.1",
-          "RegexMatcher": "1.0.1"
+          "Newtonsoft.Json": "11.0.1",
+          "RegexMatcher": "1.0.2"
         },
         "compile": {
           "lib/netstandard2.0/WatsonWebserver.dll": {}
@@ -59,6 +69,15 @@
       }
     },
     ".NETStandard,Version=v2.0": {
+      "ChunkDecoder/1.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/ChunkDecoder.dll": {}
+        }
+      },
       "IpMatcher/1.0.1": {
         "type": "package",
         "compile": {
@@ -101,7 +120,7 @@
           "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         }
       },
-      "RegexMatcher/1.0.1": {
+      "RegexMatcher/1.0.2": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/RegexMatcher.dll": {}
@@ -119,12 +138,13 @@
           "lib/netstandard2.0/System.Drawing.Common.dll": {}
         }
       },
-      "Watson/2.0.2": {
+      "Watson/2.1.2": {
         "type": "package",
         "dependencies": {
+          "ChunkDecoder": "1.0.2",
           "IpMatcher": "1.0.1",
-          "Newtonsoft.Json": "12.0.1",
-          "RegexMatcher": "1.0.1"
+          "Newtonsoft.Json": "11.0.1",
+          "RegexMatcher": "1.0.2"
         },
         "compile": {
           "lib/netstandard2.0/WatsonWebserver.dll": {}
@@ -136,6 +156,18 @@
     }
   },
   "libraries": {
+    "ChunkDecoder/1.0.2": {
+      "sha512": "UBLedsOxBcxQmN/Fz7VR8jad+XTdnhsoqBOzp3Aquz3STYnwf+98AiQm9aD1poh1gCQGGp3ZHpiw+17Lkoi6kA==",
+      "type": "package",
+      "path": "chunkdecoder/1.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "chunkdecoder.1.0.2.nupkg.sha512",
+        "chunkdecoder.nuspec",
+        "lib/netstandard2.0/ChunkDecoder.dll"
+      ]
+    },
     "IpMatcher/1.0.1": {
       "sha512": "ASdqz1wygrLi6biivalAsxORk24DI5ZMyfgyRazsEqqXsVSDqzEBUt9IqxVdGhY6le2P0TX3eQqUzaokNXCpog==",
       "type": "package",
@@ -322,16 +354,16 @@
         "newtonsoft.json.nuspec"
       ]
     },
-    "RegexMatcher/1.0.1": {
-      "sha512": "lAGEZDOSv6TvKBmi/ers840aHepcaIWlDYLN2q2F3OOoEa2MHnxLo1tneoBJHSxoUpENdS7MQK/754otk3ASMA==",
+    "RegexMatcher/1.0.2": {
+      "sha512": "gbNpAHo+3HjiX4YSirmR7ujsURje2pk3moWmb64aB2SXfa75BUFf0ffDld6zJ5KmubO9ST+86O/bejBU5y4eWg==",
       "type": "package",
-      "path": "regexmatcher/1.0.1",
+      "path": "regexmatcher/1.0.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net462/RegexMatcher.dll",
         "lib/netstandard2.0/RegexMatcher.dll",
-        "regexmatcher.1.0.1.nupkg.sha512",
+        "regexmatcher.1.0.2.nupkg.sha512",
         "regexmatcher.nuspec"
       ]
     },
@@ -368,16 +400,16 @@
         "version.txt"
       ]
     },
-    "Watson/2.0.2": {
-      "sha512": "DxrAFA+JsAI/nc2DJX7JkQksN+TYLXAR/1EbYyt+BpNHA/ouLb3YFcAoylLq5Wiao4FkDHO3DZhq7PP+1/Iigg==",
+    "Watson/2.1.2": {
+      "sha512": "C07+jvPPdR3qQdG9vO9p/3l4/Js8OAtxmpJt0F2mfjScRGdkmLge+yWijfqdBaGDPdmz1nAe09jNYkKBYiBSlw==",
       "type": "package",
-      "path": "watson/2.0.2",
+      "path": "watson/2.1.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net462/WatsonWebserver.dll",
         "lib/netstandard2.0/WatsonWebserver.dll",
-        "watson.2.0.2.nupkg.sha512",
+        "watson.2.1.2.nupkg.sha512",
         "watson.nuspec"
       ]
     }
@@ -386,13 +418,13 @@
     ".NETFramework,Version=v4.6.1": [
       "Newtonsoft.Json >= 12.0.2",
       "System.Drawing.Common >= 4.5.1",
-      "Watson >= 2.0.2"
+      "Watson >= 2.1.2"
     ],
     ".NETStandard,Version=v2.0": [
       "NETStandard.Library >= 2.0.3",
       "Newtonsoft.Json >= 12.0.2",
       "System.Drawing.Common >= 4.5.1",
-      "Watson >= 2.0.2"
+      "Watson >= 2.1.2"
     ]
   },
   "packageFolders": {
@@ -400,7 +432,7 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "3.3.0",
+    "version": "3.3.2",
     "restore": {
       "projectUniqueName": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj",
       "projectName": "Kvpbase.Core",
@@ -452,7 +484,7 @@
           },
           "Watson": {
             "target": "Package",
-            "version": "[2.0.2, )"
+            "version": "[2.1.2, )"
           }
         }
       },
@@ -474,7 +506,7 @@
           },
           "Watson": {
             "target": "Package",
-            "version": "[2.0.2, )"
+            "version": "[2.1.2, )"
           }
         },
         "imports": [

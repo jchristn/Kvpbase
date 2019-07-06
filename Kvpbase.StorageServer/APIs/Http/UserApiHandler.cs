@@ -25,22 +25,22 @@ namespace Kvpbase
                 case HttpMethod.GET:
                     #region get
 
-                    if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/containers", false))
+                    if (md.Http.RawUrlWithoutQuery.Equals("/containers"))
                     {
                         return HttpGetContainerList(md);
                     }
 
-                    if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/token", false))
+                    if (md.Http.RawUrlWithoutQuery.Equals("/token"))
                     {
                         return HttpGetToken(md);
                     }
                      
-                    if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/user", false))
+                    if (md.Http.RawUrlWithoutQuery.Equals("/user"))
                     {
                         return HttpGetUser(md);
                     }
 
-                    if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/version", false))
+                    if (md.Http.RawUrlWithoutQuery.Equals("/version"))
                     {
                         return new HttpResponse(md.Http, 200, null, "text/plain", Encoding.UTF8.GetBytes(_Version));
                     }

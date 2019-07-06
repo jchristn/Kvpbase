@@ -77,7 +77,7 @@ namespace Kvpbase.Classes.Messaging
             else if (_Settings.Redirection.Mode == RedirectMode.TemporaryRedirect) status = 307;
             else if (_Settings.Redirection.Mode == RedirectMode.PermanentRedirect) status = 308;
 
-            return new HttpResponse(md.Http, status, headers, null, null);
+            return new HttpResponse(md.Http, status, headers);
         }
 
         #endregion

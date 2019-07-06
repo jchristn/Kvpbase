@@ -68,11 +68,11 @@ namespace Kvpbase
             if (!_ObjectHandler.Exists(md, currContainer, md.Params.ObjectKey))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "HttpHeadObject unable to find object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                return new HttpResponse(md.Http, 404, null, null, null); 
+                return new HttpResponse(md.Http, 404, null); 
             }
             else
             { 
-                return new HttpResponse(md.Http, 200, null, null, null);
+                return new HttpResponse(md.Http, 200, null);
             } 
 
             #endregion 
