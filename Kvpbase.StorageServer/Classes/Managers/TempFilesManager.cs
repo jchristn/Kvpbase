@@ -163,7 +163,7 @@ namespace Kvpbase.Classes.Managers
             }
         }
 
-        public bool Read(string guid, out byte[] data)
+        public bool aRead(string guid, out byte[] data)
         {
             data = null;
             if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
@@ -186,7 +186,7 @@ namespace Kvpbase.Classes.Managers
             }
         }
 
-        public bool Read(string guid, out long contentLength, out Stream stream)
+        public bool GetStream(string guid, out long contentLength, out Stream stream)
         {
             contentLength = 0;
             stream = new MemoryStream();
@@ -201,27 +201,7 @@ namespace Kvpbase.Classes.Managers
                 }
 
                 contentLength = new FileInfo(_Settings.Storage.TempFiles + guid).Length;
-
-                long bytesRemaining = contentLength;
-                int bytesRead = 0;
-                byte[] buffer = new byte[_StreamReadBufferSize];
-
-                using (FileStream fs = new FileStream(_Settings.Storage.TempFiles + guid, FileMode.Open))
-                {
-                    while (bytesRemaining > 0)
-                    {
-                        bytesRead = fs.Read(buffer, 0, buffer.Length);
-
-                        if (bytesRead > 0)
-                        {
-                            stream.Write(buffer, 0, bytesRead);
-                            bytesRemaining -= bytesRead;
-                        }
-                    }
-
-                    if (stream.CanSeek) stream.Seek(0, SeekOrigin.Begin);
-                }
-
+                stream = new FileStream(_Settings.Storage.TempFiles + guid, FileMode.Open);
                 return true;
             }
             finally

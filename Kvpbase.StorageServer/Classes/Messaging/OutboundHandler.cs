@@ -315,7 +315,7 @@ namespace Kvpbase.Classes.Messaging
 
         #region Public-Object-Methods
 
-        public bool ObjectCreate(RequestMetadata md, ContainerSettings settings, Stream stream)
+        public bool ObjectCreate(RequestMetadata md, ContainerSettings settings, long contentLength, Stream stream)
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (stream == null) throw new ArgumentNullException(nameof(stream));
@@ -338,7 +338,7 @@ namespace Kvpbase.Classes.Messaging
 
             foreach (Node currNode in nodes)
             {
-                if (!ObjectCreateInternal(md, currNode, settings.Replication))
+                if (!ObjectCreateInternal(md, currNode, settings.Replication, contentLength, stream))
                 {
                     success = false;
                     _Logging.Log(LoggingModule.Severity.Warn, "ObjectCreate unable to replicate to " + currNode.ToString());
@@ -707,10 +707,10 @@ namespace Kvpbase.Classes.Messaging
 
         #region Private-Object-Methods
 
-        private bool ObjectCreateInternal(RequestMetadata md, Node node, ReplicationMode mode)
-        { 
-            if (md.Http.DataStream.CanSeek) md.Http.DataStream.Seek(0, SeekOrigin.Begin);
-            Message msgOut = new Message(_Topology.LocalNode, node, md.Sanitized(), MessageType.ObjectCreate, null, md.Http.ContentLength, md.Http.DataStream);
+        private bool ObjectCreateInternal(RequestMetadata md, Node node, ReplicationMode mode, long contentLength, Stream stream)
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+            Message msgOut = new Message(_Topology.LocalNode, node, md.Sanitized(), MessageType.ObjectCreate, null, contentLength, stream);
              
             if (mode == ReplicationMode.Sync)
             {

@@ -1,20 +1,20 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "fc71baf3b74b484b19d10d974a2b56c5931df4c3"
+    "signature": "29c06d2b1dd5fc19d00f5fded7912f7cd85c9679"
   },
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v2.2": {
-      "Kvpbase.StorageServer/3.3.2": {
+      "Kvpbase.StorageServer/3.3.2.5": {
         "dependencies": {
           "EmailWrapper": "1.0.2",
           "Kvpbase.Containers": "3.3.2",
           "Kvpbase.Core": "3.3.2",
           "Newtonsoft.Json": "12.0.2",
           "RestWrapper": "2.0.4",
-          "SyslogLogging": "1.0.12",
-          "Watson": "2.1.2",
+          "SyslogLogging": "1.1.0",
+          "Watson": "2.1.4",
           "WatsonMesh": "1.2.7",
           "WatsonTcp": "1.3.12"
         },
@@ -126,11 +126,11 @@
           }
         }
       },
-      "SyslogLogging/1.0.12": {
+      "SyslogLogging/1.1.0": {
         "runtime": {
           "lib/netstandard2.0/LoggingModule.dll": {
-            "assemblyVersion": "1.0.12.0",
-            "fileVersion": "1.0.12.0"
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
           }
         }
       },
@@ -194,7 +194,7 @@
           }
         }
       },
-      "Watson/2.1.2": {
+      "Watson/2.1.4": {
         "dependencies": {
           "ChunkDecoder": "1.0.2",
           "IpMatcher": "1.0.1",
@@ -203,8 +203,8 @@
         },
         "runtime": {
           "lib/netstandard2.0/WatsonWebserver.dll": {
-            "assemblyVersion": "2.1.2.0",
-            "fileVersion": "2.1.2.0"
+            "assemblyVersion": "2.1.4.0",
+            "fileVersion": "2.1.4.0"
           }
         }
       },
@@ -250,7 +250,7 @@
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.1.2"
+          "Watson": "2.1.4"
         },
         "runtime": {
           "Kvpbase.Core.dll": {}
@@ -259,7 +259,7 @@
     }
   },
   "libraries": {
-    "Kvpbase.StorageServer/3.3.2": {
+    "Kvpbase.StorageServer/3.3.2.5": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -348,12 +348,12 @@
       "path": "sqlitehelper/1.0.13",
       "hashPath": "sqlitehelper.1.0.13.nupkg.sha512"
     },
-    "SyslogLogging/1.0.12": {
+    "SyslogLogging/1.1.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-cBWaJZ7wZfRs82S1RCHUJGfhxJZTDBtNx5hw6t3+8e81GGmg34wXCQyKVbSbV1TYBRUHxhuxQBmKBzGfXVEGvg==",
-      "path": "sysloglogging/1.0.12",
-      "hashPath": "sysloglogging.1.0.12.nupkg.sha512"
+      "sha512": "sha512-H4YnuGbSAVdx6lgRPGJP4YmsGyVKS53aXmVvKSDecmmg5iJreFF0xgZ1oiDPHujzrv4VsWwhBP2PoiV73YZyiA==",
+      "path": "sysloglogging/1.1.0",
+      "hashPath": "sysloglogging.1.1.0.nupkg.sha512"
     },
     "System.Data.SQLite/1.0.111": {
       "type": "package",
@@ -376,12 +376,12 @@
       "path": "system.drawing.common/4.5.1",
       "hashPath": "system.drawing.common.4.5.1.nupkg.sha512"
     },
-    "Watson/2.1.2": {
+    "Watson/2.1.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-C07+jvPPdR3qQdG9vO9p/3l4/Js8OAtxmpJt0F2mfjScRGdkmLge+yWijfqdBaGDPdmz1nAe09jNYkKBYiBSlw==",
-      "path": "watson/2.1.2",
-      "hashPath": "watson.2.1.2.nupkg.sha512"
+      "sha512": "sha512-pdD4rxsgw6JL+juSz5QnePLMB1AOFws+dNOdyOi2TMwGdPhvkvjzi+tMigRcBWLTPELxxeZ+wwiqmZpo0Mro+w==",
+      "path": "watson/2.1.4",
+      "hashPath": "watson.2.1.4.nupkg.sha512"
     },
     "WatsonMesh/1.2.7": {
       "type": "package",

@@ -20,7 +20,9 @@ namespace Kvpbase
             Container currContainer = null;
             ErrorCode error;
 
-            string guid = null;
+            string guid = null; 
+            Stream stream = null;
+            long contentLength = 0;
 
             try
             { 
@@ -92,10 +94,7 @@ namespace Kvpbase
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, "Unable to write temporary file.", null), true)));
                 }
 
-                Stream stream = null;
-                long contentLength = 0;
-
-                if (!_TempFilesMgr.Read(guid, out contentLength, out stream))
+                if (!_TempFilesMgr.GetStream(guid, out contentLength, out stream))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "HttpPostObject unable to attach stream for for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                     return new HttpResponse(md.Http, 500, null, "application/json",
@@ -116,7 +115,7 @@ namespace Kvpbase
                 else
                 { 
                     if (stream.CanSeek) stream.Seek(0, SeekOrigin.Begin);
-                    if (!_OutboundMessageHandler.ObjectCreate(md, currContainer.Settings, stream))
+                    if (!_OutboundMessageHandler.ObjectCreate(md, currContainer.Settings, contentLength, stream))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "HttpPostObject unable to replicate operation to one or more nodes");
                         cleanupRequired = true;
@@ -136,6 +135,12 @@ namespace Kvpbase
                 {
                     _ObjectHandler.Delete(md, currContainer, md.Params.ObjectKey, out error);
                     _OutboundMessageHandler.ObjectDelete(md, currContainer.Settings);
+                }
+
+                if (stream != null)
+                {
+                    stream.Close();
+                    stream.Dispose();
                 }
 
                 if (!String.IsNullOrEmpty(guid))
