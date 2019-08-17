@@ -41,7 +41,7 @@ namespace Kvpbase.Classes.BackgroundThreads
 
             if (_Settings.Server.FailedRequestsIntervalSec < 60)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "FailedRequestsThread setting failed requests interval 60 sec (config value too low: " + _Settings.Server.FailedRequestsIntervalSec + " sec)");
+                _Logging.Warn("FailedRequestsThread setting failed requests interval 60 sec (config value too low: " + _Settings.Server.FailedRequestsIntervalSec + " sec)");
                 _Settings.Server.FailedRequestsIntervalSec = 60;
             }
 
@@ -87,7 +87,7 @@ namespace Kvpbase.Classes.BackgroundThreads
                 {
                     #region Send-Email
 
-                    _Logging.Log(LoggingModule.Severity.Debug, "FailedRequestsWorker sending details of " + dicts.Count + " failed requests");
+                    _Logging.Debug("FailedRequestsWorker sending details of " + dicts.Count + " failed requests");
 
                     Email email = new Email();
                     email.FromAddress = _Settings.Email.EmailExceptionsFrom;

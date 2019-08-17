@@ -20,7 +20,7 @@ namespace Kvpbase
              
             if (!_ContainerMgr.GetContainers(out containers))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpGetContainerList unable to retrieve containers");
+                _Logging.Warn("TcpGetContainerList unable to retrieve containers");
                 return false;
             }
              

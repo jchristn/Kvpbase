@@ -19,7 +19,7 @@ namespace Kvpbase
             Container currContainer = null;
             if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpPostObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
+                _Logging.Warn("TcpPostObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
                 return false;
             }
 
@@ -29,7 +29,7 @@ namespace Kvpbase
 
             if (currContainer.Exists(md.Params.ObjectKey))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpPostObject object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " already exists");
+                _Logging.Warn("TcpPostObject object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " already exists");
                 return false;
             }
 
@@ -40,7 +40,7 @@ namespace Kvpbase
             ErrorCode error;
             if (!_ObjectHandler.Create(md, currContainer, md.Params.ObjectKey, md.Http.ContentType, md.Http.ContentLength, md.Http.DataStream, out error))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpPostObject unable to write object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                _Logging.Warn("TcpPostObject unable to write object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
                 return false;
             }
             else

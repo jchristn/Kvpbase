@@ -25,14 +25,14 @@ namespace Kvpbase
                 }
                 catch (Exception)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "TcpPostContainer unable to deserialize request body");
+                    _Logging.Warn("TcpPostContainer unable to deserialize request body");
                     return false;
                 }
             }
 
             if (reqBody == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpPostContainer invalid request body");
+                _Logging.Warn("TcpPostContainer invalid request body");
                 return false;
             }
 

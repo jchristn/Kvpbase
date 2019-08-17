@@ -92,7 +92,7 @@ namespace Kvpbase.Classes.Messaging
             Message msgIn = _Topology.SendSync(msgOut);
             if (msgIn == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ContainerList unable to retrieve response from node ID " + node.NodeId);
+                _Logging.Warn("ContainerList unable to retrieve response from node ID " + node.NodeId);
                 return false;
             } 
 
@@ -102,18 +102,18 @@ namespace Kvpbase.Classes.Messaging
                 { 
                     msgIn.DataStream.Seek(0, SeekOrigin.Begin);
                     containers = Common.DeserializeJson<List<ContainerSettings>>(Common.StreamToBytes(msgIn.DataStream));
-                    _Logging.Log(LoggingModule.Severity.Debug, "ContainerList response includes " + containers.Count + " containers from node ID " + node.NodeId);
+                    _Logging.Debug("ContainerList response includes " + containers.Count + " containers from node ID " + node.NodeId);
                     return true;
                 }
                 catch (Exception e)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ContainerList unable to process response from node ID " + node.NodeId + ": " + e.Message);
+                    _Logging.Warn("ContainerList unable to process response from node ID " + node.NodeId + ": " + e.Message);
                     return false;
                 }
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ContainerList failure reported on node ID " + node.NodeId);
+                _Logging.Warn("ContainerList failure reported on node ID " + node.NodeId);
                 return false;
             }
         }
@@ -125,7 +125,7 @@ namespace Kvpbase.Classes.Messaging
             Message msgIn = _Topology.SendSync(msgOut);
             if (msgIn == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ContainerEnumerate unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+                _Logging.Warn("ContainerEnumerate unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
                 return false;
             }
 
@@ -134,18 +134,18 @@ namespace Kvpbase.Classes.Messaging
                 try
                 {
                     metadata = Common.DeserializeJson<ContainerMetadata>(Common.StreamToBytes(msgIn.DataStream));
-                    _Logging.Log(LoggingModule.Severity.Debug, "ContainerEnumerate response includes " + metadata.Objects.Count + " objects in " + metadata.User + "/" + metadata.Name + " from node ID " + node.NodeId);
+                    _Logging.Debug("ContainerEnumerate response includes " + metadata.Objects.Count + " objects in " + metadata.User + "/" + metadata.Name + " from node ID " + node.NodeId);
                     return true;
                 }
                 catch (Exception e)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ContainerEnumerate unable to process response from node ID " + node.NodeId + ": " + e.Message);
+                    _Logging.Warn("ContainerEnumerate unable to process response from node ID " + node.NodeId + ": " + e.Message);
                     return false;
                 }
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ContainerEnumerate failure reported on node ID " + node.NodeId);
+                _Logging.Warn("ContainerEnumerate failure reported on node ID " + node.NodeId);
                 return false;
             }
         }
@@ -154,16 +154,12 @@ namespace Kvpbase.Classes.Messaging
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None)
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "ContainerCreate replication mode set to none");
-                return true;
-            }
+            if (settings.Replication == ReplicationMode.None) return true;
 
             List<Node> nodes = _Topology.GetReplicas();
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "ContainerCreate no replicas found in topology");
+                _Logging.Debug("ContainerCreate no replicas found in topology");
                 return true;
             }
 
@@ -176,7 +172,7 @@ namespace Kvpbase.Classes.Messaging
                 if (!ContainerCreateInternal(md, currNode, settings.Replication))
                 {
                     success = false;
-                    _Logging.Log(LoggingModule.Severity.Warn, "ContainerCreate unable to replicate to " + currNode.ToString());
+                    _Logging.Warn("ContainerCreate unable to replicate to " + currNode.ToString());
                 }
             }
 
@@ -187,16 +183,12 @@ namespace Kvpbase.Classes.Messaging
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None)
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "ContainerDelete replication mode set to none");
-                return true;
-            }
+            if (settings.Replication == ReplicationMode.None) return true;
 
             List<Node> nodes = _Topology.GetReplicas();
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "ContainerDelete no replicas found in topologyy");
+                _Logging.Debug("ContainerDelete no replicas found in topologyy");
                 return true;
             }
 
@@ -207,7 +199,7 @@ namespace Kvpbase.Classes.Messaging
                 if (!ContainerDeleteInternal(md, currNode, settings.Replication))
                 {
                     success = false;
-                    _Logging.Log(LoggingModule.Severity.Warn, "ContainerDelete unable to replicate to " + currNode.ToString());
+                    _Logging.Warn("ContainerDelete unable to replicate to " + currNode.ToString());
                 }
             }
 
@@ -218,16 +210,12 @@ namespace Kvpbase.Classes.Messaging
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None)
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "ContainerUpdate replication mode set to none");
-                return true;
-            }
+            if (settings.Replication == ReplicationMode.None) return true;
 
             List<Node> nodes = _Topology.GetReplicas();
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "ContainerUpdate no replicas found in topology");
+                _Logging.Debug("ContainerUpdate no replicas found in topology");
                 return true;
             }
 
@@ -240,7 +228,7 @@ namespace Kvpbase.Classes.Messaging
                 if (!ContainerUpdateInternal(md, currNode, settings.Replication))
                 {
                     success = false;
-                    _Logging.Log(LoggingModule.Severity.Warn, "ContainerUpdate unable to replicate to " + currNode.ToString());
+                    _Logging.Warn("ContainerUpdate unable to replicate to " + currNode.ToString());
                 }
             }
 
@@ -253,11 +241,11 @@ namespace Kvpbase.Classes.Messaging
             Message msgIn = _Topology.SendSync(msgOut);
             if (msgIn == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ContainerExists unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+                _Logging.Warn("ContainerExists unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
                 return false;
             }
 
-            _Logging.Log(LoggingModule.Severity.Info, "ContainerExists response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+            _Logging.Info("ContainerExists response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
 
             return Common.IsTrue(msgIn.Success);
         }
@@ -266,16 +254,12 @@ namespace Kvpbase.Classes.Messaging
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None)
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "ContainerClearAuditLog replication mode set to none");
-                return true;
-            }
+            if (settings.Replication == ReplicationMode.None) return true;
 
             List<Node> nodes = _Topology.GetReplicas();
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "ContainerClearAuditLog no replicas found in topology");
+                _Logging.Debug("ContainerClearAuditLog no replicas found in topology");
                 return true;
             }
 
@@ -286,7 +270,7 @@ namespace Kvpbase.Classes.Messaging
                 if (!ContainerClearAuditLogInternal(md, currNode, settings.Replication))
                 {
                     success = false;
-                    _Logging.Log(LoggingModule.Severity.Warn, "ContainerClearAuditLog unable to replicate to " + currNode.ToString());
+                    _Logging.Warn("ContainerClearAuditLog unable to replicate to " + currNode.ToString());
                 }
             }
 
@@ -321,16 +305,12 @@ namespace Kvpbase.Classes.Messaging
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             if (!stream.CanRead) throw new ArgumentException("Cannot read from supplied stream.");
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None)
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "ObjectCreate replication mode set to none");
-                return true;
-            }
+            if (settings.Replication == ReplicationMode.None) return true;
 
             List<Node> nodes = _Topology.GetReplicas();
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "ObjectCreate no replicas found in topology");
+                _Logging.Debug("ObjectCreate no replicas found in topology");
                 return true;
             }
 
@@ -341,7 +321,7 @@ namespace Kvpbase.Classes.Messaging
                 if (!ObjectCreateInternal(md, currNode, settings.Replication, contentLength, stream))
                 {
                     success = false;
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectCreate unable to replicate to " + currNode.ToString());
+                    _Logging.Warn("ObjectCreate unable to replicate to " + currNode.ToString());
                 }
             }
 
@@ -352,16 +332,12 @@ namespace Kvpbase.Classes.Messaging
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None)
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "ObjectDelete replication mode set to none");
-                return true;
-            }
+            if (settings.Replication == ReplicationMode.None) return true;
 
             List<Node> nodes = _Topology.GetReplicas();
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "ObjectDelete no replicas found in topology");
+                _Logging.Debug("ObjectDelete no replicas found in topology");
                 return true;
             }
 
@@ -372,7 +348,7 @@ namespace Kvpbase.Classes.Messaging
                 if (!ObjectDeleteInternal(md, currNode, settings.Replication))
                 {
                     success = false;
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectDelete unable to replicate to " + currNode.ToString());
+                    _Logging.Warn("ObjectDelete unable to replicate to " + currNode.ToString());
                 }
             }
 
@@ -386,7 +362,7 @@ namespace Kvpbase.Classes.Messaging
 
             if (!ObjectDeleteInternal(md, node, ReplicationMode.Sync))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ObjectDelete unable to replicate to node ID " + node.NodeId);
+                _Logging.Warn("ObjectDelete unable to replicate to node ID " + node.NodeId);
                 return false;
             }
 
@@ -397,16 +373,12 @@ namespace Kvpbase.Classes.Messaging
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None)
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "ObjectWriteRange replication mode set to none");
-                return true;
-            }
+            if (settings.Replication == ReplicationMode.None) return true;
 
             List<Node> nodes = _Topology.GetReplicas();
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "ObjectWriteRange no replicas found in topology");
+                _Logging.Debug("ObjectWriteRange no replicas found in topology");
                 return true;
             }
 
@@ -417,7 +389,7 @@ namespace Kvpbase.Classes.Messaging
                 if (!ObjectWriteRangeInternal(md, currNode, settings.Replication))
                 {
                     success = false;
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectWriteRange unable to replicate to " + currNode.ToString());
+                    _Logging.Warn("ObjectWriteRange unable to replicate to " + currNode.ToString());
                 }
             }
 
@@ -428,16 +400,12 @@ namespace Kvpbase.Classes.Messaging
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None)
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "ObjectWriteTags replication mode set to none");
-                return true;
-            }
+            if (settings.Replication == ReplicationMode.None) return true;
 
             List<Node> nodes = _Topology.GetReplicas();
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "ObjectWriteTags no replicas found in topology");
+                _Logging.Debug("ObjectWriteTags no replicas found in topology");
                 return true;
             }
 
@@ -448,7 +416,7 @@ namespace Kvpbase.Classes.Messaging
                 if (!ObjectWriteTagsInternal(md, currNode, settings.Replication))
                 {
                     success = false;
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectWriteTags unable to replicate to " + currNode.ToString());
+                    _Logging.Warn("ObjectWriteTags unable to replicate to " + currNode.ToString());
                 }
             }
 
@@ -459,16 +427,12 @@ namespace Kvpbase.Classes.Messaging
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Replication == ReplicationMode.None)
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "ObjectRename replication mode set to none");
-                return true;
-            }
+            if (settings.Replication == ReplicationMode.None) return true;
 
             List<Node> nodes = _Topology.GetReplicas();
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "ObjectRename no replicas found in topology");
+                _Logging.Debug("ObjectRename no replicas found in topology");
                 return true;
             }
 
@@ -479,7 +443,7 @@ namespace Kvpbase.Classes.Messaging
                 if (!ObjectRenameInternal(md, currNode, settings.Replication))
                 {
                     success = false;
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectRename unable to replicate to " + currNode.ToString());
+                    _Logging.Warn("ObjectRename unable to replicate to " + currNode.ToString());
                 }
             }
 
@@ -492,11 +456,11 @@ namespace Kvpbase.Classes.Messaging
             Message msgIn = _Topology.SendSync(msgOut);
             if (msgIn == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ObjectExists unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                _Logging.Warn("ObjectExists unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                 return false;
             }
 
-            _Logging.Log(LoggingModule.Severity.Info, "ObjectExists response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+            _Logging.Info("ObjectExists response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
 
             return Common.IsTrue(msgIn.Success);
         }
@@ -510,7 +474,7 @@ namespace Kvpbase.Classes.Messaging
             Message msgIn = _Topology.SendSync(msgOut);
             if (msgIn == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ObjectRead unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                _Logging.Warn("ObjectRead unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                 return false;
             }
 
@@ -520,18 +484,18 @@ namespace Kvpbase.Classes.Messaging
                 {
                     contentLength = msgIn.ContentLength;
                     stream = msgIn.DataStream;
-                    _Logging.Log(LoggingModule.Severity.Debug, "ObjectRead response length " + contentLength + " bytes for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                    _Logging.Debug("ObjectRead response length " + contentLength + " bytes for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                     return true;
                 }
                 else
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "ObjectRead request success but no data returned for for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                    _Logging.Debug("ObjectRead request success but no data returned for for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                     return true;
                 }
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ObjectRead failure reported on node ID " + node.NodeId);
+                _Logging.Warn("ObjectRead failure reported on node ID " + node.NodeId);
                 return false;
             }
         }
@@ -544,7 +508,7 @@ namespace Kvpbase.Classes.Messaging
 
             if (msgIn == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ObjectMetadata unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                _Logging.Warn("ObjectMetadata unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                 return false;
             }
 
@@ -553,18 +517,18 @@ namespace Kvpbase.Classes.Messaging
                 try
                 {
                     metadata = Common.DeserializeJson<ObjectMetadata>(Common.StreamToBytes(msgIn.DataStream));
-                    _Logging.Log(LoggingModule.Severity.Debug, "ObjectMetadata retrieved for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                    _Logging.Debug("ObjectMetadata retrieved for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                     return true;
                 }
                 catch (Exception e)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectMetadata unable to process response from node ID " + node.NodeId + ": " + e.Message);
+                    _Logging.Warn("ObjectMetadata unable to process response from node ID " + node.NodeId + ": " + e.Message);
                     return false;
                 }
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ObjectMetadata failure reported on node ID " + node.NodeId);
+                _Logging.Warn("ObjectMetadata failure reported on node ID " + node.NodeId);
                 return false;
             }
         }
@@ -591,11 +555,11 @@ namespace Kvpbase.Classes.Messaging
                 Message msgIn = _Topology.SendSync(msgOut);
                 if (msgIn == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ContainerCreateInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+                    _Logging.Warn("ContainerCreateInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
                     return false;
                 }
 
-                _Logging.Log(LoggingModule.Severity.Info, "ContainerCreateInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+                _Logging.Info("ContainerCreateInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
 
                 return Common.IsTrue(msgIn.Success);
             }
@@ -619,11 +583,11 @@ namespace Kvpbase.Classes.Messaging
                 Message msgIn = _Topology.SendSync(msgOut);
                 if (msgIn == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ContainerDeleteInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+                    _Logging.Warn("ContainerDeleteInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
                     return false;
                 }
 
-                _Logging.Log(LoggingModule.Severity.Info, "ContainerDeleteInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+                _Logging.Info("ContainerDeleteInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
 
                 return Common.IsTrue(msgIn.Success);
             }
@@ -656,11 +620,11 @@ namespace Kvpbase.Classes.Messaging
                 Message msgIn = _Topology.SendSync(msgOut);
                 if (msgIn == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ContainerUpdateInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+                    _Logging.Warn("ContainerUpdateInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
                     return false;
                 }
 
-                _Logging.Log(LoggingModule.Severity.Debug, "ContainerUpdateInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+                _Logging.Debug("ContainerUpdateInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
 
                 return Common.IsTrue(msgIn.Success);
             }
@@ -684,11 +648,11 @@ namespace Kvpbase.Classes.Messaging
                 Message msgIn = _Topology.SendSync(msgOut);
                 if (msgIn == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ContainerClearAuditLogInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+                    _Logging.Warn("ContainerClearAuditLogInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
                     return false;
                 }
 
-                _Logging.Log(LoggingModule.Severity.Info, "ContainerClearAuditLogInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
+                _Logging.Info("ContainerClearAuditLogInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + " from node ID " + node.NodeId);
 
                 return Common.IsTrue(msgIn.Success);
             }
@@ -717,11 +681,11 @@ namespace Kvpbase.Classes.Messaging
                 Message msgIn = _Topology.SendSync(msgOut);
                 if (msgIn == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectCreateInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                    _Logging.Warn("ObjectCreateInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                     return false;
                 }
 
-                _Logging.Log(LoggingModule.Severity.Info, "ObjectCreateInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                _Logging.Info("ObjectCreateInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
 
                 return Common.IsTrue(msgIn.Success);
             }
@@ -745,11 +709,11 @@ namespace Kvpbase.Classes.Messaging
                 Message msgIn = _Topology.SendSync(msgOut);
                 if (msgIn == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectDeleteInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                    _Logging.Warn("ObjectDeleteInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                     return false;
                 }
 
-                _Logging.Log(LoggingModule.Severity.Info, "ObjectDeleteInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                _Logging.Info("ObjectDeleteInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
 
                 return Common.IsTrue(msgIn.Success);
             }
@@ -773,11 +737,11 @@ namespace Kvpbase.Classes.Messaging
                 Message msgIn = _Topology.SendSync(msgOut);
                 if (msgIn == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectWriteRangeInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                    _Logging.Warn("ObjectWriteRangeInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                     return false;
                 }
 
-                _Logging.Log(LoggingModule.Severity.Info, "ObjectWriteRangeInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                _Logging.Info("ObjectWriteRangeInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
 
                 return Common.IsTrue(msgIn.Success);
             }
@@ -801,11 +765,11 @@ namespace Kvpbase.Classes.Messaging
                 Message msgIn = _Topology.SendSync(msgOut);
                 if (msgIn == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectWriteTagsInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                    _Logging.Warn("ObjectWriteTagsInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                     return false;
                 }
 
-                _Logging.Log(LoggingModule.Severity.Info, "ObjectWriteTagsInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                _Logging.Info("ObjectWriteTagsInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
 
                 return Common.IsTrue(msgIn.Success);
             }
@@ -829,11 +793,11 @@ namespace Kvpbase.Classes.Messaging
                 Message msgIn = _Topology.SendSync(msgOut);
                 if (msgIn == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ObjectRenameInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                    _Logging.Warn("ObjectRenameInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                     return false;
                 }
 
-                _Logging.Log(LoggingModule.Severity.Info, "ObjectRenameInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                _Logging.Info("ObjectRenameInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
 
                 return Common.IsTrue(msgIn.Success);
             }
@@ -854,11 +818,11 @@ namespace Kvpbase.Classes.Messaging
             Message msgIn = _Topology.SendSync(msgOut);
             if (msgIn == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ObjectReadInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+                _Logging.Warn("ObjectReadInternal unable to retrieve response for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
                 return false;
             }
 
-            _Logging.Log(LoggingModule.Severity.Info, "ObjectReadInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
+            _Logging.Info("ObjectReadInternal response " + msgIn.Success + " for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " from node ID " + node.NodeId);
 
             return Common.IsTrue(msgIn.Success);
         }

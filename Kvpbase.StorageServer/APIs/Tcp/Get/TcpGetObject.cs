@@ -24,7 +24,7 @@ namespace Kvpbase
             Container currContainer = null;
             if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpGetObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
+                _Logging.Warn("TcpGetObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
                 return false;
             }
 
@@ -34,7 +34,7 @@ namespace Kvpbase
 
             if (!currContainer.ReadObjectMetadata(md.Params.ObjectKey, out metadata))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpGetObject unable to retrieve metadata for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                _Logging.Warn("TcpGetObject unable to retrieve metadata for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                 return false;
             }
 
@@ -55,7 +55,7 @@ namespace Kvpbase
 
             if (!_ObjectHandler.Read(md, currContainer, md.Params.ObjectKey, index, count, out contentType, out contentLength, out stream, out error))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpGetObject unable to find object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                _Logging.Warn("TcpGetObject unable to find object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                 return false;
             }
             else

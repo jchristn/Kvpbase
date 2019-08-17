@@ -228,7 +228,12 @@ namespace Kvpbase.Containers
                     query += "AND LastAccessUtc < '" + TimestampUtc(Convert.ToDateTime(filter.LastAccessBefore)) + "' ";
                 }
 
-                if (!String.IsNullOrEmpty(filter.Md5)) 
+                if (!String.IsNullOrEmpty(filter.Prefix))
+                {
+                    query += "AND Key LIKE '" + Sanitize(filter.Prefix) + "%' ";
+                }
+
+                if (!String.IsNullOrEmpty(filter.Md5))
                 {
                     query += "AND Md5 = '" + Sanitize(filter.Md5) + "' ";
                 }

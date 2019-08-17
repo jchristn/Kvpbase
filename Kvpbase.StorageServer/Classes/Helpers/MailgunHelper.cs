@@ -44,18 +44,18 @@ namespace Kvpbase
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "MailgunSend successfully sent message to " + email.ToAddress + " from " + email.FromAddress);
+                    _Logging.Debug("MailgunSend successfully sent message to " + email.ToAddress + " from " + email.FromAddress);
                     return true;
                 }
                 else
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "MailgunSend message to " + email.ToAddress + " not sent successfully: " + response.StatusCode.ToString());
+                    _Logging.Debug("MailgunSend message to " + email.ToAddress + " not sent successfully: " + response.StatusCode.ToString());
                     return false;
                 }
             }
             catch (Exception e)
             {
-                _Logging.LogException("MailgunSend", "exception encountered when attempting to send email", e);
+                _Logging.Exception("MailgunSend", "exception encountered when attempting to send email", e);
                 return false;
             }
         }

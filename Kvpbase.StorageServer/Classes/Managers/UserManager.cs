@@ -138,7 +138,7 @@ namespace Kvpbase.Classes.Managers
             curr = GetUserByEmail(email);
             if (curr == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials unable to find email " + email);
+                _Logging.Warn("AuthenticateCredentials unable to find email " + email);
                 return false;
             }
 
@@ -152,19 +152,19 @@ namespace Kvpbase.Classes.Managers
                     }
                     else
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials UserMasterId " + curr.UserMasterId + " expired at " + curr.Expiration);
+                        _Logging.Warn("AuthenticateCredentials UserMasterId " + curr.UserMasterId + " expired at " + curr.Expiration);
                         return false;
                     }
                 }
                 else
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials UserMasterId " + curr.UserMasterId + " marked inactive");
+                    _Logging.Warn("AuthenticateCredentials UserMasterId " + curr.UserMasterId + " marked inactive");
                     return false;
                 }
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials invalid password supplied for email " + email + " (" + password + " vs " + curr.Password + ")");
+                _Logging.Warn("AuthenticateCredentials invalid password supplied for email " + email + " (" + password + " vs " + curr.Password + ")");
                 return false;
             }
         }
@@ -176,7 +176,7 @@ namespace Kvpbase.Classes.Managers
             UserMaster curr = GetUserByGuid(guid);
             if (curr == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "GetHomeDirectory unable to find user GUID " + guid);
+                _Logging.Warn("GetHomeDirectory unable to find user GUID " + guid);
                 return null;
             }
 

@@ -19,7 +19,7 @@ namespace Kvpbase
             Container currContainer = null;
             if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpHeadObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
+                _Logging.Warn("TcpHeadObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
                 return false;
             }
 
@@ -31,7 +31,7 @@ namespace Kvpbase
              
             if (!_ObjectHandler.Exists(md, currContainer, md.Params.ObjectKey))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpHeadObject unable to find object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                _Logging.Warn("TcpHeadObject unable to find object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                 return false;
             }
             else

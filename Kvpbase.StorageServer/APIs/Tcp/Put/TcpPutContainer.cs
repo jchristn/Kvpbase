@@ -19,7 +19,7 @@ namespace Kvpbase
             Container currContainer;
             if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpPutContainer container " + md.Params.UserGuid + "/" + md.Params.Container + " not found");
+                _Logging.Warn("TcpPutContainer container " + md.Params.UserGuid + "/" + md.Params.Container + " not found");
                 return false;
             }
 
@@ -36,14 +36,14 @@ namespace Kvpbase
                 }
                 catch (Exception)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "TcpPutContainer unable to deserialize request body");
+                    _Logging.Warn("TcpPutContainer unable to deserialize request body");
                     return false;
                 }
             }
 
             if (reqBody == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpPutContainer no request body");
+                _Logging.Warn("TcpPutContainer no request body");
                 return false;
             }
 

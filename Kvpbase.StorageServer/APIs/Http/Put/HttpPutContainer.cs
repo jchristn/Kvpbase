@@ -19,7 +19,7 @@ namespace Kvpbase
 
             if (md.User == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer no authentication material");
+                _Logging.Warn("HttpPutContainer no authentication material");
                 return new HttpResponse(md.Http, 401, null, "application/json",
                     Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
             }
@@ -30,14 +30,14 @@ namespace Kvpbase
 
             if (md.Http.RawUrlEntries.Count != 2)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer request URL does not have two entries");
+                _Logging.Warn("HttpPutContainer request URL does not have two entries");
                 return new HttpResponse(md.Http, 400, null, "application/json",
                     Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "URL path must contain two entries, i.e. /[user]/[container]/.", null), true)));
             }
              
             if (!md.Params.UserGuid.ToLower().Equals(md.User.Guid.ToLower()))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer user " + md.User.Guid + " attempting to PUT container in user " + md.Params.UserGuid);
+                _Logging.Warn("HttpPutContainer user " + md.User.Guid + " attempting to PUT container in user " + md.Params.UserGuid);
                 return new HttpResponse(md.Http, 401, null, "application/json",
                     Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
             }
@@ -52,7 +52,7 @@ namespace Kvpbase
                 List<Node> nodes = new List<Node>();
                 if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
+                    _Logging.Warn("HttpPutContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
                     return new HttpResponse(md.Http, 404, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
                 }
@@ -60,7 +60,7 @@ namespace Kvpbase
                 {
                     string redirectUrl = null;
                     HttpResponse redirectRest = _OutboundMessageHandler.BuildRedirectResponse(md, nodes[0], out redirectUrl);
-                    _Logging.Log(LoggingModule.Severity.Debug, "HttpPutContainer redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
+                    _Logging.Debug("HttpPutContainer redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
                     return redirectRest;
                 }
             }
@@ -108,7 +108,7 @@ namespace Kvpbase
                     }
                     catch (Exception)
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer unable to deserialize request body");
+                        _Logging.Warn("HttpPutContainer unable to deserialize request body");
                         return new HttpResponse(md.Http, 400, null, "application/json",
                             Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true)));
                     }
@@ -116,7 +116,7 @@ namespace Kvpbase
 
                 if (settings == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPutContainer no request body");
+                    _Logging.Warn("HttpPutContainer no request body");
                     return new HttpResponse(md.Http, 400, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "No container settings found in request body.", null), true)));
                 }

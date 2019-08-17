@@ -176,13 +176,13 @@ namespace Kvpbase.Classes.Managers
             
             if (resp == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ServerDecrypt null REST response returned");
+                _Logging.Warn("ServerDecrypt null REST response returned");
                 return false;
             }
 
             if (resp.StatusCode < 200 || resp.StatusCode > 299)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ServerDecrypt non success response returned: " + resp.StatusCode);
+                _Logging.Warn("ServerDecrypt non success response returned: " + resp.StatusCode);
                 return false;
             }
 
@@ -219,13 +219,13 @@ namespace Kvpbase.Classes.Managers
 
             if (resp == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ServerEncrypt null REST response returned");
+                _Logging.Warn("ServerEncrypt null REST response returned");
                 return false;
             }
 
             if (resp.StatusCode < 200 || resp.StatusCode > 299)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ServerEncrypt non success response returned: " + resp.StatusCode);
+                _Logging.Warn("ServerEncrypt non success response returned: " + resp.StatusCode);
                 return false;
             }
 
@@ -235,13 +235,13 @@ namespace Kvpbase.Classes.Managers
             }
             catch (Exception)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ServerEncrypt unable to deserialize rest response body to encrypted message");
+                _Logging.Warn("ServerEncrypt unable to deserialize rest response body to encrypted message");
                 return false;
             }
 
             if (ret == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ServerEncrypt null response object after deserialization");
+                _Logging.Warn("ServerEncrypt null response object after deserialization");
                 return false;
             }
 

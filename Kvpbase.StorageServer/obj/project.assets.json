@@ -14,7 +14,7 @@
           "lib/netstandard2.0/Caching.dll": {}
         }
       },
-      "ChunkDecoder/1.0.2": {
+      "ChunkDecoder/1.0.3": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/ChunkDecoder.dll": {}
@@ -333,7 +333,7 @@
           "lib/netstandard2.0/SqliteWrapper.dll": {}
         }
       },
-      "SyslogLogging/1.1.0": {
+      "SyslogLogging/1.2.0": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/LoggingModule.dll": {}
@@ -398,12 +398,12 @@
           }
         }
       },
-      "Watson/2.1.4": {
+      "Watson/2.1.6": {
         "type": "package",
         "dependencies": {
-          "ChunkDecoder": "1.0.2",
+          "ChunkDecoder": "1.0.3",
           "IpMatcher": "1.0.1",
-          "Newtonsoft.Json": "11.0.1",
+          "Newtonsoft.Json": "12.0.2",
           "RegexMatcher": "1.0.2"
         },
         "compile": {
@@ -438,12 +438,12 @@
           "lib/netstandard2.0/WatsonTcp.dll": {}
         }
       },
-      "Kvpbase.Containers/3.3.2": {
+      "Kvpbase.Containers/3.3.2.6": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
           "Caching.dll": "1.3.3",
-          "Kvpbase.Core": "3.3.2",
+          "Kvpbase.Core": "3.3.2.6",
           "Microsoft.CSharp": "4.5.0",
           "Newtonsoft.Json": "12.0.2",
           "SQLite.Interop.dll": "1.0.103",
@@ -458,13 +458,13 @@
           "bin/placeholder/Kvpbase.Containers.dll": {}
         }
       },
-      "Kvpbase.Core/3.3.2": {
+      "Kvpbase.Core/3.3.2.6": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.1.2"
+          "Watson": "2.1.6"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Core.dll": {}
@@ -487,7 +487,7 @@
           "lib/netstandard2.0/Caching.dll": {}
         }
       },
-      "ChunkDecoder/1.0.2": {
+      "ChunkDecoder/1.0.3": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/ChunkDecoder.dll": {}
@@ -1051,7 +1051,7 @@
           "lib/netstandard2.0/SqliteWrapper.dll": {}
         }
       },
-      "SyslogLogging/1.1.0": {
+      "SyslogLogging/1.2.0": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/LoggingModule.dll": {}
@@ -1091,12 +1091,12 @@
           "runtimes/win/lib/netcoreapp2.0/System.Drawing.Common.dll": {}
         }
       },
-      "Watson/2.1.4": {
+      "Watson/2.1.6": {
         "type": "package",
         "dependencies": {
-          "ChunkDecoder": "1.0.2",
+          "ChunkDecoder": "1.0.3",
           "IpMatcher": "1.0.1",
-          "Newtonsoft.Json": "11.0.1",
+          "Newtonsoft.Json": "12.0.2",
           "RegexMatcher": "1.0.2"
         },
         "compile": {
@@ -1131,12 +1131,12 @@
           "lib/netstandard2.0/WatsonTcp.dll": {}
         }
       },
-      "Kvpbase.Containers/3.3.2": {
+      "Kvpbase.Containers/3.3.2.6": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
           "Caching.dll": "1.3.3",
-          "Kvpbase.Core": "3.3.2",
+          "Kvpbase.Core": "3.3.2.6",
           "Microsoft.CSharp": "4.5.0",
           "Newtonsoft.Json": "12.0.2",
           "SQLite.Interop.dll": "1.0.103",
@@ -1151,13 +1151,13 @@
           "bin/placeholder/Kvpbase.Containers.dll": {}
         }
       },
-      "Kvpbase.Core/3.3.2": {
+      "Kvpbase.Core/3.3.2.6": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.1.2"
+          "Watson": "2.1.6"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Core.dll": {}
@@ -1180,7 +1180,7 @@
           "lib/net452/Caching.dll": {}
         }
       },
-      "ChunkDecoder/1.0.2": {
+      "ChunkDecoder/1.0.3": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/ChunkDecoder.dll": {}
@@ -1295,7 +1295,7 @@
           "lib/net452/SqliteWrapper.dll": {}
         }
       },
-      "SyslogLogging/1.1.0": {
+      "SyslogLogging/1.2.0": {
         "type": "package",
         "compile": {
           "lib/net452/LoggingModule.dll": {}
@@ -1377,12 +1377,12 @@
           "lib/net461/System.Drawing.Common.dll": {}
         }
       },
-      "Watson/2.1.4": {
+      "Watson/2.1.6": {
         "type": "package",
         "dependencies": {
-          "ChunkDecoder": "1.0.2",
+          "ChunkDecoder": "1.0.3",
           "IpMatcher": "1.0.1",
-          "Newtonsoft.Json": "11.0.1",
+          "Newtonsoft.Json": "12.0.2",
           "RegexMatcher": "1.0.2"
         },
         "compile": {
@@ -1417,12 +1417,12 @@
           "lib/net452/WatsonTcp.dll": {}
         }
       },
-      "Kvpbase.Containers/3.3.2": {
+      "Kvpbase.Containers/3.3.2.6": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6.1",
         "dependencies": {
           "Caching.dll": "1.3.3",
-          "Kvpbase.Core": "3.3.2",
+          "Kvpbase.Core": "3.3.2.6",
           "Microsoft.CSharp": "4.5.0",
           "Newtonsoft.Json": "12.0.2",
           "SQLite.Interop.dll": "1.0.103",
@@ -1437,13 +1437,13 @@
           "bin/placeholder/Kvpbase.Containers.dll": {}
         }
       },
-      "Kvpbase.Core/3.3.2": {
+      "Kvpbase.Core/3.3.2.6": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6.1",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.1.2"
+          "Watson": "2.1.6"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Core.dll": {}
@@ -1466,7 +1466,7 @@
           "lib/net452/Caching.dll": {}
         }
       },
-      "ChunkDecoder/1.0.2": {
+      "ChunkDecoder/1.0.3": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/ChunkDecoder.dll": {}
@@ -1581,7 +1581,7 @@
           "lib/net452/SqliteWrapper.dll": {}
         }
       },
-      "SyslogLogging/1.1.0": {
+      "SyslogLogging/1.2.0": {
         "type": "package",
         "compile": {
           "lib/net452/LoggingModule.dll": {}
@@ -1645,12 +1645,12 @@
           "lib/net461/System.Drawing.Common.dll": {}
         }
       },
-      "Watson/2.1.4": {
+      "Watson/2.1.6": {
         "type": "package",
         "dependencies": {
-          "ChunkDecoder": "1.0.2",
+          "ChunkDecoder": "1.0.3",
           "IpMatcher": "1.0.1",
-          "Newtonsoft.Json": "11.0.1",
+          "Newtonsoft.Json": "12.0.2",
           "RegexMatcher": "1.0.2"
         },
         "compile": {
@@ -1685,12 +1685,12 @@
           "lib/net452/WatsonTcp.dll": {}
         }
       },
-      "Kvpbase.Containers/3.3.2": {
+      "Kvpbase.Containers/3.3.2.6": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6.1",
         "dependencies": {
           "Caching.dll": "1.3.3",
-          "Kvpbase.Core": "3.3.2",
+          "Kvpbase.Core": "3.3.2.6",
           "Microsoft.CSharp": "4.5.0",
           "Newtonsoft.Json": "12.0.2",
           "SQLite.Interop.dll": "1.0.103",
@@ -1705,13 +1705,13 @@
           "bin/placeholder/Kvpbase.Containers.dll": {}
         }
       },
-      "Kvpbase.Core/3.3.2": {
+      "Kvpbase.Core/3.3.2.6": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6.1",
         "dependencies": {
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.1.2"
+          "Watson": "2.1.6"
         },
         "compile": {
           "bin/placeholder/Kvpbase.Core.dll": {}
@@ -1736,15 +1736,16 @@
         "lib/netstandard2.0/Caching.dll"
       ]
     },
-    "ChunkDecoder/1.0.2": {
-      "sha512": "UBLedsOxBcxQmN/Fz7VR8jad+XTdnhsoqBOzp3Aquz3STYnwf+98AiQm9aD1poh1gCQGGp3ZHpiw+17Lkoi6kA==",
+    "ChunkDecoder/1.0.3": {
+      "sha512": "asHFIIEKA1osWR52HC62b96dYOrdphZb70v/6anI4m20Hpb4Pp9yLTmlwn39aNPcyezPBt1AtxUKhf81BVo0Xw==",
       "type": "package",
-      "path": "chunkdecoder/1.0.2",
+      "path": "chunkdecoder/1.0.3",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "chunkdecoder.1.0.2.nupkg.sha512",
+        "chunkdecoder.1.0.3.nupkg.sha512",
         "chunkdecoder.nuspec",
+        "lib/net462/ChunkDecoder.dll",
         "lib/netstandard2.0/ChunkDecoder.dll"
       ]
     },
@@ -2729,16 +2730,16 @@
         "sqlitehelper.nuspec"
       ]
     },
-    "SyslogLogging/1.1.0": {
-      "sha512": "H4YnuGbSAVdx6lgRPGJP4YmsGyVKS53aXmVvKSDecmmg5iJreFF0xgZ1oiDPHujzrv4VsWwhBP2PoiV73YZyiA==",
+    "SyslogLogging/1.2.0": {
+      "sha512": "tJ6pHIwcV/NMe3JsBfFWOvh3GLoYfR6bmZm6FLcu+K4VEeFlzAijlK+KbZ9kflzWeumPr4pq1lpuVrYllBbJdg==",
       "type": "package",
-      "path": "sysloglogging/1.1.0",
+      "path": "sysloglogging/1.2.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net452/LoggingModule.dll",
         "lib/netstandard2.0/LoggingModule.dll",
-        "sysloglogging.1.1.0.nupkg.sha512",
+        "sysloglogging.1.2.0.nupkg.sha512",
         "sysloglogging.nuspec"
       ]
     },
@@ -2896,16 +2897,16 @@
         "version.txt"
       ]
     },
-    "Watson/2.1.4": {
-      "sha512": "pdD4rxsgw6JL+juSz5QnePLMB1AOFws+dNOdyOi2TMwGdPhvkvjzi+tMigRcBWLTPELxxeZ+wwiqmZpo0Mro+w==",
+    "Watson/2.1.6": {
+      "sha512": "BiS8ABVqmRgda9eNG8IDELKgeX48k6OLg0KmBlbi6udjPGtxLEcoW+kA0Z3qSkF8y63OiW404uZVkvleafI2IA==",
       "type": "package",
-      "path": "watson/2.1.4",
+      "path": "watson/2.1.6",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net462/WatsonWebserver.dll",
         "lib/netstandard2.0/WatsonWebserver.dll",
-        "watson.2.1.4.nupkg.sha512",
+        "watson.2.1.6.nupkg.sha512",
         "watson.nuspec"
       ]
     },
@@ -2935,12 +2936,12 @@
         "watsontcp.nuspec"
       ]
     },
-    "Kvpbase.Containers/3.3.2": {
+    "Kvpbase.Containers/3.3.2.6": {
       "type": "project",
       "path": "../Kvpbase.Containers/Kvpbase.Containers.csproj",
       "msbuildProject": "../Kvpbase.Containers/Kvpbase.Containers.csproj"
     },
-    "Kvpbase.Core/3.3.2": {
+    "Kvpbase.Core/3.3.2.6": {
       "type": "project",
       "path": "../Kvpbase.Core/Kvpbase.Core.csproj",
       "msbuildProject": "../Kvpbase.Core/Kvpbase.Core.csproj"
@@ -2949,24 +2950,24 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.2": [
       "EmailWrapper >= 1.0.2",
-      "Kvpbase.Containers >= 3.3.2",
-      "Kvpbase.Core >= 3.3.2",
+      "Kvpbase.Containers >= 3.3.2.6",
+      "Kvpbase.Core >= 3.3.2.6",
       "Microsoft.NETCore.App >= 2.2.0",
       "Newtonsoft.Json >= 12.0.2",
       "RestWrapper >= 2.0.4",
-      "SyslogLogging >= 1.1.0",
-      "Watson >= 2.1.4",
+      "SyslogLogging >= 1.2.0",
+      "Watson >= 2.1.6",
       "WatsonMesh >= 1.2.7",
       "WatsonTcp >= 1.3.12"
     ],
     ".NETFramework,Version=v4.6.1": [
       "EmailWrapper >= 1.0.2",
-      "Kvpbase.Containers >= 3.3.2",
-      "Kvpbase.Core >= 3.3.2",
+      "Kvpbase.Containers >= 3.3.2.6",
+      "Kvpbase.Core >= 3.3.2.6",
       "Newtonsoft.Json >= 12.0.2",
       "RestWrapper >= 2.0.4",
-      "SyslogLogging >= 1.1.0",
-      "Watson >= 2.1.4",
+      "SyslogLogging >= 1.2.0",
+      "Watson >= 2.1.6",
       "WatsonMesh >= 1.2.7",
       "WatsonTcp >= 1.3.12"
     ]
@@ -2976,13 +2977,13 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "3.3.2.5",
+    "version": "3.3.2.6",
     "restore": {
-      "projectUniqueName": "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
+      "projectUniqueName": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
       "projectName": "Kvpbase.StorageServer",
-      "projectPath": "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
+      "projectPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
       "packagesPath": "C:\\Users\\joelc\\.nuget\\packages\\",
-      "outputPath": "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.StorageServer\\obj\\",
+      "outputPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.StorageServer\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
@@ -3005,21 +3006,21 @@
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj": {
-              "projectPath": "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj"
+            "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj": {
+              "projectPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj"
             },
-            "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj": {
-              "projectPath": "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj"
+            "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj": {
+              "projectPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj"
             }
           }
         },
         "net461": {
           "projectReferences": {
-            "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj": {
-              "projectPath": "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj"
+            "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj": {
+              "projectPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Containers\\Kvpbase.Containers.csproj"
             },
-            "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj": {
-              "projectPath": "C:\\Code\\KVPbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj"
+            "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj": {
+              "projectPath": "C:\\code\\kvpbase\\storageserver-3.3\\Kvpbase.Core\\Kvpbase.Core.csproj"
             }
           }
         }
@@ -3053,11 +3054,11 @@
           },
           "SyslogLogging": {
             "target": "Package",
-            "version": "[1.1.0, )"
+            "version": "[1.2.0, )"
           },
           "Watson": {
             "target": "Package",
-            "version": "[2.1.4, )"
+            "version": "[2.1.6, )"
           },
           "WatsonMesh": {
             "target": "Package",
@@ -3090,11 +3091,11 @@
           },
           "SyslogLogging": {
             "target": "Package",
-            "version": "[1.1.0, )"
+            "version": "[1.2.0, )"
           },
           "Watson": {
             "target": "Package",
-            "version": "[2.1.4, )"
+            "version": "[2.1.6, )"
           },
           "WatsonMesh": {
             "target": "Package",

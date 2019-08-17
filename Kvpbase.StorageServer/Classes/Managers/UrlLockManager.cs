@@ -71,7 +71,7 @@ namespace Kvpbase.Classes.Managers
             {
                 if (_WriteLockResources.ContainsKey(key))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "AddWriteLock resource currently locked for writing: " + key);
+                    _Logging.Warn("AddWriteLock resource currently locked for writing: " + key);
                     return false;
                 }
 
@@ -79,7 +79,7 @@ namespace Kvpbase.Classes.Managers
                 {
                     if (_ReadLockResources.Contains(key))
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "AddWriteLock resource currently being read: " + key);
+                        _Logging.Warn("AddWriteLock resource currently being read: " + key);
                         return false;
                     }
                 }
@@ -109,7 +109,7 @@ namespace Kvpbase.Classes.Managers
             {
                 if (_WriteLockResources.ContainsKey(key))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "AddReadLock resource currently locked for writing: " + key);
+                    _Logging.Warn("AddReadLock resource currently locked for writing: " + key);
                     return false;
                 }
 

@@ -45,6 +45,11 @@ namespace Kvpbase.Containers
         public DateTime? LastAccessAfter { get; set; }
 
         /// <summary>
+        /// If not null, match objects with the specified prefix in the key.
+        /// </summary>
+        public string Prefix { get; set; }
+
+        /// <summary>
         /// If not null, match objects with the specified MD5 hash value.
         /// </summary>
         public string Md5 { get; set; }

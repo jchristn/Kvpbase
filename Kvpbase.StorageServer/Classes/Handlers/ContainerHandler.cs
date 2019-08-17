@@ -58,6 +58,7 @@ namespace Kvpbase.Classes.Handlers
             filter.LastAccessBefore = md.Params.LastAccessBefore;
             filter.UpdatedAfter = md.Params.UpdatedAfter;
             filter.UpdatedBefore = md.Params.UpdatedBefore;
+            filter.Prefix = md.Params.Prefix;
             filter.Md5 = md.Params.Md5;
             filter.ContentType = md.Params.ContentType;
             filter.Tags = Common.CsvToStringList(md.Params.Tags);

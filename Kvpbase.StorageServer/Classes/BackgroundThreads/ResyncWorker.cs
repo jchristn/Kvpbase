@@ -117,7 +117,7 @@ namespace Kvpbase.Classes.BackgroundThreads
             Node testNode = _Topology.GetNodeById(SourceNode.NodeId);
             if (testNode == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker unable to verify node ID " + SourceNode.NodeId + " in topology");
+                _Logging.Warn("ResyncWorker unable to verify node ID " + SourceNode.NodeId + " in topology");
                 throw new ArgumentException("Node does not exist in topology.");
             }
 
@@ -133,7 +133,7 @@ namespace Kvpbase.Classes.BackgroundThreads
         {
             if (_Running)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker Start already running for node " + SourceNode.ToString());
+                _Logging.Warn("ResyncWorker Start already running for node " + SourceNode.ToString());
                 return false;
             }
 
@@ -146,7 +146,7 @@ namespace Kvpbase.Classes.BackgroundThreads
 
         public void Stop()
         {
-            _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker " + WorkerGuid + " cancellation requested");
+            _Logging.Warn("ResyncWorker " + WorkerGuid + " cancellation requested");
             _TokenSource.Cancel();
         }
 
@@ -166,13 +166,13 @@ namespace Kvpbase.Classes.BackgroundThreads
                 RequestMetadata md = BuildMetadata(null, null, UserName, ContainerName, null, HttpMethod.GET);
                 if (!_OutboundMessageHandler.ContainerList(md, SourceNode, out containers))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask unable to retrieve container list from " + SourceNode.ToString());
+                    _Logging.Warn("ResyncWorker BackgroundTask unable to retrieve container list from " + SourceNode.ToString());
                     return;
                 }
                  
                 if (containers == null || containers.Count < 1)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask no containers found on node " + SourceNode.ToString());
+                    _Logging.Warn("ResyncWorker BackgroundTask no containers found on node " + SourceNode.ToString());
                     return;
                 }
 
@@ -190,7 +190,7 @@ namespace Kvpbase.Classes.BackgroundThreads
 
                     if (filtered == null || filtered.Count < 1)
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask no matching containers found on node " + SourceNode.ToString());
+                        _Logging.Warn("ResyncWorker BackgroundTask no matching containers found on node " + SourceNode.ToString());
                         return;
                     }
 
@@ -211,7 +211,7 @@ namespace Kvpbase.Classes.BackgroundThreads
                 {
                     #region Pre-Enumerate
 
-                    _Logging.Log(LoggingModule.Severity.Info, "ResyncWorker BackgroundTask " + WorkerGuid + " starting container " + currContainer.User + "/" + currContainer.Name + " on node ID " + SourceNode.NodeId);
+                    _Logging.Info("ResyncWorker BackgroundTask " + WorkerGuid + " starting container " + currContainer.User + "/" + currContainer.Name + " on node ID " + SourceNode.NodeId);
 
                     #endregion
 
@@ -230,13 +230,13 @@ namespace Kvpbase.Classes.BackgroundThreads
 
                     if (!_ContainerMgr.Exists(currContainer.User, currContainer.Name))
                     {
-                        _Logging.Log(LoggingModule.Severity.Info, "ResyncWorker BackgroundTask " + WorkerGuid + " creating container " + currContainer.User + "/" + currContainer.Name);
+                        _Logging.Info("ResyncWorker BackgroundTask " + WorkerGuid + " creating container " + currContainer.User + "/" + currContainer.Name);
                         _ContainerMgr.Add(currContainer);
                     }
                     
                     if (!_ContainerMgr.GetContainer(currContainer.User, currContainer.Name, out container))
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask " + WorkerGuid + " unable to retrieve container " + currContainer.User + "/" + currContainer.Name);
+                        _Logging.Warn("ResyncWorker BackgroundTask " + WorkerGuid + " unable to retrieve container " + currContainer.User + "/" + currContainer.Name);
                         Stats.Errors.Add("Unable to retrieve container after adding: " + currContainer.User + "/" + currContainer.Name);
                         Stats.ContainersProcessed++;
                         continue;
@@ -254,7 +254,7 @@ namespace Kvpbase.Classes.BackgroundThreads
 
                         if (!_OutboundMessageHandler.ContainerEnumerate(md, SourceNode, out currMetadata))
                         {
-                            _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask " + WorkerGuid + " unable to enumerate container " + currContainer.User + "/" + currContainer.Name + " on node ID " + SourceNode.NodeId);
+                            _Logging.Warn("ResyncWorker BackgroundTask " + WorkerGuid + " unable to enumerate container " + currContainer.User + "/" + currContainer.Name + " on node ID " + SourceNode.NodeId);
                             Stats.Errors.Add("Unable to enumerate container " + currContainer.User + "/" + currContainer.Name + " on node ID " + SourceNode.NodeId);
                             Stats.ContainersProcessed++;
                             running = false;
@@ -263,7 +263,7 @@ namespace Kvpbase.Classes.BackgroundThreads
 
                         if (currMetadata.Objects == null || currMetadata.Objects.Count < 1)
                         {
-                            _Logging.Log(LoggingModule.Severity.Debug, "ResyncWorker BackgroundTask " + WorkerGuid + " reached end of container " + currContainer.User + "/" + currContainer.Name + " on node ID " + SourceNode.NodeId);
+                            _Logging.Debug("ResyncWorker BackgroundTask " + WorkerGuid + " reached end of container " + currContainer.User + "/" + currContainer.Name + " on node ID " + SourceNode.NodeId);
                             running = false;
                             break;
                         }
@@ -280,7 +280,7 @@ namespace Kvpbase.Classes.BackgroundThreads
                         {
                             #region Enumerate
 
-                            _Logging.Log(LoggingModule.Severity.Debug, "ResyncWorker BackgroundTask " + WorkerGuid + " processing object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + " on node ID " + SourceNode.NodeId);
+                            _Logging.Debug("ResyncWorker BackgroundTask " + WorkerGuid + " processing object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + " on node ID " + SourceNode.NodeId);
 
                             #endregion
 
@@ -300,7 +300,7 @@ namespace Kvpbase.Classes.BackgroundThreads
                             {
                                 if (!container.ReadObjectMetadata(currObject.Key, out currObjectMetadata))
                                 {
-                                    _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask " + WorkerGuid + " unable to read metadata for existing object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key);
+                                    _Logging.Warn("ResyncWorker BackgroundTask " + WorkerGuid + " unable to read metadata for existing object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key);
                                     Stats.Errors.Add("Unable to read metadata for object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key);
                                     Stats.ObjectsProcessed++;
                                     continue;
@@ -308,14 +308,14 @@ namespace Kvpbase.Classes.BackgroundThreads
 
                                 if (!currObjectMetadata.Md5.Equals(currObject.Md5))
                                 {
-                                    _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask " + WorkerGuid + " deleting existing object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + ", MD5 mismatch");
+                                    _Logging.Warn("ResyncWorker BackgroundTask " + WorkerGuid + " deleting existing object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + ", MD5 mismatch");
                                     Stats.Errors.Add("Removed object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + " due to MD5 mismatch");
                                     Stats.ObjectsProcessed++;
                                     container.RemoveObject(currObject.Key, out error);
                                 }
                                 else
                                 {
-                                    _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask " + WorkerGuid + " existing object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + " is up to date, skipping");
+                                    _Logging.Warn("ResyncWorker BackgroundTask " + WorkerGuid + " existing object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + " is up to date, skipping");
                                     Stats.ObjectsProcessed++;
                                     Stats.BytesProcessed += Convert.ToInt64(currObject.ContentLength);
                                     continue;
@@ -329,7 +329,7 @@ namespace Kvpbase.Classes.BackgroundThreads
                             md = BuildMetadata(null, null, currContainer.User, currContainer.Name, currObject.Key, HttpMethod.GET);
                             if (!_OutboundMessageHandler.ObjectRead(md, SourceNode, out contentLength, out stream))
                             {
-                                _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask " + WorkerGuid + " unable to retrieve " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key);
+                                _Logging.Warn("ResyncWorker BackgroundTask " + WorkerGuid + " unable to retrieve " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key);
                                 Stats.Errors.Add("Unable to retrieve " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + " from node ID " + SourceNode.NodeId);
                                 Stats.ObjectsProcessed++;
                                 Stats.BytesProcessed += Convert.ToInt64(currObject.ContentLength);
@@ -338,7 +338,7 @@ namespace Kvpbase.Classes.BackgroundThreads
 
                             if (!container.WriteObject(currObject, stream, out error))
                             {
-                                _Logging.Log(LoggingModule.Severity.Warn, "ResyncWorker BackgroundTask " + WorkerGuid + " unable to write " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + ": " + error.ToString());
+                                _Logging.Warn("ResyncWorker BackgroundTask " + WorkerGuid + " unable to write " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + ": " + error.ToString());
                                 Stats.Errors.Add("Unable to write object " + currContainer.User + "/" + currContainer.Name + "/" + currObject.Key + ": " + error.ToString());
                                 Stats.ObjectsProcessed++;
                                 Stats.BytesProcessed += Convert.ToInt64(currObject.ContentLength);
@@ -363,18 +363,18 @@ namespace Kvpbase.Classes.BackgroundThreads
             }
             catch (OperationCanceledException)
             {
-                _Logging.Log(LoggingModule.Severity.Info, "ResyncWorker BackgroundTask " + WorkerGuid + " terminated");
+                _Logging.Info("ResyncWorker BackgroundTask " + WorkerGuid + " terminated");
             }
             catch (Exception e)
             {
-                _Logging.LogException("ResyncWorker", "BackgroundTask", e);
+                _Logging.Exception("ResyncWorker", "BackgroundTask", e);
             }
             finally
             {
                 EndTime = DateTime.Now.ToUniversalTime();
                 TotalMilliseconds = Common.TotalMsFrom(Convert.ToDateTime(StartTime));
 
-                _Logging.Log(LoggingModule.Severity.Info, "ResyncWorker BackgroundTask " + WorkerGuid + " completed");
+                _Logging.Info("ResyncWorker BackgroundTask " + WorkerGuid + " completed");
 
                 _Running = false;
                 _TaskComplete(WorkerGuid);

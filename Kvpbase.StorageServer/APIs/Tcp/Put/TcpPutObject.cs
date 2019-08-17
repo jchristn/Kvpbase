@@ -19,7 +19,7 @@ namespace Kvpbase
             Container currContainer = null;
             if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpPutObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
+                _Logging.Warn("TcpPutObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
                 return false;
             }
             
@@ -29,7 +29,7 @@ namespace Kvpbase
 
             if (!currContainer.Exists(md.Params.ObjectKey))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpPutObject object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " does not exists");
+                _Logging.Warn("TcpPutObject object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " does not exists");
                 return false;
             }
 
@@ -44,7 +44,7 @@ namespace Kvpbase
                  
                 if (!_ObjectHandler.Rename(md, currContainer, md.Params.ObjectKey, md.Params.Rename, out error))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "TcpPutObject unable to rename object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " to " + md.Params.Rename + ": " + error.ToString());
+                    _Logging.Warn("TcpPutObject unable to rename object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " to " + md.Params.Rename + ": " + error.ToString());
                     return false;
                 }
                 else
@@ -60,7 +60,7 @@ namespace Kvpbase
                 
                 if (!_ObjectHandler.WriteRange(md, currContainer, md.Params.ObjectKey, Convert.ToInt64(md.Params.Index), md.Http.ContentLength, md.Http.DataStream, out error))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "TcpPutObject unable to write range to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                    _Logging.Warn("TcpPutObject unable to write range to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
                     return false;
                 }
                 else
@@ -76,7 +76,7 @@ namespace Kvpbase
                   
                 if (!currContainer.WriteObjectTags(md.Params.ObjectKey, md.Params.Tags, out error))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPutObject unable to write tags to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                    _Logging.Warn("HttpPutObject unable to write tags to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
                     return false;
                 }
                 else
@@ -88,7 +88,7 @@ namespace Kvpbase
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpPutObject request query does not contain index start or rename"); 
+                _Logging.Warn("TcpPutObject request query does not contain index start or rename"); 
                 return false;
             }
 

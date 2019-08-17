@@ -78,7 +78,7 @@ namespace Kvpbase.Classes.Managers
             }
             catch (Exception)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "VerifyToken unable to deserialize request body");
+                _Logging.Warn("VerifyToken unable to deserialize request body");
                 return false;
             }
 
@@ -88,7 +88,7 @@ namespace Kvpbase.Classes.Managers
 
             if (!Common.IsLaterThanNow(curr.Expiration))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "VerifyToken token expired at " + curr.Expiration);
+                _Logging.Warn("VerifyToken token expired at " + curr.Expiration);
                 return false;
             }
 
@@ -99,7 +99,7 @@ namespace Kvpbase.Classes.Managers
             currUser = _Users.GetUserById(curr.UserMasterId);
             if (currUser == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "VerifyToken unable to find UserMasterId " + curr.UserMasterId);
+                _Logging.Warn("VerifyToken unable to find UserMasterId " + curr.UserMasterId);
                 return false;
             }
 
@@ -113,13 +113,13 @@ namespace Kvpbase.Classes.Managers
                 }
                 else
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "VerifyToken UserMasterId " + currUser.UserMasterId + " expired at " + curr.Expiration);
+                    _Logging.Warn("VerifyToken UserMasterId " + currUser.UserMasterId + " expired at " + curr.Expiration);
                     return false;
                 }
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "VerifyToken UserMasterId " + currUser.UserMasterId + " marked inactive");
+                _Logging.Warn("VerifyToken UserMasterId " + currUser.UserMasterId + " marked inactive");
                 return false;
             }
 

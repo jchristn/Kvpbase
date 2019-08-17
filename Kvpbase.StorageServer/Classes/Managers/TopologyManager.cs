@@ -92,7 +92,7 @@ namespace Kvpbase.Classes.Managers
              
             InitializeMeshNetwork(); 
 
-            if (_Settings.Topology.DebugMeshNetworking) _Logging.Log(LoggingModule.Severity.Info, "TopologyManager debugging enabled, disable to reduce log verbocity"); 
+            if (_Settings.Topology.DebugMeshNetworking) _Logging.Info("TopologyManager debugging enabled, disable to reduce log verbocity"); 
         }
 
         #endregion
@@ -148,7 +148,7 @@ namespace Kvpbase.Classes.Managers
                 || (_Topology.Nodes == null)
                 || (_Topology.Nodes.Count < 1))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "DetermineOwner null topology or no nodes in topology");
+                _Logging.Warn("DetermineOwner null topology or no nodes in topology");
                 return LocalNode;
             }
 
@@ -161,7 +161,7 @@ namespace Kvpbase.Classes.Managers
                 { 
                     if (currUser.NodeId == LocalNode.NodeId)
                     {
-                        _Logging.Log(LoggingModule.Severity.Debug, "DetermineOwner GUID " + userGuid + " statically mapped to self (NodeId " + LocalNode.NodeId + ")");
+                        _Logging.Debug("DetermineOwner GUID " + userGuid + " statically mapped to self (NodeId " + LocalNode.NodeId + ")");
                         return LocalNode;
                     }
 
@@ -174,7 +174,7 @@ namespace Kvpbase.Classes.Managers
 
                     if (currNode == default(Node))
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "DetermineOwner unable to find node ID " + currUser.NodeId + " for user GUID " + userGuid);
+                        _Logging.Warn("DetermineOwner unable to find node ID " + currUser.NodeId + " for user GUID " + userGuid);
                         return null;
                     }
 
@@ -203,14 +203,14 @@ namespace Kvpbase.Classes.Managers
             {
                 if (currPos == matchPos)
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "DetermineOwner primary for user GUID " + userGuid + " is " + curr.Name + " (" + curr.Http.DnsHostname + ":" + curr.Http.Port + ")");
+                    _Logging.Debug("DetermineOwner primary for user GUID " + userGuid + " is " + curr.Name + " (" + curr.Http.DnsHostname + ":" + curr.Http.Port + ")");
                     return curr;
                 }
 
                 currPos++;
             }
 
-            _Logging.Log(LoggingModule.Severity.Warn, "DetermineOwner iterated all nodes in sorted list, did not encounter " + matchPos + " entries");
+            _Logging.Warn("DetermineOwner iterated all nodes in sorted list, did not encounter " + matchPos + " entries");
             return null;
 
             #endregion
@@ -295,7 +295,7 @@ namespace Kvpbase.Classes.Managers
             ms.Write(msgHeaders, 0, msgHeaders.Length);
 
             if (_Settings.Topology.DebugMessages) 
-                _Logging.Log(LoggingModule.Severity.Debug, "SendAsyncMessage sending message:" + Environment.NewLine + msg.ToString()); 
+                _Logging.Debug("SendAsyncMessage sending message:" + Environment.NewLine + msg.ToString()); 
 
             if (msg.ContentLength > 0 && msg.DataStream != null)
             {   
@@ -388,7 +388,7 @@ namespace Kvpbase.Classes.Managers
             long totalLen = msgHeaders.Length; 
 
             if (_Settings.Topology.DebugMessages) 
-                _Logging.Log(LoggingModule.Severity.Debug, "SendSyncMessage sending message:" + Environment.NewLine + msg.ToString()); 
+                _Logging.Debug("SendSyncMessage sending message:" + Environment.NewLine + msg.ToString()); 
 
             if (msg.ContentLength > 0)
             { 
@@ -429,14 +429,14 @@ namespace Kvpbase.Classes.Managers
                 out responseLength,
                 out responseStream))
             { 
-                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage [" + msg.To.Tcp.IpAddress + ":" + msg.To.Tcp.Port + "] unable to send message to node ID " + msg.To.NodeId);
+                _Logging.Warn("SendSyncMessage [" + msg.To.Tcp.IpAddress + ":" + msg.To.Tcp.Port + "] unable to send message to node ID " + msg.To.NodeId);
                 return null;
             } 
 
             responseStream.Seek(0, SeekOrigin.Begin);
             if (responseStream == null || !responseStream.CanRead)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "SendSyncMessage [" + msg.To.Tcp.IpAddress + ":" + msg.To.Tcp.Port + "] no data returned from node ID " + msg.To.NodeId);
+                _Logging.Warn("SendSyncMessage [" + msg.To.Tcp.IpAddress + ":" + msg.To.Tcp.Port + "] no data returned from node ID " + msg.To.NodeId);
                 return null;
             } 
 
@@ -519,7 +519,7 @@ namespace Kvpbase.Classes.Managers
 
             if (_Topology.Nodes == null || _Topology.Nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "ValidateTopology no nodes in topology");
+                _Logging.Debug("ValidateTopology no nodes in topology");
                 error = "No nodes in topology";
                 return false;
             }
@@ -583,7 +583,7 @@ namespace Kvpbase.Classes.Managers
 
             if (_Topology == null || _Topology.Nodes.Count < 2)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "InitializeMeshNetworks fewer than two nodes exists, exiting");
+                _Logging.Debug("InitializeMeshNetworks fewer than two nodes exists, exiting");
                 return;
             }
             else
@@ -701,7 +701,7 @@ namespace Kvpbase.Classes.Managers
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "MeshSyncStreamReceived unable to retrieve response message");
+                _Logging.Warn("MeshSyncStreamReceived unable to retrieve response message");
                 return null;
             } 
         }
@@ -713,7 +713,7 @@ namespace Kvpbase.Classes.Managers
 
         private bool MeshPeerDisconnected(Peer peer)
         {
-            _Logging.Log(LoggingModule.Severity.Warn, "MeshPeerDisconnected " + peer.ToString());
+            _Logging.Warn("MeshPeerDisconnected " + peer.ToString());
             return true;
         }
 

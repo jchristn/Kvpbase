@@ -34,7 +34,7 @@ namespace Kvpbase
         {
             if (email == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "SendEmail null email object supplied");
+                _Logging.Warn("SendEmail null email object supplied");
                 return false;
             }
 
@@ -49,7 +49,7 @@ namespace Kvpbase
                     break;
 
                 default:
-                    _Logging.Log(LoggingModule.Severity.Warn, "SendEmail unknown email provider in settings file: " + _Settings.Email.EmailProvider);
+                    _Logging.Warn("SendEmail unknown email provider in settings file: " + _Settings.Email.EmailProvider);
                     return false;
             }
 
@@ -65,7 +65,7 @@ namespace Kvpbase
                 (String.IsNullOrEmpty(email.ReplyAddress)) ||
                 (String.IsNullOrEmpty(email.Subject)))
             {
-                _Logging.Log(LoggingModule.Severity.Error, "SendEmailSmtp email object has empty fields");
+                _Logging.Error("SendEmailSmtp email object has empty fields");
                 return false;
             }
 
@@ -113,7 +113,7 @@ namespace Kvpbase
             }
             catch (Exception)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "SendEmailSmtp exception encountered while attempting to send email");
+                _Logging.Warn("SendEmailSmtp exception encountered while attempting to send email");
                 return false;
             }
 

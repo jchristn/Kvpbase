@@ -22,7 +22,7 @@ namespace Kvpbase
             Container currContainer = null;
             if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpGetContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
+                _Logging.Warn("TcpGetContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
                 return false;
             }
              

@@ -1,3 +1,8 @@
+C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.csprojAssemblyReference.cache
+C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.exe.config
+C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.csproj.CoreCompileInputs.cache
+C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.AssemblyInfoInputs.cache
+C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.AssemblyInfo.cs
 C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\net461\Kvpbase.StorageServer.exe.config
 C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\net461\Kvpbase.StorageServer.exe
 C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\net461\Kvpbase.StorageServer.pdb
@@ -120,11 +125,6 @@ C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\net461\Kvpbase
 C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\net461\Kvpbase.Core.dll
 C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\net461\Kvpbase.Container.pdb
 C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\net461\Kvpbase.Core.pdb
-C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.csprojAssemblyReference.cache
-C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.exe.config
-C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.csproj.CoreCompileInputs.cache
-C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.AssemblyInfoInputs.cache
-C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.AssemblyInfo.cs
 C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.csproj.CopyComplete
 C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.exe
 C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\obj\Debug\net461\Kvpbase.StorageServer.pdb

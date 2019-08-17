@@ -66,10 +66,10 @@ namespace Kvpbase.Classes.Messaging
             if (msg == null) throw new ArgumentNullException(nameof(msg));
              
             if (_Settings.Topology.DebugMeshNetworking) 
-                _Logging.Log(LoggingModule.Severity.Info, "ProcessAsyncStream from node ID " + msg.From.NodeId + ": " + msg.ContentLength + " bytes"); 
+                _Logging.Info("ProcessAsyncStream from node ID " + msg.From.NodeId + ": " + msg.ContentLength + " bytes"); 
 
             if (_Settings.Topology.DebugMessages) 
-                _Logging.Log(LoggingModule.Severity.Info, "ProcessAsyncStream received: " + Environment.NewLine + msg.ToString()); 
+                _Logging.Info("ProcessAsyncStream received: " + Environment.NewLine + msg.ToString()); 
              
             Message resp = new Message(msg.To, msg.From, msg.Metadata, msg.Type, false, 0, null); 
 
@@ -155,10 +155,10 @@ namespace Kvpbase.Classes.Messaging
             if (msg == null) throw new ArgumentNullException(nameof(msg));
 
             if (_Settings.Topology.DebugMeshNetworking)
-                _Logging.Log(LoggingModule.Severity.Info, "ProcessSyncStream from node ID " + msg.From.NodeId + ": " + msg.ContentLength + " bytes");
+                _Logging.Info("ProcessSyncStream from node ID " + msg.From.NodeId + ": " + msg.ContentLength + " bytes");
 
             if (_Settings.Topology.DebugMessages)
-                _Logging.Log(LoggingModule.Severity.Info, "ProcessSyncStream received: " + Environment.NewLine + msg.ToString());
+                _Logging.Info("ProcessSyncStream received: " + Environment.NewLine + msg.ToString());
 
             Message resp = new Message(msg.To, msg.From, msg.Metadata, msg.Type, false, 0, null);
             byte[] respBytes = null;
@@ -242,14 +242,14 @@ namespace Kvpbase.Classes.Messaging
             if (resp != null)
             {
                 if (_Settings.Topology.DebugMessages)
-                    _Logging.Log(LoggingModule.Severity.Info, "ProcessSyncStream sending response: " + Environment.NewLine + resp.ToString());
+                    _Logging.Info("ProcessSyncStream sending response: " + Environment.NewLine + resp.ToString());
 
                 return resp;
             }
             else
             {
                 if (_Settings.Topology.DebugMessages)
-                    _Logging.Log(LoggingModule.Severity.Info, "ProcessSyncStream no response to send");
+                    _Logging.Info("ProcessSyncStream no response to send");
 
                 return null;
             }

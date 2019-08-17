@@ -3,7 +3,6 @@ C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\bin\Debug\net462\Kvpbase.Stream
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\bin\Debug\net462\KvpbaseSDK.dll
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\bin\Debug\net462\Newtonsoft.Json.dll
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\bin\Debug\net462\RestWrapper.dll
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.csprojAssemblyReference.cache
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.csproj.CoreCompileInputs.cache
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.AssemblyInfoInputs.cache
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.AssemblyInfo.cs

@@ -78,7 +78,7 @@ namespace Kvpbase
                 #endregion
             }
              
-            _Logging.Log(LoggingModule.Severity.Warn, "UserApiHandler unknown URL " + md.Http.RawUrlWithoutQuery);
+            _Logging.Warn("UserApiHandler unknown URL " + md.Http.RawUrlWithoutQuery);
             return new HttpResponse(md.Http, 404, null, "application/json",
                 Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 404, "Unknown endpoint.", null), true))); 
         }

@@ -23,7 +23,7 @@ namespace Kvpbase
                 List<Node> nodes = new List<Node>();
                 if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpGetObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
+                    _Logging.Warn("HttpGetObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
                     return new HttpResponse(md.Http, 404, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
                 }
@@ -31,7 +31,7 @@ namespace Kvpbase
                 {
                     string redirectUrl = null;
                     HttpResponse redirectRest = _OutboundMessageHandler.BuildRedirectResponse(md, nodes[0], out redirectUrl);
-                    _Logging.Log(LoggingModule.Severity.Debug, "HttpGetObject redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
+                    _Logging.Debug("HttpGetObject redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
                     return redirectRest;
                 }
             }
@@ -46,7 +46,7 @@ namespace Kvpbase
             {
                 if (md.User == null || !(md.User.Guid.ToLower().Equals(md.Params.UserGuid.ToLower())))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpGetObject unauthorized unauthenticated access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                    _Logging.Warn("HttpGetObject unauthorized unauthenticated access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                     return new HttpResponse(md.Http, 401, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
                 }
@@ -56,7 +56,7 @@ namespace Kvpbase
             {
                 if (!md.Perm.ReadObject)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpGetObject unauthorized access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                    _Logging.Warn("HttpGetObject unauthorized access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                     return new HttpResponse(md.Http, 401, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
                 }
@@ -69,7 +69,7 @@ namespace Kvpbase
             ObjectMetadata metadata = null;
             if (!currContainer.ReadObjectMetadata(md.Params.ObjectKey, out metadata))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpGetObject unable to retrieve metadata for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                _Logging.Warn("HttpGetObject unable to retrieve metadata for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
 
                 int statusCode = 0;
                 int id = 0;
@@ -92,7 +92,7 @@ namespace Kvpbase
             {
                 if (Convert.ToInt32(md.Params.Count) > _Settings.Server.MaxTransferSize)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpGetObject transfer size too large (count requested: " + md.Params.Count + ")");
+                    _Logging.Warn("HttpGetObject transfer size too large (count requested: " + md.Params.Count + ")");
                     return new HttpResponse(md.Http, 413, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true)));
                 }
@@ -101,7 +101,7 @@ namespace Kvpbase
             {
                 if (metadata.ContentLength > _Settings.Server.MaxTransferSize)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpGetObject transfer size too large (content length: " + metadata.ContentLength + ")");
+                    _Logging.Warn("HttpGetObject transfer size too large (content length: " + metadata.ContentLength + ")");
                     return new HttpResponse(md.Http, 413, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true)));
                 }
@@ -127,7 +127,7 @@ namespace Kvpbase
                 int id = 0;
                 Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
 
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpGetObject unable to read object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                _Logging.Warn("HttpGetObject unable to read object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
 
                 return new HttpResponse(md.Http, statusCode, null, "application/json",
                     Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(id, statusCode, null, error), true)));

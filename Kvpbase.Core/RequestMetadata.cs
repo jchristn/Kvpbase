@@ -288,6 +288,11 @@ namespace Kvpbase.Core
             public DateTime? LastAccessAfter { get; set; }
 
             /// <summary>
+            /// For queries, the prefix for the object key.
+            /// </summary>
+            public string Prefix { get; set; }
+
+            /// <summary>
             /// For queries, the MD5 that must match with the resource MD5.
             /// </summary>
             public string Md5 { get; set; }
@@ -343,6 +348,7 @@ namespace Kvpbase.Core
                 UpdatedAfter = null;
                 LastAccessBefore = null;
                 LastAccessAfter = null;
+                Prefix = null;
                 Md5 = null;
                 ContentType = null;
                 Tags = null;

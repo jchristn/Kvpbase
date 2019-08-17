@@ -1,28 +1,28 @@
 {
   "runtimeTarget": {
     "name": ".NETStandard,Version=v2.0/",
-    "signature": "da8ee51e7bdf2f9f4ced4174bb1861e52343fe75"
+    "signature": "b9ff9576833a50a20a42a61cd7ae9926128a205f"
   },
   "compilationOptions": {},
   "targets": {
     ".NETStandard,Version=v2.0": {},
     ".NETStandard,Version=v2.0/": {
-      "Kvpbase.Core/3.3.2": {
+      "Kvpbase.Core/3.3.2.6": {
         "dependencies": {
           "NETStandard.Library": "2.0.3",
           "Newtonsoft.Json": "12.0.2",
           "System.Drawing.Common": "4.5.1",
-          "Watson": "2.1.2"
+          "Watson": "2.1.6"
         },
         "runtime": {
           "Kvpbase.Core.dll": {}
         }
       },
-      "ChunkDecoder/1.0.2": {
+      "ChunkDecoder/1.0.3": {
         "runtime": {
           "lib/netstandard2.0/ChunkDecoder.dll": {
-            "assemblyVersion": "1.0.2.0",
-            "fileVersion": "1.0.2.0"
+            "assemblyVersion": "1.0.3.0",
+            "fileVersion": "1.0.3.0"
           }
         }
       },
@@ -64,34 +64,34 @@
           }
         }
       },
-      "Watson/2.1.2": {
+      "Watson/2.1.6": {
         "dependencies": {
-          "ChunkDecoder": "1.0.2",
+          "ChunkDecoder": "1.0.3",
           "IpMatcher": "1.0.1",
           "Newtonsoft.Json": "12.0.2",
           "RegexMatcher": "1.0.2"
         },
         "runtime": {
           "lib/netstandard2.0/WatsonWebserver.dll": {
-            "assemblyVersion": "2.1.2.0",
-            "fileVersion": "2.1.2.0"
+            "assemblyVersion": "2.1.6.0",
+            "fileVersion": "2.1.6.0"
           }
         }
       }
     }
   },
   "libraries": {
-    "Kvpbase.Core/3.3.2": {
+    "Kvpbase.Core/3.3.2.6": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "ChunkDecoder/1.0.2": {
+    "ChunkDecoder/1.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-UBLedsOxBcxQmN/Fz7VR8jad+XTdnhsoqBOzp3Aquz3STYnwf+98AiQm9aD1poh1gCQGGp3ZHpiw+17Lkoi6kA==",
-      "path": "chunkdecoder/1.0.2",
-      "hashPath": "chunkdecoder.1.0.2.nupkg.sha512"
+      "sha512": "sha512-asHFIIEKA1osWR52HC62b96dYOrdphZb70v/6anI4m20Hpb4Pp9yLTmlwn39aNPcyezPBt1AtxUKhf81BVo0Xw==",
+      "path": "chunkdecoder/1.0.3",
+      "hashPath": "chunkdecoder.1.0.3.nupkg.sha512"
     },
     "IpMatcher/1.0.1": {
       "type": "package",
@@ -135,12 +135,12 @@
       "path": "system.drawing.common/4.5.1",
       "hashPath": "system.drawing.common.4.5.1.nupkg.sha512"
     },
-    "Watson/2.1.2": {
+    "Watson/2.1.6": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-C07+jvPPdR3qQdG9vO9p/3l4/Js8OAtxmpJt0F2mfjScRGdkmLge+yWijfqdBaGDPdmz1nAe09jNYkKBYiBSlw==",
-      "path": "watson/2.1.2",
-      "hashPath": "watson.2.1.2.nupkg.sha512"
+      "sha512": "sha512-BiS8ABVqmRgda9eNG8IDELKgeX48k6OLg0KmBlbi6udjPGtxLEcoW+kA0Z3qSkF8y63OiW404uZVkvleafI2IA==",
+      "path": "watson/2.1.6",
+      "hashPath": "watson.2.1.6.nupkg.sha512"
     }
   }
 }

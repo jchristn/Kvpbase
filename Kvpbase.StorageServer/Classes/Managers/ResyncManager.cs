@@ -103,7 +103,7 @@ namespace Kvpbase.Classes.Managers
             List<ContainerSettings> containers = null;
             if (!_Outbound.ContainerList(md, node, out containers))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ResyncManager Add unable to retrieve container list from node " + node.ToString());
+                _Logging.Warn("ResyncManager Add unable to retrieve container list from node " + node.ToString());
                 return false;
             }
 
@@ -114,18 +114,18 @@ namespace Kvpbase.Classes.Managers
                     string taskGuid = null;
                     if (!Add(node, curr.User, curr.Name, startTime, out taskGuid))
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "ResyncManager Add unable to add task for container " + curr.User + "/" + curr.Name);
+                        _Logging.Warn("ResyncManager Add unable to add task for container " + curr.User + "/" + curr.Name);
                     }
                     else
                     {
-                        _Logging.Log(LoggingModule.Severity.Debug, "ResyncManager Add added task for container " + curr.User + "/" + curr.Name);
+                        _Logging.Debug("ResyncManager Add added task for container " + curr.User + "/" + curr.Name);
                         taskGuids.Add(taskGuid);
                     }
                 }
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Info, "ResyncManager Add no containers found on node " + node.ToString()); 
+                _Logging.Info("ResyncManager Add no containers found on node " + node.ToString()); 
             }
 
             return true;
@@ -142,7 +142,7 @@ namespace Kvpbase.Classes.Managers
             List<ContainerSettings> containers = null;
             if (!_Outbound.ContainerList(md, node, out containers))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ResyncManager Add unable to retrieve container list from node " + node.ToString());
+                _Logging.Warn("ResyncManager Add unable to retrieve container list from node " + node.ToString());
                 return false;
             }
 
@@ -157,11 +157,11 @@ namespace Kvpbase.Classes.Managers
                         string taskGuid = null;
                         if (!Add(node, curr.User, curr.Name, startTime, out taskGuid))
                         {
-                            _Logging.Log(LoggingModule.Severity.Warn, "ResyncManager Add unable to add task for container " + curr.User + "/" + curr.Name);
+                            _Logging.Warn("ResyncManager Add unable to add task for container " + curr.User + "/" + curr.Name);
                         }
                         else
                         {
-                            _Logging.Log(LoggingModule.Severity.Debug, "ResyncManager Add added task for container " + curr.User + "/" + curr.Name);
+                            _Logging.Debug("ResyncManager Add added task for container " + curr.User + "/" + curr.Name);
                             taskGuids.Add(taskGuid);
                         }
                     }
@@ -169,7 +169,7 @@ namespace Kvpbase.Classes.Managers
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Info, "ResyncManager Add no containers found on node " + node.ToString()); 
+                _Logging.Info("ResyncManager Add no containers found on node " + node.ToString()); 
             }
 
             return true;
@@ -182,7 +182,7 @@ namespace Kvpbase.Classes.Managers
 
             if (Exists(node, userName, container, startTime))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ResyncManager Add failed, task already exists");
+                _Logging.Warn("ResyncManager Add failed, task already exists");
                 return false;
             }
 
@@ -207,7 +207,7 @@ namespace Kvpbase.Classes.Managers
                 _ResyncTasks.Add(taskGuid, worker);
             }
 
-            _Logging.Log(LoggingModule.Severity.Debug, "ResyncManager Add added task " + taskGuid);
+            _Logging.Debug("ResyncManager Add added task " + taskGuid);
             return true;
         }
 
@@ -217,7 +217,7 @@ namespace Kvpbase.Classes.Managers
 
             if (!Exists(guid))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ResyncManager Start unable to find worker GUID " + guid);
+                _Logging.Warn("ResyncManager Start unable to find worker GUID " + guid);
                 return false;
             }
 
@@ -239,7 +239,7 @@ namespace Kvpbase.Classes.Managers
 
             if (_ResyncTasks == null || _ResyncTasks.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Info, "ResyncManager StartAll no tasks defined");
+                _Logging.Info("ResyncManager StartAll no tasks defined");
                 return true;
             }
 
@@ -247,7 +247,7 @@ namespace Kvpbase.Classes.Managers
             {
                 if (!kvp.Value.IsRunning)
                 {
-                    _Logging.Log(LoggingModule.Severity.Info, "ResyncManager StartAll starting task " + kvp.Key);
+                    _Logging.Info("ResyncManager StartAll starting task " + kvp.Key);
                     kvp.Value.Start();
                     started.Add(kvp.Key);
                 }
@@ -262,7 +262,7 @@ namespace Kvpbase.Classes.Managers
 
             if (!Exists(guid))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ResyncManager Stop unable to find worker GUID " + guid);
+                _Logging.Warn("ResyncManager Stop unable to find worker GUID " + guid);
                 return false;
             }
 
@@ -300,7 +300,7 @@ namespace Kvpbase.Classes.Managers
                 }
                 else
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "ResyncManager Get unable to find worker GUID " + guid);
+                    _Logging.Warn("ResyncManager Get unable to find worker GUID " + guid);
                     return null;
                 }
             }
@@ -320,7 +320,7 @@ namespace Kvpbase.Classes.Managers
 
             if (!Exists(guid))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "ResyncManager Remove unable to find worker GUID " + guid);
+                _Logging.Warn("ResyncManager Remove unable to find worker GUID " + guid);
                 return;
             }
 

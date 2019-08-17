@@ -5,7 +5,7 @@
     <RootNamespace>Kvpbase.Core</RootNamespace>
     <AssemblyName>Kvpbase.Core</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.3.2</Version>
+    <Version>3.3.2.6</Version>
     <Authors>Joel Christner</Authors>
     <Product>Kvpbase Core Library</Product>
     <Description>Core library and classes used in Kvpbase storage server.</Description>
@@ -16,13 +16,13 @@
     <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
-    <PackageReleaseNotes>Dependency fix</PackageReleaseNotes>
+    <PackageReleaseNotes>Container enumeration by prefix, dependency update</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
-    <PackageReference Include="Watson" Version="2.1.2" />
+    <PackageReference Include="Watson" Version="2.1.6" />
   </ItemGroup>
 
 </Project>

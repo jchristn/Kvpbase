@@ -23,7 +23,7 @@ namespace Kvpbase
                 List<Node> nodes = new List<Node>();
                 if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpHeadObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
+                    _Logging.Warn("HttpHeadObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
                     return new HttpResponse(md.Http, 404, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
                 }
@@ -31,7 +31,7 @@ namespace Kvpbase
                 {
                     string redirectUrl = null;
                     HttpResponse redirectRest = _OutboundMessageHandler.BuildRedirectResponse(md, nodes[0], out redirectUrl);
-                    _Logging.Log(LoggingModule.Severity.Debug, "HttpHeadObject redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
+                    _Logging.Debug("HttpHeadObject redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
                     return redirectRest;
                 }
             }
@@ -45,7 +45,7 @@ namespace Kvpbase
             {
                 if (md.User == null || !(md.User.Guid.ToLower().Equals(md.Params.UserGuid.ToLower())))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpHeadObject unauthorized unauthenticated access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                    _Logging.Warn("HttpHeadObject unauthorized unauthenticated access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                     return new HttpResponse(md.Http, 401, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
                 }
@@ -55,7 +55,7 @@ namespace Kvpbase
             {
                 if (!md.Perm.ReadObject)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpHeadObject unauthorized access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                    _Logging.Warn("HttpHeadObject unauthorized access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                     return new HttpResponse(md.Http, 401, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
                 }
@@ -67,7 +67,7 @@ namespace Kvpbase
              
             if (!_ObjectHandler.Exists(md, currContainer, md.Params.ObjectKey))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpHeadObject unable to find object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                _Logging.Warn("HttpHeadObject unable to find object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
                 return new HttpResponse(md.Http, 404, null); 
             }
             else

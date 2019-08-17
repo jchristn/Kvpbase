@@ -97,6 +97,7 @@ Please visit our documentation [https://github.com/kvpbase/storage-server/wiki] 
 
 ## New in v3.3.0
 
+- Enumeration support using object key prefixes
 - Support for stream processing instead of byte arrays (better memory usage, support for large objects)
 - Server settings MaxObjectSize and MaxTransferSize
 - Temporary files manager to overcome byte array size limitations (now using streams)

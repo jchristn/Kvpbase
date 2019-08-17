@@ -97,19 +97,19 @@ namespace Kvpbase.Classes.Managers
                 if (!AddLock(guid))
                 {
                     guid = null;
-                    _Logging.Log(LoggingModule.Severity.Warn, "TempFilesManager Add unable to acquire lock for key " + guid);
+                    _Logging.Warn("TempFilesManager Add unable to acquire lock for key " + guid);
                     return false;
                 }
 
                 if (!Common.WriteFile(_Settings.Storage.TempFiles + guid, data))
                 {
                     guid = null;
-                    _Logging.Log(LoggingModule.Severity.Warn, "TempFilesManager Add unable to write tempfile of length " + data.Length);
+                    _Logging.Warn("TempFilesManager Add unable to write tempfile of length " + data.Length);
                     return false;
                 }
                 else
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "TempFilesManager Add added temporary file " + guid);
+                    _Logging.Debug("TempFilesManager Add added temporary file " + guid);
                 }
 
                 return true;
@@ -133,7 +133,7 @@ namespace Kvpbase.Classes.Managers
                 if (!AddLock(guid))
                 {
                     guid = null;
-                    _Logging.Log(LoggingModule.Severity.Warn, "TempFilesManager Add unable to acquire lock for key " + guid);
+                    _Logging.Warn("TempFilesManager Add unable to acquire lock for key " + guid);
                     return false;
                 }
 
@@ -173,7 +173,7 @@ namespace Kvpbase.Classes.Managers
                 if (!AddLock(guid))
                 {
                     guid = null;
-                    _Logging.Log(LoggingModule.Severity.Warn, "TempFilesManager Read unable to acquire lock for key " + guid);
+                    _Logging.Warn("TempFilesManager Read unable to acquire lock for key " + guid);
                     return false;
                 }
 
@@ -196,7 +196,7 @@ namespace Kvpbase.Classes.Managers
                 if (!AddLock(guid))
                 {
                     guid = null;
-                    _Logging.Log(LoggingModule.Severity.Warn, "TempFilesManager Read unable to acquire lock for key " + guid);
+                    _Logging.Warn("TempFilesManager Read unable to acquire lock for key " + guid);
                     return false;
                 }
 
@@ -218,7 +218,7 @@ namespace Kvpbase.Classes.Managers
             {
                 if (!AddLock(guid))
                 { 
-                    _Logging.Log(LoggingModule.Severity.Warn, "TempFilesManager Delete unable to acquire lock for key " + guid);
+                    _Logging.Warn("TempFilesManager Delete unable to acquire lock for key " + guid);
                     return false;
                 }
 
@@ -245,7 +245,7 @@ namespace Kvpbase.Classes.Managers
             {
                 if (_LockedGuids.ContainsKey(key))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "TempFilesManager AddLock already exists for key " + key);
+                    _Logging.Warn("TempFilesManager AddLock already exists for key " + key);
                     return false;
                 }
 

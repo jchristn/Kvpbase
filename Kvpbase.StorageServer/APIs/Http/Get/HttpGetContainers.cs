@@ -19,7 +19,7 @@ namespace Kvpbase
 
             if (md.User == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpGetContainers no authentication material");
+                _Logging.Warn("HttpGetContainers no authentication material");
                 return new HttpResponse(md.Http, 401, null, "application/json",
                     Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
             }
@@ -30,7 +30,7 @@ namespace Kvpbase
              
             if (!md.Params.UserGuid.ToLower().Equals(md.User.Guid.ToLower()))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpGetContainers user " + md.User.Guid + " attempting to retrieve container list for user " + md.Params.UserGuid);
+                _Logging.Warn("HttpGetContainers user " + md.User.Guid + " attempting to retrieve container list for user " + md.Params.UserGuid);
                 return new HttpResponse(md.Http, 401, null, "application/json",
                     Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
             }
@@ -42,7 +42,7 @@ namespace Kvpbase
             List<string> containers = new List<string>();
             if (!_ContainerMgr.GetContainersByUser(md.Params.UserGuid, out containers))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "HttpGetContainers unable to retrieve containers for user " + md.Params.UserGuid);
+                _Logging.Warn("HttpGetContainers unable to retrieve containers for user " + md.Params.UserGuid);
                 return new HttpResponse(md.Http, 500, null, "application/json",
                     Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, null, null), true)));
             }

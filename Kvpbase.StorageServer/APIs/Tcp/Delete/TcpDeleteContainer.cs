@@ -19,20 +19,20 @@ namespace Kvpbase
             Container currContainer = null;
             if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "TcpDeleteContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
+                _Logging.Warn("TcpDeleteContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
                 return true;
             }
 
             if (md.Params.AuditLog)
             {
                 currContainer.ClearAuditLog(); 
-                _Logging.Log(LoggingModule.Severity.Info, "TcpDeleteContainer cleared audit log for container " + md.Params.UserGuid + "/" + md.Params.Container);
+                _Logging.Info("TcpDeleteContainer cleared audit log for container " + md.Params.UserGuid + "/" + md.Params.Container);
                 return true;
             }
             else
             {
                 _ContainerHandler.Delete(md.Params.UserGuid, md.Params.Container);
-                _Logging.Log(LoggingModule.Severity.Info, "TcpDeleteContainer deleted container " + md.Params.UserGuid + "/" + md.Params.Container);
+                _Logging.Info("TcpDeleteContainer deleted container " + md.Params.UserGuid + "/" + md.Params.Container);
                 return true;
             }
             

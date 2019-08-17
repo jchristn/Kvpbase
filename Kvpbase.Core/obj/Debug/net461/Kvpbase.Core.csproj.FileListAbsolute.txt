@@ -102,10 +102,10 @@ C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\bin\Debug\net461\System.Xml.XmlDo
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\bin\Debug\net461\System.Xml.XmlSerializer.dll
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\bin\Debug\net461\System.Xml.XPath.dll
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\bin\Debug\net461\System.Xml.XPath.XDocument.dll
+C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.csprojAssemblyReference.cache
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.csproj.CoreCompileInputs.cache
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.AssemblyInfoInputs.cache
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.AssemblyInfo.cs
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.csproj.CopyComplete
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.dll
 C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.pdb
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Debug\net461\Kvpbase.Core.csprojAssemblyReference.cache

@@ -24,7 +24,7 @@ namespace Kvpbase
 
                 if (md.User == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPostContainer no authentication material");
+                    _Logging.Warn("HttpPostContainer no authentication material");
                     return new HttpResponse(md.Http, 401, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
                 }
@@ -35,7 +35,7 @@ namespace Kvpbase
                  
                 if (_ContainerMgr.Exists(md.User.Guid, md.Params.Container))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPostContainer container " + md.User.Guid + "/" + md.Params.Container + " already exists");
+                    _Logging.Warn("HttpPostContainer container " + md.User.Guid + "/" + md.Params.Container + " already exists");
                     return new HttpResponse(md.Http, 409, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(7, 409, null, null), true)));
                 }
@@ -54,7 +54,7 @@ namespace Kvpbase
                     }
                     catch (Exception)
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "HttpPostContainer unable to deserialize request body");
+                        _Logging.Warn("HttpPostContainer unable to deserialize request body");
                         return new HttpResponse(md.Http, 400, null, "application/json",
                             Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true)));
                     }
@@ -62,7 +62,7 @@ namespace Kvpbase
 
                 if (settings == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "HttpPostContainer no settings found, using defaults for " + md.User.Guid + "/" + md.Params.Container);
+                    _Logging.Debug("HttpPostContainer no settings found, using defaults for " + md.User.Guid + "/" + md.Params.Container);
                     settings = new ContainerSettings(); 
                 }
 
@@ -89,14 +89,14 @@ namespace Kvpbase
 
                 if (!_OutboundMessageHandler.ContainerCreate(md, settings))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "HttpPostContainer unable to replicate operation to one or more nodes");
+                    _Logging.Warn("HttpPostContainer unable to replicate operation to one or more nodes");
                     cleanupRequired = true;
 
                     return new HttpResponse(md.Http, 500, null, "application/json",
                         Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true)));
                 }
 
-                _Logging.Log(LoggingModule.Severity.Debug, "HttpPostContainer successfully created container " + settings.User + "/" + settings.Name);
+                _Logging.Debug("HttpPostContainer successfully created container " + settings.User + "/" + settings.Name);
                 return new HttpResponse(md.Http, 201, null);
 
                 #endregion

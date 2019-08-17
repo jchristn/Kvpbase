@@ -6,7 +6,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>Kvpbase.Container</AssemblyName>
     <PackageId>Kvpbase.Containers</PackageId>
-    <Version>3.3.2</Version>
+    <Version>3.3.2.6</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Kvpbase Containers</Product>
@@ -17,7 +17,7 @@
     <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
-    <PackageReleaseNotes>Dependency fix</PackageReleaseNotes>
+    <PackageReleaseNotes>Container enumeration by prefix, dependency update</PackageReleaseNotes>
     <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
   </PropertyGroup>
 

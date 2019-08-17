@@ -15,7 +15,7 @@ namespace Kvpbase
         {
             #region Enumerate
 
-            _Logging.Log(LoggingModule.Severity.Debug, 
+            _Logging.Debug(
                 "AdminApiHandler admin API requested by " + 
                 md.Http.SourceIp + ":" + md.Http.SourcePort + " " + 
                 md.Http.Method + " " + md.Http.RawUrlWithoutQuery);
@@ -82,7 +82,7 @@ namespace Kvpbase
                 #endregion 
             }
 
-            _Logging.Log(LoggingModule.Severity.Warn, "AdminApiHandler unknown endpoint URL: " + md.Http.RawUrlWithoutQuery);
+            _Logging.Warn("AdminApiHandler unknown endpoint URL: " + md.Http.RawUrlWithoutQuery);
             return new HttpResponse(md.Http, 400, null, "application/json",
                 Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Unknown endpoint.", null), true)));
 
