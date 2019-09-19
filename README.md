@@ -1,14 +1,5 @@
 # Kvpbase Storage Server
-
-```
-   _             _
-  | |____ ___ __| |__  __ _ ___ ___
-  | / /\ V / '_ \ '_ \/ _` (_-</ -_)
-  |_\_\ \_/| .__/_.__/\__,_/__/\___|
-           |_|
-
-```
-
+ 
 [![StackShare](http://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/jchristn/kvpbase)
 
 ![alt tag](https://github.com/kvpbase/storage-server/blob/master/assets/diagram.png)
