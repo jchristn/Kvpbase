@@ -3,66 +3,66 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
 using Kvpbase.Containers;
-using Kvpbase.Core;
+using Kvpbase.Classes;
 
 namespace Kvpbase
 {
     public partial class StorageServer
     {
-        public static HttpResponse HttpPutContainer(RequestMetadata md)
+        public static async Task HttpPutContainer(RequestMetadata md)
         {
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+
             #region Validate-Authentication
 
             if (md.User == null)
             {
-                _Logging.Warn("HttpPutContainer no authentication material");
-                return new HttpResponse(md.Http, 401, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                _Logging.Warn(header + "HttpPutContainer no authentication material");
+                md.Http.Response.StatusCode = 401;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                return;
             }
 
             #endregion
 
             #region Validate-Request
 
-            if (md.Http.RawUrlEntries.Count != 2)
+            if (md.Http.Request.RawUrlEntries.Count != 2)
             {
-                _Logging.Warn("HttpPutContainer request URL does not have two entries");
-                return new HttpResponse(md.Http, 400, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "URL path must contain two entries, i.e. /[user]/[container]/.", null), true)));
+                _Logging.Warn(header + "HttpPutContainer request URL does not have two entries");
+                md.Http.Response.StatusCode = 400;
+                md.Http.Response.ContentType = "application.json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 400, "URL path must be of the form /[user]/[container]/[key].", null), true));
+                return;
             }
              
-            if (!md.Params.UserGuid.ToLower().Equals(md.User.Guid.ToLower()))
+            if (!md.Params.UserGuid.ToLower().Equals(md.User.GUID.ToLower()))
             {
-                _Logging.Warn("HttpPutContainer user " + md.User.Guid + " attempting to PUT container in user " + md.Params.UserGuid);
-                return new HttpResponse(md.Http, 401, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                _Logging.Warn(header + "HttpPutContainer user " + md.User.GUID + " attempting to PUT container in user " + md.Params.UserGuid);
+                md.Http.Response.StatusCode = 401;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                return;
             }
 
             #endregion
 
             #region Check-if-Container-Exists
 
-            Container currContainer = null;
-            if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
-            {
-                List<Node> nodes = new List<Node>();
-                if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
-                {
-                    _Logging.Warn("HttpPutContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, 404, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
-                }
-                else
-                {
-                    string redirectUrl = null;
-                    HttpResponse redirectRest = _OutboundMessageHandler.BuildRedirectResponse(md, nodes[0], out redirectUrl);
-                    _Logging.Debug("HttpPutContainer redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
-                    return redirectRest;
-                }
+            ContainerClient client = null;
+            if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
+            { 
+                _Logging.Warn(header + "HttpPutContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                md.Http.Response.StatusCode = 404;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
+                return;
             }
 
             #endregion
@@ -78,7 +78,7 @@ namespace Kvpbase
                 if (md.Params.Count != null) count = Convert.ToInt32(md.Params.Count);
                 if (md.Params.Index != null) index = Convert.ToInt32(md.Params.Index);
 
-                List<AuditLogEntry> entries = currContainer.GetAuditLogEntries(
+                List<AuditLogEntry> entries = client.GetAuditLogEntries(
                     md.Params.AuditKey,
                     md.Params.Action,
                     count,
@@ -86,7 +86,102 @@ namespace Kvpbase
                     md.Params.CreatedBefore,
                     md.Params.CreatedAfter);
 
-                return new HttpResponse(md.Http, 200, null, "application/json", Encoding.UTF8.GetBytes(Common.SerializeJson(entries, true)));
+                md.Http.Response.StatusCode = 200;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(entries, true));
+                return;
+
+                #endregion
+            }
+            else if (md.Params.Keys)
+            {
+                #region Update-Keys
+
+                Dictionary<string, string> keys = null;
+
+                if (md.Http.Request.Data != null && md.Http.Request.ContentLength > 0)
+                {
+                    byte[] reqData = Common.StreamToBytes(md.Http.Request.Data);
+
+                    try
+                    {
+                        keys = Common.DeserializeJson<Dictionary<string, string>>(reqData);
+                    }
+                    catch (Exception)
+                    {
+                        _Logging.Warn(header + "HttpPutContainer unable to deserialize request body");
+                        md.Http.Response.StatusCode = 400;
+                        md.Http.Response.ContentType = "application/json";
+                        await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true));
+                        return;
+                    }
+                }
+
+                client.WriteContainerKeyValuePairs(keys);
+                md.Http.Response.StatusCode = 201;
+                await md.Http.Response.Send();
+                return;
+
+                #endregion
+            }
+            else if (md.Params.Search)
+            {
+                #region Search
+
+                #region Deserialize-Request-Body
+
+                EnumerationFilter filter = null;
+
+                if (md.Http.Request.Data != null && md.Http.Request.ContentLength > 0)
+                {
+                    byte[] reqData = Common.StreamToBytes(md.Http.Request.Data);
+
+                    try
+                    {
+                        filter = Common.DeserializeJson<EnumerationFilter>(reqData);
+                    }
+                    catch (Exception)
+                    {
+                        _Logging.Warn(header + "HttpPutContainer unable to deserialize request body");
+                        md.Http.Response.StatusCode = 400;
+                        md.Http.Response.ContentType = "application/json";
+                        await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true));
+                        return;
+                    }
+                }
+
+                #endregion
+                 
+                #region Enumerate-and-Return
+
+                int? index = null;
+                if (md.Params.Index != null) index = Convert.ToInt32(md.Params.Index);
+
+                int? count = null;
+                if (md.Params.Count != null) count = Convert.ToInt32(md.Params.Count);
+
+                ContainerMetadata meta = client.Enumerate(
+                    (int?)md.Params.Index,
+                    (int?)md.Params.Count,
+                    filter,
+                    md.Params.OrderBy);
+
+                if (md.Params.Html)
+                {
+                    md.Http.Response.StatusCode = 200;
+                    md.Http.Response.ContentType = "text/html";
+                    await md.Http.Response.Send(DirectoryListingPage(meta));
+                    return;
+                }
+                else
+                {
+                    md.Http.Response.StatusCode = 200;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(meta, true));
+                    return;
+                }
+
+                #endregion
 
                 #endregion
             }
@@ -96,40 +191,46 @@ namespace Kvpbase
 
                 #region Deserialize-Request-Body
 
-                ContainerSettings settings = null;
+                Container container = null;
 
-                if (md.Http.DataStream != null && md.Http.DataStream.CanRead)
+                if (md.Http.Request.Data != null && md.Http.Request.ContentLength > 0)
                 {
-                    md.Http.Data = Common.StreamToBytes(md.Http.DataStream);
+                    byte[] reqData = Common.StreamToBytes(md.Http.Request.Data);
 
                     try
                     {
-                        settings = Common.DeserializeJson<ContainerSettings>(md.Http.Data);
+                        container = Common.DeserializeJson<Container>(reqData);
                     }
                     catch (Exception)
                     {
-                        _Logging.Warn("HttpPutContainer unable to deserialize request body");
-                        return new HttpResponse(md.Http, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true)));
+                        _Logging.Warn(header + "HttpPutContainer unable to deserialize request body");
+                        md.Http.Response.StatusCode = 400;
+                        md.Http.Response.ContentType = "application/json";
+                        await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true));
+                        return;
                     }
                 }
 
-                if (settings == null)
+                if (container == null)
                 {
-                    _Logging.Warn("HttpPutContainer no request body");
-                    return new HttpResponse(md.Http, 400, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "No container settings found in request body.", null), true)));
+                    _Logging.Warn(header + "HttpPutContainer no request body");
+                    md.Http.Response.StatusCode = 400;
+                    md.Http.Response.ContentType = "application.json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 400, "No container settings found in request body.", null), true));
+                    return;
                 }
 
                 #endregion
 
                 #region Update
 
-                _ContainerHandler.Update(md, currContainer, settings);
+                _ConfigMgr.UpdateContainer(container); 
+                _ContainerMgr.Delete(container.UserGuid, container.Name, false); 
+                _ContainerMgr.Add(container);
 
-                _OutboundMessageHandler.ContainerUpdate(md, settings);
-
-                return new HttpResponse(md.Http, 200, null);
+                md.Http.Response.StatusCode = 200;
+                await md.Http.Response.Send();
+                return;
 
                 #endregion
 

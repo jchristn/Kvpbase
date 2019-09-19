@@ -3,72 +3,54 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
 using Kvpbase.Containers;
-using Kvpbase.Core;
+using Kvpbase.Classes;
 
 namespace Kvpbase
 {
     public partial class StorageServer
     {
-        public static HttpResponse HttpGetContainers(RequestMetadata md)
+        public static async Task HttpGetContainers(RequestMetadata md)
         {
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+
             #region Validate-Authentication
 
             if (md.User == null)
             {
-                _Logging.Warn("HttpGetContainers no authentication material");
-                return new HttpResponse(md.Http, 401, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                _Logging.Warn(header + "HttpGetContainers no authentication material");
+                md.Http.Response.StatusCode = 401;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                return;
             }
 
             #endregion
 
             #region Validate-Request
              
-            if (!md.Params.UserGuid.ToLower().Equals(md.User.Guid.ToLower()))
+            if (!md.Params.UserGuid.ToLower().Equals(md.User.GUID.ToLower()))
             {
-                _Logging.Warn("HttpGetContainers user " + md.User.Guid + " attempting to retrieve container list for user " + md.Params.UserGuid);
-                return new HttpResponse(md.Http, 401, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                _Logging.Warn(header + "HttpGetContainers user " + md.User.GUID + " attempting to retrieve container list for user " + md.Params.UserGuid);
+                md.Http.Response.StatusCode = 401;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                return;
             }
 
             #endregion
-             
+
             #region Retrieve-and-Respond
 
-            List<string> containers = new List<string>();
-            if (!_ContainerMgr.GetContainersByUser(md.Params.UserGuid, out containers))
-            {
-                _Logging.Warn("HttpGetContainers unable to retrieve containers for user " + md.Params.UserGuid);
-                return new HttpResponse(md.Http, 500, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, null, null), true)));
-            }
-            else
-            {
-                if (!md.Params.Stats)
-                {
-                    return new HttpResponse(md.Http, 200, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(containers, true)));
-                }
-                else
-                {
-                    List<ContainerSettings> ret = new List<ContainerSettings>();
-                    foreach (string containerName in containers)
-                    {
-                        ContainerSettings currSettings = null;
-                        if (_ContainerMgr.GetContainerSettings(md.Params.UserGuid, containerName, out currSettings))
-                        {
-                            ret.Add(currSettings);
-                        }
-                    }
-
-                    return new HttpResponse(md.Http, 200, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(ret, true)));
-                }
-            }
+            List<Container> containers = _ContainerMgr.GetContainersByUser(md.Params.UserGuid);
+            md.Http.Response.StatusCode = 200;
+            md.Http.Response.ContentType = "application/json";
+            await md.Http.Response.Send(Common.SerializeJson(containers, true));
+            return;
 
             #endregion 
         }

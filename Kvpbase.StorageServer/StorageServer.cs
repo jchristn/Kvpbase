@@ -8,15 +8,15 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
+using DatabaseWrapper;
 using SyslogLogging;
 using WatsonWebserver;
-
-using Kvpbase.Classes.BackgroundThreads;
+ 
 using Kvpbase.Classes.Handlers;
-using Kvpbase.Classes.Managers;
-using Kvpbase.Classes.Messaging;
+using Kvpbase.Classes.Managers; 
 using Kvpbase.Containers;
-using Kvpbase.Core;
+using Kvpbase.Classes;
 
 namespace Kvpbase
 {
@@ -24,23 +24,13 @@ namespace Kvpbase
     {
         public static Settings _Settings;
         public static LoggingModule _Logging;
-        public static UserManager _UserMgr;
-        public static ApiKeyManager _ApiKeyMgr;
-
-        public static TempFilesManager _TempFilesMgr;
+        public static DatabaseClient _ConfigDb;
+        public static DatabaseClient _StorageDb;
+        public static ConfigManager _ConfigMgr;
+         
         public static ContainerManager _ContainerMgr;
-        public static ContainerHandler _ContainerHandler;
-        public static UrlLockManager _UrlLockMgr;
-        public static ObjectHandler _ObjectHandler;
-        public static InboundHandler _InboundMessageHandler;
-        
-        public static TopologyManager _TopologyMgr; 
-        public static OutboundHandler _OutboundMessageHandler; 
-
-        public static ConnectionManager _ConnMgr; 
-        public static EncryptionManager _EncryptionMgr;
-        public static TokenManager _TokenMgr;
-        public static ResyncManager _ResyncMgr;
+        public static ObjectHandler _ObjectHandler;  
+        public static ConnectionManager _ConnMgr;  
         public static ConsoleManager _ConsoleMgr; 
         public static ConcurrentQueue<Dictionary<string, object>> _FailedRequests;
         public static Server _Server;
@@ -49,17 +39,7 @@ namespace Kvpbase
         public static string _Version = null;
 
         public static void Main(string[] args)
-        { 
-            #region Startup-Check
-            
-            if (!HttpListener.IsSupported)
-            {
-                Common.ExitApplication("StorageServer", "Your OS does not support HttpListener", -1);
-                return;
-            }
-
-            #endregion
-
+        {  
             #region Load-Settings
 
             bool initialSetup = false;
@@ -99,61 +79,55 @@ namespace Kvpbase
                 false,
                 false);
 
+            // 
+            // Databases
+            //
+
+            _ConfigDb = new DatabaseClient(
+                _Settings.ConfigDatabase.Type,
+                _Settings.ConfigDatabase.Hostname,
+                _Settings.ConfigDatabase.Port,
+                _Settings.ConfigDatabase.Username,
+                _Settings.ConfigDatabase.Password,
+                _Settings.ConfigDatabase.InstanceName,
+                _Settings.ConfigDatabase.DatabaseName);
+
+            _StorageDb = new DatabaseClient(
+                _Settings.StorageDatabase.Type,
+                _Settings.StorageDatabase.Hostname,
+                _Settings.StorageDatabase.Port,
+                _Settings.StorageDatabase.Username,
+                _Settings.StorageDatabase.Password,
+                _Settings.StorageDatabase.InstanceName,
+                _Settings.StorageDatabase.DatabaseName);
+
             //
             // Authentication, state, and encrypted related managers
             //
 
-            _UserMgr = new UserManager(_Settings, _Logging); 
-            _ApiKeyMgr = new ApiKeyManager(_Settings, _Logging, _UserMgr); 
-            _ConnMgr = new ConnectionManager(); 
-            _EncryptionMgr = new EncryptionManager(_Settings, _Logging); 
-            _TokenMgr = new TokenManager(_Settings, _Logging, _EncryptionMgr, _UserMgr);
+            _ConfigMgr = new ConfigManager(_Settings, _Logging, _ConfigDb); 
+            _ConnMgr = new ConnectionManager();  
 
             //
             // Managers and handlers for containers, objects
             //
-
-            _TempFilesMgr = new TempFilesManager(_Settings, _Logging);
-            _ContainerMgr = new ContainerManager(_Settings.Files.Container, _Settings.Container.CacheSize, _Settings.Container.EvictSize); 
-            _ContainerHandler = new ContainerHandler(_Settings, _Logging, _ContainerMgr); 
-            _UrlLockMgr = new UrlLockManager(_Logging); 
-            _ObjectHandler = new ObjectHandler(_Settings, _Logging, _UrlLockMgr);
-
-            //
-            // Managers and handlers for the topology, messaging, and callbacks for messages
-            //
-
-            _InboundMessageHandler = new InboundHandler(_Settings, _Logging, _ContainerHandler, _ObjectHandler); 
-            _TopologyMgr = new TopologyManager(_Settings, _Logging, _UserMgr, _InboundMessageHandler);  
-            _OutboundMessageHandler = new OutboundHandler(_Settings, _Logging, _TopologyMgr); 
-            _ResyncMgr = new ResyncManager(_Settings, _Logging, _TopologyMgr, _OutboundMessageHandler, _ContainerMgr, _ContainerHandler, _ObjectHandler);
-
-            //
-            // Miscellaneous
-            //
-
-            new FailedRequestsThread(_Settings, _Logging, _FailedRequests); 
-               
+             
+            _ContainerMgr = new ContainerManager(_Settings, _Logging, _ConfigMgr, _StorageDb);  
+            _ObjectHandler = new ObjectHandler(_Settings, _Logging, _ConfigMgr);
+              
             _Server = new Server(
-                _TopologyMgr.LocalNode.Http.DnsHostname, 
-                _TopologyMgr.LocalNode.Http.Port, 
-                _TopologyMgr.LocalNode.Http.Ssl, 
+                _Settings.Server.DnsHostname,
+                _Settings.Server.Port,
+                _Settings.Server.Ssl,
                 RequestReceived);
 
-            _Server.ReadInputStream = false;
+            _Server.Events.ExceptionEncountered = WebserverException;
              
             _ConsoleMgr = new ConsoleManager(
                 _Settings,
-                _Logging,
-                _TopologyMgr, 
-                _UserMgr,
-                _UrlLockMgr,
-                _EncryptionMgr,
-                _OutboundMessageHandler,
-                _ContainerMgr,
-                _ContainerHandler,
-                _ObjectHandler,
-                _ResyncMgr);
+                _Logging, 
+                _ContainerMgr, 
+                _ObjectHandler);
 
             #endregion
 
@@ -190,7 +164,7 @@ namespace Kvpbase
             string msg =
                 Logo() + 
                 Environment.NewLine +
-                "  " + _Settings.ProductName + " v" + _Version + Environment.NewLine +
+                "  Kvpbase Storage Server v" + _Version + Environment.NewLine +
                 Environment.NewLine;
 
             Console.WriteLine(msg);
@@ -199,17 +173,11 @@ namespace Kvpbase
         static void CreateDirectories()
         {
             if (!Directory.Exists(_Settings.Storage.Directory)) Directory.CreateDirectory(_Settings.Storage.Directory);
-            if (!Directory.Exists(_Settings.Storage.TempFiles)) Directory.CreateDirectory(_Settings.Storage.TempFiles);
-            if (!Directory.Exists(_Settings.Messages.Directory)) Directory.CreateDirectory(_Settings.Messages.Directory);
-            if (!Directory.Exists(_Settings.Expiration.Directory)) Directory.CreateDirectory(_Settings.Expiration.Directory);
-            if (!Directory.Exists(_Settings.Replication.Directory)) Directory.CreateDirectory(_Settings.Replication.Directory);
-            if (!Directory.Exists(_Settings.Tasks.Directory)) Directory.CreateDirectory(_Settings.Tasks.Directory);  
         }
 
-        static HttpResponse RequestReceived(HttpRequest req)
-        {
-            HttpResponse resp = new HttpResponse(req, 500, null, "application/json",
-                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, null, null), true)));
+        static async Task RequestReceived(HttpContext ctx)
+        { 
+            string header = ctx.Request.SourceIp + ":" + ctx.Request.SourcePort + " ";
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -219,390 +187,119 @@ namespace Kvpbase
                 #region Variables
 
                 DateTime startTime = DateTime.Now;
-                
-                string apiKey = "";
-                string email = "";
-                string password = "";
-                string token = "";
-                string version = "";
-
-                UserMaster currUserMaster = null;
-                ApiKey currApiKey = null;
-                ApiKeyPermission currPermission = null;
-
+                 
                 RequestMetadata md = new RequestMetadata();
-                md.Http = req;
-                md.Node = _TopologyMgr.LocalNode;
+                md.Http = ctx; 
                 md.User = null;
                 md.Key = null;
                 md.Perm = null;
 
-                if (Common.IsTrue(_Settings.Syslog.LogHttpRequests))
-                {
-                    _Logging.Debug("RequestReceived request received: " + Environment.NewLine + md.Http.ToString());
-                }
+                if (Common.IsTrue(_Settings.Syslog.LogHttpRequests)) 
+                    _Logging.Debug(header + "RequestReceived request received: " + Environment.NewLine + md.Http.ToString()); 
 
                 #endregion
 
                 #region Options-Handler
 
-                if (req.Method == HttpMethod.OPTIONS)
+                if (ctx.Request.Method == HttpMethod.OPTIONS)
                 {
-                    _Logging.Debug("RequestReceived " + Thread.CurrentThread.ManagedThreadId + ": OPTIONS request received");
-                    resp = OptionsHandler(req);
-                    return resp;
+                    await OptionsHandler(ctx);
+                    return;
                 }
 
                 #endregion
 
                 #region Favicon-Robots-Root
 
-                if (req.RawUrlEntries != null && req.RawUrlEntries.Count > 0)
+                if (ctx.Request.RawUrlEntries != null && ctx.Request.RawUrlEntries.Count > 0)
                 {
-                    if (req.RawUrlWithoutQuery.Equals("/favicon.ico"))
+                    if (ctx.Request.RawUrlWithoutQuery.Equals("/favicon.ico"))
                     {
-                        resp = new HttpResponse(req, 200, null);
-                        return resp;
+                        ctx.Response.StatusCode = 200;
+                        await ctx.Response.Send();
+                        return;
                     }
 
-                    if (req.RawUrlWithoutQuery.Equals("/robots.txt"))
+                    if (ctx.Request.RawUrlWithoutQuery.Equals("/robots.txt"))
                     {
-                        resp = new HttpResponse(req, 200, null, "text/plain", Encoding.UTF8.GetBytes("User-Agent: *\r\nDisallow:\r\n"));
-                        return resp;
+                        ctx.Response.StatusCode = 200;
+                        ctx.Response.ContentType = "text/plain";
+                        await ctx.Response.Send("User-Agent: *\r\nDisallow:\r\n");
+                        return;
                     }
                 }
 
-                if (req.RawUrlEntries == null || req.RawUrlEntries.Count == 0)
+                if (ctx.Request.RawUrlEntries == null || ctx.Request.RawUrlEntries.Count == 0)
                 {
-                    resp = new HttpResponse(req, 200, null, "text/html",
-                        Encoding.UTF8.GetBytes(DefaultPage("http://github.com/kvpbase")));
-                    return resp;
+                    ctx.Response.StatusCode = 200;
+                    ctx.Response.ContentType = "text/html";
+                    await ctx.Response.Send(DefaultPage("http://github.com/kvpbase"));
+                    return;
                 }
 
                 #endregion
 
                 #region Add-Connection
 
-                _ConnMgr.Add(Thread.CurrentThread.ManagedThreadId, req);
+                _ConnMgr.Add(Thread.CurrentThread.ManagedThreadId, ctx);
 
                 #endregion
-                 
-                #region Retrieve-Auth-Parameters
-
-                apiKey = req.RetrieveHeaderValue(_Settings.Server.HeaderApiKey);
-                email = req.RetrieveHeaderValue(_Settings.Server.HeaderEmail);
-                password = req.RetrieveHeaderValue(_Settings.Server.HeaderPassword);
-                token = req.RetrieveHeaderValue(_Settings.Server.HeaderToken);
-                version = req.RetrieveHeaderValue(_Settings.Server.HeaderVersion);
-
-                #endregion
-
-                #region Move-Data-into-Stream
-
-                if (md.Http.ContentLength > 0)
-                {
-                    if (md.Http.Data != null)
-                    {
-                        md.Http.DataStream = new MemoryStream();
-                        md.Http.DataStream.Write(md.Http.Data, 0, md.Http.Data.Length);
-                        md.Http.DataStream.Seek(0, SeekOrigin.Begin);
-                        md.Http.Data = null;
-                    }
-                    else if (md.Http.DataStream != null)
-                    {
-                        MemoryStream ms = new MemoryStream();
-
-                        byte[] buffer = new byte[65536];
-                        int bytesRead = 0;
-                        long bytesRemaining = md.Http.ContentLength;
-
-                        while (bytesRemaining > 0)
-                        {
-                            bytesRead = md.Http.DataStream.Read(buffer, 0, buffer.Length);
-                            if (bytesRead > 0)
-                            {
-                                ms.Write(buffer, 0, bytesRead);
-                                bytesRemaining -= bytesRead;
-                            }
-                        }
-
-                        ms.Seek(0, SeekOrigin.Begin);
-                        md.Http.Data = null;
-                        md.Http.DataStream = null;
-                        md.Http.DataStream = ms;
-                    }
-                }
-
-                #endregion
-
-                #region Admin-API
-
-                if (req.RawUrlEntries != null && req.RawUrlEntries.Count > 0)
-                {
-                    if (String.Compare(req.RawUrlEntries[0], "admin") == 0)
-                    {
-                        if (String.IsNullOrEmpty(apiKey))
-                        {
-                            _Logging.Warn("RequestReceived admin API requested but no API key specified");
-                            resp = new HttpResponse(req, 401, null, "application/json",
-                                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "No API key specified.", null), true)));
-                            return resp;
-                        }
-
-                        if (String.Compare(_Settings.Server.AdminApiKey, apiKey) != 0)
-                        {
-                            _Logging.Warn("RequestReceived admin API requested but invalid API key specified");
-                            resp = new HttpResponse(req, 401, null, "application/json",
-                                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true)));
-                            return resp;
-                        }
-
-                        resp = AdminApiHandler(md);
-                        return resp;
-                    }
-                }
-
-                #endregion
-
+                   
                 #region Authenticate-and-Build-Metadata
-                
-                if (!String.IsNullOrEmpty(token))
-                {
-                    if (!_TokenMgr.VerifyToken(token, out currUserMaster, out currPermission))
-                    {
-                        _Logging.Warn("RequestReceived unable to verify token");
-                        resp = new HttpResponse(req, 401, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true)));
-                        return resp;
-                    }
-                }
-                else if (!String.IsNullOrEmpty(apiKey))
+
+                string apiKeyVal = ctx.Request.RetrieveHeaderValue(_Settings.Server.HeaderApiKey);
+                string emailVal = ctx.Request.RetrieveHeaderValue(_Settings.Server.HeaderEmail);
+                string passwordVal = ctx.Request.RetrieveHeaderValue(_Settings.Server.HeaderPassword);
+
+                UserMaster user = null;
+                ApiKey apiKey = null;
+                AuthResult authResult = AuthResult.None;
+                Permission effectivePermissions = null;
+
+                if (!String.IsNullOrEmpty(apiKeyVal))
                 { 
-                    if (!_ApiKeyMgr.VerifyApiKey(apiKey, out currUserMaster, out currApiKey, out currPermission))
+                    if (!_ConfigMgr.Authenticate(apiKeyVal, out user, out apiKey, out effectivePermissions, out authResult))
                     {
-                        _Logging.Warn("RequestReceived unable to verify API key " + apiKey);
-                        resp = new HttpResponse(req,  401, null, "application/json",
-                           Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true)));
-                        return resp;
+                        _Logging.Warn("RequestReceived unable to verify API key " + apiKeyVal + ": " + authResult);
+                        ctx.Response.StatusCode = 401;
+                        ctx.Response.ContentType = "application/json";
+                        await ctx.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                        return;
                     }
                 }
-                else if ((!String.IsNullOrEmpty(email)) && (!String.IsNullOrEmpty(password)))
+                else if ((!String.IsNullOrEmpty(emailVal)) && (!String.IsNullOrEmpty(passwordVal)))
                 {
-                    if (!_UserMgr.Authenticate(email, password, out currUserMaster))
+                    if (!_ConfigMgr.Authenticate(emailVal, passwordVal, out user, out apiKey, out effectivePermissions, out authResult))
                     {
-                        _Logging.Warn("RequestReceived unable to verify credentials for email " + email);
-                        resp = new HttpResponse(req, 401, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true)));
-                        return resp;
+                        _Logging.Warn("RequestReceived unable to verify credentials for email " + emailVal);
+                        ctx.Response.StatusCode = 401;
+                        ctx.Response.ContentType = "application/json";
+                        await ctx.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                        return;
                     }
 
-                    currPermission = ApiKeyPermission.DefaultPermit(currUserMaster);
-                } 
-
-                md.User = currUserMaster;
-                md.Key = currApiKey;
-                md.Perm = currPermission;
-                md.Params = new RequestMetadata.Parameters();
-
-                md.Params.UserGuid = "null";
-                if (md.User != null) md.Params.UserGuid = md.User.Guid;
-                if (req.RawUrlEntries.Count >= 1) md.Params.UserGuid = req.RawUrlEntries[0];
-
-                if (req.RawUrlEntries.Count > 1) md.Params.Container = req.RawUrlEntries[1];
-                if (req.RawUrlEntries.Count > 2) md.Params.ObjectKey = req.RawUrlEntries[2];
-
-                if (req.QuerystringEntries.ContainsKey("_auditlog")) 
-                    md.Params.AuditLog = Common.IsTrue(req.QuerystringEntries["_auditlog"]); 
-
-                if (req.QuerystringEntries.ContainsKey("_metadata")) 
-                    md.Params.Metadata = Common.IsTrue(req.QuerystringEntries["_metadata"]); 
-
-                if (req.QuerystringEntries.ContainsKey("_reqmetadata")) 
-                    md.Params.RequestMetadata = Common.IsTrue(req.QuerystringEntries["_reqmetadata"]); 
-
-                if (req.QuerystringEntries.ContainsKey("_auditkey")) 
-                    md.Params.AuditKey = req.QuerystringEntries["_auditkey"]; 
-
-                if (req.QuerystringEntries.ContainsKey("_action")) 
-                    md.Params.Action = req.QuerystringEntries["_action"]; 
-
-                int index; 
-                if (req.QuerystringEntries.ContainsKey("_index"))
-                {
-                    if (Int32.TryParse(req.QuerystringEntries["_index"], out index))
-                    {
-                        if (index >= 0) md.Params.Index = index;
-                    }
-                }
-
-                int count; 
-                if (req.QuerystringEntries.ContainsKey("_count"))
-                {
-                    if (Int32.TryParse(req.QuerystringEntries["_count"], out count))
-                    {
-                        if (count >= 0) md.Params.Count = count;
-                    }
+                    effectivePermissions = Permission.DefaultPermit(user);
                 }
                  
-                if (req.QuerystringEntries.ContainsKey("_rename")) 
-                    md.Params.Rename = req.QuerystringEntries["_rename"]; 
-                 
-                if (req.QuerystringEntries.ContainsKey("_config")) 
-                    md.Params.Config = Common.IsTrue(req.QuerystringEntries["_config"]); 
-
-                if (req.QuerystringEntries.ContainsKey("_stats")) 
-                    md.Params.Stats = Common.IsTrue(req.QuerystringEntries["_stats"]); 
-
-                if (req.QuerystringEntries.ContainsKey("_html")) 
-                    md.Params.Html = Common.IsTrue(req.QuerystringEntries["_html"]); 
-
-                DateTime testTimestamp;
-
-                if (req.QuerystringEntries.ContainsKey("_createdbefore"))
-                {
-                    if (!DateTime.TryParse(req.QuerystringEntries["_createdbefore"], out testTimestamp))
-                    {
-                        _Logging.Debug("StorageServer invalid value for _createdbefore");
-                        resp = new HttpResponse(req, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _createdbefore.", null), true)));
-                    }
-                    else
-                    {
-                        md.Params.CreatedBefore = testTimestamp;
-                    }
-                }
-
-                if (req.QuerystringEntries.ContainsKey("_createdafter"))
-                {
-                    if (!DateTime.TryParse(req.QuerystringEntries["_createdafter"], out testTimestamp))
-                    {
-                        _Logging.Debug("StorageServer invalid value for _createdafter");
-                        resp = new HttpResponse(req, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _createdafter.", null), true)));
-                    }
-                    else
-                    {
-                        md.Params.CreatedAfter = testTimestamp;
-                    }
-                }
-
-                if (req.QuerystringEntries.ContainsKey("_updatedbefore"))
-                {
-                    if (!DateTime.TryParse(req.QuerystringEntries["_updatedbefore"], out testTimestamp))
-                    {
-                        _Logging.Debug("StorageServer invalid value for _updatedbefore");
-                        resp = new HttpResponse(req, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _updatedbefore.", null), true)));
-                    }
-                    else
-                    {
-                        md.Params.UpdatedBefore = testTimestamp;
-                    }
-                }
-
-                if (req.QuerystringEntries.ContainsKey("_updatedafter"))
-                {
-                    if (!DateTime.TryParse(req.QuerystringEntries["_updatedafter"], out testTimestamp))
-                    {
-                        _Logging.Debug("StorageServer invalid value for _updatedafter");
-                        resp = new HttpResponse(req, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _updatedafter.", null), true)));
-                    }
-                    else
-                    {
-                        md.Params.UpdatedAfter = testTimestamp;
-                    }
-                }
-
-                if (req.QuerystringEntries.ContainsKey("_accessedbefore"))
-                {
-                    if (!DateTime.TryParse(req.QuerystringEntries["_accessedbefore"], out testTimestamp))
-                    {
-                        _Logging.Debug("StorageServer invalid value for _accessedbefore");
-                        resp = new HttpResponse(req, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _updatedbefore.", null), true)));
-                    }
-                    else
-                    {
-                        md.Params.LastAccessBefore = testTimestamp;
-                    }
-                }
-
-                if (req.QuerystringEntries.ContainsKey("_accessedafter"))
-                {
-                    if (!DateTime.TryParse(req.QuerystringEntries["_accessedafter"], out testTimestamp))
-                    {
-                        _Logging.Debug("StorageServer invalid value for _accessedafter");
-                        resp = new HttpResponse(req, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _updatedafter.", null), true)));
-                    }
-                    else
-                    {
-                        md.Params.LastAccessAfter = testTimestamp;
-                    }
-                }
-
-                if (req.QuerystringEntries.ContainsKey("_prefix"))
-                    md.Params.Prefix = req.QuerystringEntries["_prefix"];
-
-                if (req.QuerystringEntries.ContainsKey("_md5"))
-                    md.Params.Md5 = req.QuerystringEntries["_md5"];
-
-                if (req.QuerystringEntries.ContainsKey("_orderby")) 
-                    md.Params.OrderBy = req.QuerystringEntries["_orderby"]; 
-
-                if (req.QuerystringEntries.ContainsKey("_contenttype")) 
-                    md.Params.ContentType = req.QuerystringEntries["_contenttype"]; 
-
-                if (req.QuerystringEntries.ContainsKey("_tags")) 
-                    md.Params.Tags = req.QuerystringEntries["_tags"]; 
-
-                long testLong = 0;
-                if (req.QuerystringEntries.ContainsKey("_sizemin"))
-                {
-                    if (!Int64.TryParse(req.QuerystringEntries["_sizemin"], out testLong))
-                    {
-                        _Logging.Debug("StorageServer invalid value for _sizemin");
-                        resp = new HttpResponse(req, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _sizemin.", null), true)));
-                    }
-                    else
-                    {
-                        md.Params.SizeMin = testLong;
-                    }
-                }
-
-                if (req.QuerystringEntries.ContainsKey("_sizemax"))
-                {
-                    if (!Int64.TryParse(req.QuerystringEntries["_sizemax"], out testLong))
-                    {
-                        _Logging.Debug("StorageServer invalid value for _sizemax");
-                        resp = new HttpResponse(req, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for _sizemax.", null), true)));
-                    }
-                    else
-                    {
-                        md.Params.SizeMax = testLong;
-                    }
-                }
-
+                md.User = user;
+                md.Key = apiKey;
+                md.Perm = effectivePermissions;
+                md.Params = RequestMetadata.Parameters.FromHttpRequest(ctx.Request);
+                if (md.User != null) md.Params.UserGuid = md.User.GUID; 
                 _ConnMgr.Update(Thread.CurrentThread.ManagedThreadId, md.User);
 
-                #endregion 
-
-                #region Call-User-API
-
-                resp = UserApiHandler(md);
-                return resp;
-
                 #endregion
+
+                await UserApiHandler(md);
+                return;
             }
             catch (Exception e)
             {
-                _Logging.Exception("StorageServer", "RequestReceived", e);
-                resp = new HttpResponse(req, 500, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(1, 500, "Outer exception.", null), true)));
-                return resp;
+                _Logging.Exception("StorageServer", "RequestReceived", e); 
+                ctx.Response.StatusCode = 500;
+                ctx.Response.ContentType = "application/json";
+                await ctx.Response.Send(Common.SerializeJson(new ErrorResponse(1, 500, "Outer exception.", null), true));
+                return;
             }
             finally
             {
@@ -611,27 +308,23 @@ namespace Kvpbase
                 _ConnMgr.Close(Thread.CurrentThread.ManagedThreadId);
 
                 string msg =
-                    req.SourceIp + ":" + req.SourcePort + " " +
-                    req.Method + " " + req.RawUrlWithoutQuery + " " +
-                    resp.StatusCode + " " +
+                    ctx.Request.SourceIp + ":" + ctx.Request.SourcePort + " " +
+                    ctx.Request.Method + " " + ctx.Request.RawUrlWithoutQuery + " " +
+                    ctx.Response.StatusCode + " " +
                     "[" + sw.ElapsedMilliseconds + "ms]";
-                _Logging.Debug(msg);
 
-                if (Common.IsTrue(_Settings.Syslog.LogHttpRequests)) 
-                    _Logging.Debug("RequestReceived sending response: " + Environment.NewLine + resp.ToString()); 
+                _Logging.Debug(msg); 
             }
         }
 
-        static HttpResponse OptionsHandler(HttpRequest req)
-        {
-            _Logging.Debug("OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": processing options request");
-
+        static async Task OptionsHandler(HttpContext ctx)
+        { 
             Dictionary<string, string> responseHeaders = new Dictionary<string, string>();
 
             string[] requestedHeaders = null;
-            if (req.Headers != null)
+            if (ctx.Request.Headers != null)
             {
-                foreach (KeyValuePair<string, string> curr in req.Headers)
+                foreach (KeyValuePair<string, string> curr in ctx.Request.Headers)
                 {
                     if (String.IsNullOrEmpty(curr.Key)) continue;
                     if (String.IsNullOrEmpty(curr.Value)) continue;
@@ -646,9 +339,7 @@ namespace Kvpbase
             string headers =
                 _Settings.Server.HeaderApiKey + ", " +
                 _Settings.Server.HeaderEmail + ", " +
-                _Settings.Server.HeaderPassword + ", " +
-                _Settings.Server.HeaderToken + ", " +
-                _Settings.Server.HeaderVersion;
+                _Settings.Server.HeaderPassword;
 
             if (requestedHeaders != null)
             {
@@ -667,17 +358,24 @@ namespace Kvpbase
             responseHeaders.Add("Accept-Charset", "ISO-8859-1, utf-8");
             responseHeaders.Add("Connection", "keep-alive");
 
-            if (Common.IsTrue(_TopologyMgr.LocalNode.Http.Ssl))
+            if (_Settings.Server.Ssl)
             {
-                responseHeaders.Add("Host", "https://" + _TopologyMgr.LocalNode.Http.DnsHostname + ":" + _TopologyMgr.LocalNode.Http.Port);
+                responseHeaders.Add("Host", "https://" + _Settings.Server.DnsHostname + ":" + _Settings.Server.Port);
             }
             else
             {
-                responseHeaders.Add("Host", "http://" + _TopologyMgr.LocalNode.Http.DnsHostname + ":" + _TopologyMgr.LocalNode.Http.Port);
+                responseHeaders.Add("Host", "http://" + _Settings.Server.DnsHostname + ":" + _Settings.Server.Port);
             }
 
-            _Logging.Debug("OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": exiting successfully from OptionsHandler");
-            return new HttpResponse(req, 200, responseHeaders);
+            ctx.Response.StatusCode = 200;
+            ctx.Response.Headers = responseHeaders;
+            await ctx.Response.Send();
+        }
+
+        static bool WebserverException(string ip, int port, Exception e)
+        {
+            _Logging.Exception("StorageServer", "Webserver [" + ip + ":" + port + "]", e);
+            return true;
         }
 
         static string DefaultPage(string link)
@@ -746,7 +444,7 @@ namespace Kvpbase
 
             return ret;
         }
-
+         
         static bool ExitApplication()
         {
             _Logging.Info("StorageServer exiting due to console request");

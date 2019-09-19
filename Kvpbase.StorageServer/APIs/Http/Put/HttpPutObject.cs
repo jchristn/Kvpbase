@@ -1,54 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
 using Kvpbase.Containers;
-using Kvpbase.Core;
+using Kvpbase.Classes;
 
 namespace Kvpbase
 {
     public partial class StorageServer
     {
-        public static HttpResponse HttpPutObject(RequestMetadata md)
-        { 
+        public static async Task HttpPutObject(RequestMetadata md)
+        {
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+
             #region Retrieve-Container
 
-            Container currContainer = null;
-            if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
-            {
-                List<Node> nodes = new List<Node>();
-                if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
-                {
-                    _Logging.Warn("HttpPutObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, 404, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
-                }
-                else
-                {
-                    string redirectUrl = null;
-                    HttpResponse redirectRest = _OutboundMessageHandler.BuildRedirectResponse(md, nodes[0], out redirectUrl);
-                    _Logging.Debug("HttpPutObject redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
-                    return redirectRest;
-                }
+            ContainerClient client = null;
+            if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
+            { 
+                _Logging.Warn(header + "HttpPutObject unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                md.Http.Response.StatusCode = 404;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
+                return;
             }
-
-            bool isPublicWrite = currContainer.IsPublicWrite();
-
+             
             #endregion
 
             #region Authenticate-and-Authorize
 
-            if (!isPublicWrite)
+            if (!client.Container.IsPublicWrite)
             {
-                if (md.User == null || !(md.User.Guid.ToLower().Equals(md.Params.UserGuid.ToLower())))
+                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
                 {
-                    _Logging.Warn("HttpPutObject unauthorized unauthenticated write attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                    return new HttpResponse(md.Http, 401, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                    _Logging.Warn(header + "HttpPutObject unauthorized unauthenticated write attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    md.Http.Response.StatusCode = 401;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                    return;
                 }
             }
 
@@ -56,9 +51,11 @@ namespace Kvpbase
             {
                 if (!md.Perm.WriteObject)
                 {
-                    _Logging.Warn("HttpPutObject unauthorized write attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                    return new HttpResponse(md.Http, 401, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                    _Logging.Warn(header + "HttpPutObject unauthorized write attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    md.Http.Response.StatusCode = 401;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                    return;
                 }
             }
 
@@ -66,71 +63,44 @@ namespace Kvpbase
 
             #region Check-if-Object-Exists
 
-            if (!currContainer.Exists(md.Params.ObjectKey))
+            if (!client.Exists(md.Params.ObjectKey))
             {
-                _Logging.Warn("HttpPutObject object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " does not exists");
-                return new HttpResponse(md.Http, 404, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Object does not exist.", null), true)));
+                _Logging.Warn(header + "HttpPutObject object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + " does not exists");
+                md.Http.Response.StatusCode = 404;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
+                return;
             }
 
             #endregion
             
             #region Process
 
-            ErrorCode error;
-            bool cleanupRequired = false;
+            ErrorCode error;  
 
             if (!String.IsNullOrEmpty(md.Params.Rename))
             {
                 #region Rename
-
-                try
+                 
+                if (!_ObjectHandler.Rename(md, client, md.Params.ObjectKey, md.Params.Rename, out error))
                 {
-                    if (!_ObjectHandler.Rename(md, currContainer, md.Params.ObjectKey, md.Params.Rename, out error))
-                    {
-                        _Logging.Warn("HttpPutObject unable to rename object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " to " + md.Params.Rename + ": " + error.ToString());
-                        cleanupRequired = true;
+                    _Logging.Warn(header + "HttpPutObject unable to rename object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + " to " + md.Params.Rename + ": " + error.ToString());
 
-                        int statusCode = 0;
-                        int id = 0;
-                        Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+                    int statusCode = 0;
+                    int id = 0;
+                    Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
 
-                        return new HttpResponse(md.Http, statusCode, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to rename object.", error), true)));
-                    }
-                    else
-                    {
-                        if (!_OutboundMessageHandler.ObjectRename(md, currContainer.Settings))
-                        {
-                            _Logging.Warn("HttpPutObject unable to replicate operation to one or more nodes");
-                            cleanupRequired = true;
-
-                            return new HttpResponse(md.Http, 500, null, "application/json",
-                                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true))); 
-                        }
-
-                        return new HttpResponse(md.Http, 200, null);
-                    }
+                    md.Http.Response.StatusCode = statusCode;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to rename.", error), true));
+                    return;
                 }
-                finally
+                else
                 {
-                    if (cleanupRequired)
-                    {
-                        #region Rename-to-Orginal
-
-                        _ObjectHandler.Rename(md, currContainer, md.Params.Rename, md.Params.ObjectKey, out error);
-
-                        string renameKey = String.Copy(md.Params.Rename);
-                        string originalKey = String.Copy(md.Params.ObjectKey);
-
-                        md.Params.ObjectKey = renameKey;
-                        md.Params.Rename = originalKey;
-
-                        _OutboundMessageHandler.ObjectRename(md, currContainer.Settings);
-
-                        #endregion
-                    }
-                }
+                    md.Http.Response.StatusCode = 200;
+                    await md.Http.Response.Send();
+                    return;
+                } 
 
                 #endregion
             }
@@ -140,28 +110,41 @@ namespace Kvpbase
 
                 #region Verify-Transfer-Size
 
-                if (md.Http.ContentLength > _Settings.Server.MaxTransferSize ||
-                    (md.Http.Data != null && md.Http.Data.Length > _Settings.Server.MaxTransferSize)
+                if (md.Http.Request.ContentLength > _Settings.Server.MaxTransferSize ||
+                    (md.Http.Request.Data != null && md.Http.Request.ContentLength > _Settings.Server.MaxTransferSize)
                     )
                 {
-                    _Logging.Warn("HttpPutObject transfer size too large (count requested: " + md.Params.Count + ")");
-                    return new HttpResponse(md.Http, 413, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true)));
+                    _Logging.Warn(header + "HttpPutObject transfer size too large (count requested: " + md.Params.Count + ")");
+                    md.Http.Response.StatusCode = 413;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true));
+                    return;
                 }
 
                 #endregion
 
                 #region Retrieve-Original-Data
 
-                // md.Http.Data = Common.StreamToBytes(md.Http.DataStream); 
+                long originalContentLength = 0;
+                Stream originalDataStream = null;
                 byte[] originalData = null;
                 string originalContentType = null;
-                if (!_ObjectHandler.Read(md, currContainer, md.Params.ObjectKey, Convert.ToInt32(md.Params.Index), Convert.ToInt32(md.Http.ContentLength), out originalContentType, out originalData, out error))
+
+                if (!_ObjectHandler.Read(
+                    md, 
+                    client, 
+                    md.Params.ObjectKey, 
+                    Convert.ToInt32(md.Params.Index), 
+                    Convert.ToInt32(md.Http.Request.ContentLength), 
+                    out originalContentType, 
+                    out originalContentLength,
+                    out originalDataStream, 
+                    out error))
                 {
                     if (error == ErrorCode.OutOfRange)
                     {
                         // continue, simply appending the data
-                        originalData = new byte[md.Http.ContentLength];
+                        originalData = new byte[md.Http.Request.ContentLength];
                         for (int i = 0; i < originalData.Length; i++)
                         {
                             originalData[i] = 0x00;
@@ -169,56 +152,44 @@ namespace Kvpbase
                     }
                     else
                     { 
-                        _Logging.Warn("HttpPutObject unable to retrieve original data from object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
-                        return new HttpResponse(md.Http, 500, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, "Unable to retrieve original data.", null), true)));
+                        _Logging.Warn(header + "HttpPutObject unable to retrieve original data from object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                        md.Http.Response.StatusCode = 500;
+                        md.Http.Response.ContentType = "application/json";
+                        await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(4, 500, "Unable to retrieve original data.", error), true));
+                        return;
+                    }
+                }
+                else
+                {
+                    if (originalContentLength > 0 && originalDataStream != null)
+                    {
+                        originalData = Common.StreamToBytes(originalDataStream);
                     }
                 }
 
                 #endregion
 
                 #region Perform-Update
-
-                try
+                 
+                if (!_ObjectHandler.WriteRange(md, client, md.Params.ObjectKey, Convert.ToInt64(md.Params.Index), md.Http.Request.ContentLength, md.Http.Request.Data, out error))
                 {
-                    if (!_ObjectHandler.WriteRange(md, currContainer, md.Params.ObjectKey, Convert.ToInt64(md.Params.Index), md.Http.ContentLength, md.Http.DataStream, out error))
-                    {
-                        _Logging.Warn("HttpPutObject unable to write range to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
-                        cleanupRequired = true;
+                    _Logging.Warn(header + "HttpPutObject unable to write range to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
 
-                        int statusCode = 0;
-                        int id = 0;
-                        Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+                    int statusCode = 0;
+                    int id = 0;
+                    Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
 
-                        return new HttpResponse(md.Http, statusCode, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to write range to object.", error), true)));
-                    }
-                    else
-                    { 
-                        if (!_OutboundMessageHandler.ObjectWriteRange(md, currContainer.Settings))
-                        {
-                            _Logging.Warn("HttpPutObject unable to replicate operation to one or more nodes");
-                            cleanupRequired = true;
-
-                            return new HttpResponse(md.Http, 500, null, "application/json",
-                                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true)));
-                        }
-
-                        return new HttpResponse(md.Http, 200, null);
-                    }
+                    md.Http.Response.StatusCode = statusCode;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to write range to object.", error), true));
+                    return;
                 }
-                finally
+                else
                 {
-                    if (cleanupRequired)
-                    {
-                        _ObjectHandler.WriteRange(md, currContainer, md.Params.ObjectKey, Convert.ToInt64(md.Params.Index), originalData, out error);
-
-                        md.Http.Data = new byte[originalData.Length];
-                        Buffer.BlockCopy(originalData, 0, md.Http.Data, 0, originalData.Length);
-
-                        _OutboundMessageHandler.ObjectWriteRange(md, currContainer.Settings);
-                    }
-                }
+                    md.Http.Response.StatusCode = 200;
+                    await md.Http.Response.Send();
+                    return;
+                } 
 
                 #endregion
 
@@ -231,63 +202,96 @@ namespace Kvpbase
                 #region Retrieve-Original-Object-Metadata
 
                 ObjectMetadata originalMetadata = null;
-                if (!currContainer.ReadObjectMetadata(md.Params.ObjectKey, out originalMetadata))
+                if (!client.ReadObjectMetadata(md.Params.ObjectKey, out originalMetadata))
                 {
-                    _Logging.Warn("HttpPutObject unable to read original metadata for tag rewrite for object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                    return new HttpResponse(md.Http, 404, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Object not found.", null), true)));
+                    _Logging.Warn(header + "HttpPutObject unable to read original metadata for tag rewrite for object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    md.Http.Response.StatusCode = 404;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
+                    return;
                 }
 
                 #endregion
 
                 #region Update-Tags
-
-                try
+                 
+                if (!client.WriteObjectTags(md.Params.ObjectKey, md.Params.Tags, out error))
                 {
-                    if (!currContainer.WriteObjectTags(md.Params.ObjectKey, md.Params.Tags, out error))
-                    {
-                        _Logging.Warn("HttpPutObject unable to write tags to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
-                        cleanupRequired = true;
+                    _Logging.Warn(header + "HttpPutObject unable to write tags to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
 
-                        int statusCode = 0;
-                        int id = 0;
-                        Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+                    int statusCode = 0;
+                    int id = 0;
+                    Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
 
-                        return new HttpResponse(md.Http, statusCode, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to write tags to object.", error), true)));
-                    }
-                    else
-                    {
-                        if (!_OutboundMessageHandler.ObjectWriteTags(md, currContainer.Settings))
-                        {
-                            _Logging.Warn("HttpPutObject unable to replicate operation to one or more nodes");
-                            cleanupRequired = true;
-
-                            return new HttpResponse(md.Http, 500, null, "application/json",
-                                Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true)));
-                        }
-
-                        return new HttpResponse(md.Http, 200, null);
-                    }
+                    md.Http.Response.StatusCode = statusCode;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to write tags to object.", error), true));
+                    return;
                 }
-                finally
+                else
                 {
-                    if (cleanupRequired)
-                    {
-                        _ObjectHandler.WriteTags(md, currContainer, md.Params.ObjectKey, originalMetadata.Tags, out error);
-                        _OutboundMessageHandler.ObjectWriteTags(md, currContainer.Settings);
-                    }
-                }
+                    md.Http.Response.StatusCode = 200;
+                    await md.Http.Response.Send();
+                    return;
+                } 
 
                 #endregion
 
                 #endregion
             }
+            else if (md.Params.Keys)
+            {
+                #region Update-Keys
+
+                Dictionary<string, string> keys = null;
+
+                if (md.Http.Request.Data != null && md.Http.Request.ContentLength > 0)
+                {
+                    byte[] reqData = Common.StreamToBytes(md.Http.Request.Data);
+
+                    try
+                    {
+                        keys = Common.DeserializeJson<Dictionary<string, string>>(reqData);
+                    }
+                    catch (Exception)
+                    {
+                        _Logging.Warn(header + "HttpPutContainer unable to deserialize request body");
+                        md.Http.Response.StatusCode = 400;
+                        md.Http.Response.ContentType = "application/json";
+                        await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true));
+                        return;
+                    }
+                }
+                 
+                if (!_ObjectHandler.WriteKeyValues(md, client, md.Params.ObjectKey, keys, out error))
+                {
+                    _Logging.Warn(header + "HttpPutObject unable to write keys to " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
+
+                    int statusCode = 0;
+                    int id = 0;
+                    Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+
+                    md.Http.Response.StatusCode = statusCode;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to write keys.", error), true));
+                    return;
+                }
+                else
+                {
+                    md.Http.Response.StatusCode = 201;
+                    await md.Http.Response.Send();
+                    return;
+                }
+
+                #endregion
+            }
             else
             {
-                _Logging.Warn("HttpPutObject request query does not contain _index, _rename, or _tags"); 
-                return new HttpResponse(md.Http, 400, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(2, 400, "Querystring must contain values for '_index', '_rename', or '_tags'.", null), true)));
+                _Logging.Warn(header + "HttpPutObject request query does not contain _index, _rename, or _tags");
+                md.Http.Response.StatusCode = 400;
+                md.Http.Response.ContentType = "application.json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 400, "Querystring must contain values for '_index', '_rename', or '_tags'.", null), true));
+                return; 
             }
 
             #endregion 

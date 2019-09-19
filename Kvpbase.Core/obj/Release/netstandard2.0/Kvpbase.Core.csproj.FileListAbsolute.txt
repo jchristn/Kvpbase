@@ -1,9 +1,0 @@
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\bin\Release\netstandard2.0\Kvpbase.Core.deps.json
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\bin\Release\netstandard2.0\Kvpbase.Core.dll
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\bin\Release\netstandard2.0\Kvpbase.Core.pdb
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Release\netstandard2.0\Kvpbase.Core.csprojAssemblyReference.cache
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Release\netstandard2.0\Kvpbase.Core.csproj.CoreCompileInputs.cache
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Release\netstandard2.0\Kvpbase.Core.AssemblyInfoInputs.cache
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Release\netstandard2.0\Kvpbase.Core.AssemblyInfo.cs
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Release\netstandard2.0\Kvpbase.Core.dll
-C:\code\kvpbase\storageserver-3.3\Kvpbase.Core\obj\Release\netstandard2.0\Kvpbase.Core.pdb

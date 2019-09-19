@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
@@ -14,13 +14,21 @@
     <RepositoryType>Github</RepositoryType>
     <PackageTags>kvpbase object storage blob primary cloud</PackageTags>
     <PackageReleaseNotes>Retarget to support both .NET Core 2.0 and .NET Framework 4.6.2</PackageReleaseNotes>
-    <PackageLicenseUrl>https://github.com/kvpbase/stream-proxy/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="KvpbaseSDK" Version="3.1.5" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

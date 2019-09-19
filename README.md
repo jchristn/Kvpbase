@@ -11,42 +11,65 @@
 
 [![StackShare](http://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/jchristn/kvpbase)
 
-Scalable, simple RESTful object storage platform, written in C#
-
-Kvpbase Storage Server is a RESTful object storage platform written in C# and available under the MIT license.  
-
-As of v3.2, Kvpbase is targeted to both .NET Core 2.2 and .NET Framework 4.6.1.
-
 ![alt tag](https://github.com/kvpbase/storage-server/blob/master/assets/diagram.png)
 
+Scalable, simple RESTful object storage platform, written in C#
+
+## Introducing v4.0
+
+We're happy to release v4.0, bringing a wealth of new features, optimizations, and fixes to enable you to deploy a more performant and scalable object storage platform.  We have a healthy pipeline of features and capabilities we plan to bring to Kvpbase.  If you have any suggestions, please file an issue and let us know!
+
+### New Features
+
+- Integration with external databases for configuration, thereby enabling consistency across nodes, simplicity, scale-out, and reducing JSON files
+- Removed Kvpbase.Core library (merged into StorageServer and KvpbaseSDK directly) for simplicity
+- Reduced ```System.json``` file for simplicity
+- Async APIs for better performance and scale
+- New search API at ```PUT /<container>/?_search``` using an ```EnumerationFilter``` allowing filtering by timestamps, prefix, content-type, MD5, and tags
+- Certain querystring elements no longer require ```=true```
+- Support for hierarchical structures within a container using zero-byte objects (folders) and objects with ```/``` in the name
+- Each object now stored using a unique identifier to enable support for versioning (future)
+- Optimized memory utilization with large objects (internal optimizations now rely on streams)
+- Support for object tagging and extensible key-value pair metadata 
+- Enhanced container statistics
+- Dependency updates
+- Retarget to both .NET Core 2.2 and .NET Framework 4.6.1
+
+### Fixes
+
+- Major code refactor and simplification
+- Fixed issues associated with object range reads
+- Fixed issues associated with container cleanup on delete
+ 
 ## Help and Feedback
 
-First things first - do you need help or have feedback?  Contact me at joel dot christner at gmail dot com or file an issue here. 
+First things first - do you need help or have feedback?  File an issue here!
 
 ## Initial Setup
 
-The binaries for Kvpbase can be created by compiling from source or using the pre-compiled binaries found in ```StorageServer\bin\release``` (I intentionally did not ```.gitignore``` these files).
+The binaries for Kvpbase can be created by compiling from source or using the pre-compiled binaries found in ```Kvpbase.StorageServer\bin\release\[framework]\``` (I intentionally did not ```.gitignore``` these files).  Executing the binaries will create the requisite configuration files and database tables.
 
-In Windows environments, run ```StorageServer.exe``` to create the requisite JSON configuration files.
+Important: you MUST create the database to be used by Kvpbase prior to running the application.  Kvpbase will automatically create the tables for you.
 
-In Linux and Mac environments, first run the Mono AOT prior to running StorageServer.exe in Mono.  It is recommended that you use the ```--server``` flag for both the AOT and while running under Mono.
+### Windows (.NET Framework)
 ```
-sudo mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server StorageServer.exe
-sudo mono --server StorageServer.exe
+> Kvpbase.StorageServer.exe
 ```
 
-In Linux and Mac environments, the listener (```Nodes.Http.DnsHostname``` in the ```Topology.json``` file) MUST be a hostname or IP address.  Incoming requests must have a HOST header matching this exact value.  If it does not match, you will receive a ```400/Bad Request```.
+### Windows, Linux, Mac (.NET Core)
+```
+$ dotnet Kvpbase.StorageServer.dll
+```
 
-## Configuration Files
+### Mono
+```
+$ sudo mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server Kvpbase.StorageServer.exe
+$ sudo mono --server Kvpbase.StorageServer.exe
+```
 
-The following configuration files are created by setup process:
-
-- System.json - the main system configuration file
-- UserMaster.json - containing the user objects
-- ApiKey.json - containing API keys associated with users
-- ApiKeyPermission.json - permissions associated with API keys
-- Topology.json - node definitions
-- Container.json - storage containers mapped to users and associated metadata
+When specifying the listener hostname ```Server.DnsHostname``` in the ```system.json``` file, follow these rules:
+- If you are using an IP address that listens on any interface such as ```0.0.0.0```, ```*```, or ```+```, Kvpbase must be run using elevated privileges
+- If using any other IP address or DNS name, the HOST header on incoming requests *MUST* match the value for this parameter
 
 ## Your First GET Requests
 
@@ -77,9 +100,9 @@ My first object!
 
 ## Enumerate the Container
 
-To see the contents of your container, call ```GET /[userguid]/[containername]?_container=true```.
+To see the contents of your container, call ```GET /[userguid]/[containername]```.
 ```
-$ curl "http://localhost:8000/default/default?_container=true"
+$ curl "http://localhost:8000/default/default"
 ```
 
 ## Deleting Your First Object
@@ -94,28 +117,10 @@ The response is simply a 200/OK.
 ## Documentation
 
 Please visit our documentation [https://github.com/kvpbase/storage-server/wiki] for details on APIs, configuration files, deployment scenarios, and more. 
+ 
+## Compatibility with Previous Versions
 
-## New in v3.3.0
-
-- Enumeration support using object key prefixes
-- Support for stream processing instead of byte arrays (better memory usage, support for large objects)
-- Server settings MaxObjectSize and MaxTransferSize
-- Temporary files manager to overcome byte array size limitations (now using streams)
-- Removed task manager and enhanced resync manager
-- Updated dependencies
-
-## Compatibility 
-
-### Moving from 3.0.x to 3.1.x or later
-
-- Add the 'Tags' field to the 'Objects' table, with field type ```VARCHAR(256)``` for each container database.
-
-### With 2.x.x
-
-- 3.x.x is fundamentally incompatible with 2.x.x (hence the major version change)
-- URL structure explicitly fixed in format with 3.x.x (i.e. /[userguid]/[containername]/[objectkey])
-- Bunkering temporarily removed (this will be reintroduced)
-- Branch ```release-2.1``` has been preserved for those that need it: https://github.com/kvpbase/storage-server/tree/release-2.1
+Kvpbase v4.x interacts with an external database whereas previous versions relied on an internally-managed SQLite database.  If you wish to migrate from a previous version to v4.x, please file an issue and we will prioritize documenting the new database schema so you can better script the migration.
 
 ## Use Cases
 
@@ -124,8 +129,7 @@ Core use cases for Kvpbase Storage Server:
 - Object storage - create, read, update, delete, search objects using HTTP
 - Container storage - create, read, update, delete, search containers using HTTP
 - Primary storage for objects - range read, range write, and append support
-- Secure storage - automatic encryption using either symmetric key or one-time-use keys for PCI, HIPAA, or any PII
-- Scalable storage - multi-node support, sync and async replication, bunkering to another deployment
+- Scalable storage - multi-node scale-out support using shared backend disk storage 
 - Filesystem gateway - RESTful access to existing SAN/DAS (block with filesystem) or NAS (fileshares via CIFS, NFS)
 
 ## SDKs and Sample Scripts
@@ -140,31 +144,4 @@ Numerous SDKs and sample scripts are already available for Kvpbase Storage Serve
 
 ## Version History
 
-Notes from previous versions (starting with v2.0.1) will be moved here.
-
-v3.x
-
-- Retarget to .NET Core 2.2 and .NET Framework 4.6.1
-- Updated dependencies
-- Bugfix for retrieving request metadata vs container/object metadata (new querystring parameter)
-- Support for object tags (on create/POST, on edit/PUT, and for enumeration)
-- Significant performance improvements
-- Major refactor in preparation of new features, better code manageability
-- Container class now used for metadata management, eliminating dependency on filesystem for enumeration and encapsulation for extended metadata
-- Support for larger number of objects per container
-- Better support for public containers (read, write)
-- Streamlined replication and messaging based on persistent TCP sockets amongst nodes (instead of using HTTP APIs)
-- Container resync support (useful when replacing failed node or populating container contents on another node)
-
-v2.1.x
-
-- Version 2.1 can be found in the release-2.1 branch: https://github.com/kvpbase/storage-server/tree/release-2.1
-- Performance improvements
-- Simplified default HTML pages
-- Reduced CPU utilization
-- Single instancing of certain classes to reduce overhead
-
-v2.0.x
-
-- First open source release
-- Massive refactor
+Refer to CHANGELOG.md for version history.

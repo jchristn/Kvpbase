@@ -40,8 +40,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\net461\Kvpbase.StorageServer.exe" target="lib\net461\Kvpbase.StorageServer.exe" />
-    <file src="C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\netcoreapp2.2\Kvpbase.StorageServer.runtimeconfig.json" target="lib\netcoreapp2.2\Kvpbase.StorageServer.runtimeconfig.json" />
-    <file src="C:\code\kvpbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\netcoreapp2.2\Kvpbase.StorageServer.dll" target="lib\netcoreapp2.2\Kvpbase.StorageServer.dll" />
+    <file src="C:\Code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\net461\Kvpbase.StorageServer.exe" target="lib\net461\Kvpbase.StorageServer.exe" />
+    <file src="C:\Code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\netcoreapp2.2\Kvpbase.StorageServer.runtimeconfig.json" target="lib\netcoreapp2.2\Kvpbase.StorageServer.runtimeconfig.json" />
+    <file src="C:\Code\KVPbase\storageserver-3.3\Kvpbase.StorageServer\bin\Debug\netcoreapp2.2\Kvpbase.StorageServer.dll" target="lib\netcoreapp2.2\Kvpbase.StorageServer.dll" />
   </files>
 </package>

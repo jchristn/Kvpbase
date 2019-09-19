@@ -3,112 +3,98 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
 using Kvpbase.Containers;
-using Kvpbase.Core;
+using Kvpbase.Classes;
 
 namespace Kvpbase
 {
     public partial class StorageServer
     {
-        public static HttpResponse HttpPostContainer(RequestMetadata md)
+        public static async Task HttpPostContainer(RequestMetadata md)
         {
-            bool cleanupRequired = false; 
-            ContainerSettings settings = null;
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
 
-            try
+            #region Validate-Authentication
+
+            if (md.User == null)
             {
-                #region Validate-Authentication
-
-                if (md.User == null)
-                {
-                    _Logging.Warn("HttpPostContainer no authentication material");
-                    return new HttpResponse(md.Http, 401, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
-                }
-
-                #endregion
-                 
-                #region Check-if-Container-Exists
-                 
-                if (_ContainerMgr.Exists(md.User.Guid, md.Params.Container))
-                {
-                    _Logging.Warn("HttpPostContainer container " + md.User.Guid + "/" + md.Params.Container + " already exists");
-                    return new HttpResponse(md.Http, 409, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(7, 409, null, null), true)));
-                }
-
-                #endregion
-
-                #region Deserialize-Request-Body
-
-                if (md.Http.DataStream != null && md.Http.DataStream.CanRead)
-                {
-                    md.Http.Data = Common.StreamToBytes(md.Http.DataStream);
-
-                    try
-                    {
-                        settings = Common.DeserializeJson<ContainerSettings>(md.Http.Data);
-                    }
-                    catch (Exception)
-                    {
-                        _Logging.Warn("HttpPostContainer unable to deserialize request body");
-                        return new HttpResponse(md.Http, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true)));
-                    }
-                }
-
-                if (settings == null)
-                {
-                    _Logging.Debug("HttpPostContainer no settings found, using defaults for " + md.User.Guid + "/" + md.Params.Container);
-                    settings = new ContainerSettings(); 
-                }
-
-                #endregion
-
-                #region Apply-Base-Settings
-
-                settings.User = md.User.Guid.ToLower();
-                settings.Name = md.Params.Container.ToLower();
-
-                if (!String.IsNullOrEmpty(md.User.HomeDirectory)) settings.RootDirectory = md.User.HomeDirectory + settings.Name;
-                else settings.RootDirectory = _Settings.Storage.Directory + settings.User + "/" + settings.Name + "/";
-
-                settings.DatabaseFilename = settings.RootDirectory + "__Container__.db";
-                settings.ObjectsDirectory = settings.RootDirectory + "__Objects__/";
-                settings.HandlerType = ObjectHandlerType.Disk; 
-
-                #endregion
-
-                #region Create-and-Replicate
-
-                _ContainerHandler.Create(md, settings);
-                md.Http.Data = Encoding.UTF8.GetBytes(Common.SerializeJson(settings, false));
-
-                if (!_OutboundMessageHandler.ContainerCreate(md, settings))
-                {
-                    _Logging.Warn("HttpPostContainer unable to replicate operation to one or more nodes");
-                    cleanupRequired = true;
-
-                    return new HttpResponse(md.Http, 500, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(10, 500, null, null), true)));
-                }
-
-                _Logging.Debug("HttpPostContainer successfully created container " + settings.User + "/" + settings.Name);
-                return new HttpResponse(md.Http, 201, null);
-
-                #endregion
+                _Logging.Warn(header + "HttpPostContainer no authentication material");
+                md.Http.Response.StatusCode = 401;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                return;
             }
-            finally
+
+            #endregion
+                 
+            #region Check-if-Container-Exists
+                 
+            if (_ContainerMgr.Exists(md.User.GUID, md.Params.ContainerName))
             {
-                if (cleanupRequired)
+                _Logging.Warn(header + "HttpPostContainer container " + md.User.GUID + "/" + md.Params.ContainerName + " already exists");
+                md.Http.Response.StatusCode = 409;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(7, 409, null, null), true));
+                return;
+            }
+
+            #endregion
+
+            #region Deserialize-Request-Body
+
+            Container container = null;
+
+            if (md.Http.Request.Data != null && md.Http.Request.ContentLength > 0)
+            {
+                byte[] reqData = Common.StreamToBytes(md.Http.Request.Data);
+
+                try
                 {
-                    _ContainerHandler.Delete(settings.User, settings.Name);
-                    _OutboundMessageHandler.ContainerDelete(md, settings);
+                    container = Common.DeserializeJson<Container>(reqData);
+                }
+                catch (Exception)
+                {
+                    _Logging.Warn(header + "HttpPostContainer unable to deserialize request body");
+                    md.Http.Response.StatusCode = 400;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(9, 400, null, null), true));
+                    return;
                 }
             }
+
+            if (container == null)
+            {
+                _Logging.Debug(header + "HttpPostContainer no settings found, using defaults for " + md.User.GUID + "/" + md.Params.ContainerName);
+                container = new Container(); 
+            }
+
+            #endregion
+
+            #region Apply-Base-Settings
+
+            container.UserGuid = md.User.GUID.ToLower();
+            container.Name = md.Params.ContainerName.ToLower();
+
+            if (String.IsNullOrEmpty(container.GUID)) container.GUID = Guid.NewGuid().ToString();
+            if (!String.IsNullOrEmpty(md.User.HomeDirectory)) container.ObjectsDirectory = md.User.HomeDirectory + container.Name;
+            else container.ObjectsDirectory = _Settings.Storage.Directory + container.UserGuid + "/" + container.Name + "/";
+            if (!container.ObjectsDirectory.EndsWith("/")) container.ObjectsDirectory += "/"; 
+
+            #endregion
+
+            #region Create
+
+            _ContainerMgr.Add(container); 
+            _Logging.Info(header + "HttpPostContainer created container " + container.UserGuid + "/" + container.Name);
+            md.Http.Response.StatusCode = 201;
+            await md.Http.Response.Send();
+            return;
+            
+            #endregion 
         } 
     }
 }

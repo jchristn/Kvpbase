@@ -4,52 +4,46 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
 using Kvpbase.Containers;
-using Kvpbase.Core;
+using Kvpbase.Classes;
 
 namespace Kvpbase
 {
     public partial class StorageServer
     {
-        public static HttpResponse HttpGetContainer(RequestMetadata md)
-        {  
-            #region Retrieve-Container
-            
-            Container currContainer = null;
-            if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
-            {
-                List<Node> nodes = new List<Node>();
-                if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
-                {
-                    _Logging.Warn("HttpGetContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, 404, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
-                }
-                else
-                {
-                    string redirectUrl = null;
-                    HttpResponse redirectRest = _OutboundMessageHandler.BuildRedirectResponse(md, nodes[0], out redirectUrl);
-                    _Logging.Debug("HttpGetContainer redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
-                    return redirectRest;
-                }
-            }
-            
-            bool isPublicRead = currContainer.IsPublicRead();
+        public static async Task HttpGetContainer(RequestMetadata md)
+        {
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
 
+            #region Retrieve-Container
+
+            ContainerClient client = null;
+            if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
+            { 
+                _Logging.Warn(header + "HttpGetContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                md.Http.Response.StatusCode = 404;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
+                return;
+            }
+             
             #endregion
 
             #region Authenticate-and-Authorize
 
-            if (!isPublicRead)
+            if (!client.Container.IsPublicRead)
             {
-                if (md.User == null || !(md.User.Guid.ToLower().Equals(md.Params.UserGuid.ToLower())))
+                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
                 {
-                    _Logging.Warn("HttpGetContainer unauthorized unauthenticated access attempt to container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, 401, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                    _Logging.Warn(header + "HttpGetContainer unauthorized unauthenticated access attempt to container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                    md.Http.Response.StatusCode = 401;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                    return;
                 }
             }
              
@@ -57,49 +51,56 @@ namespace Kvpbase
             {
                 if (!md.Perm.ReadContainer)
                 {
-                    _Logging.Warn("HttpGetContainer unauthorized access attempt to container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, 401, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                    _Logging.Warn(header + "HttpGetContainer unauthorized access attempt to container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                    md.Http.Response.StatusCode = 401;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                    return;
                 }
             }
 
             #endregion
 
-            #region Retrieve-Settings
-
-            ContainerSettings settings = null;
-            if (!_ContainerMgr.GetContainerSettings(md.Params.UserGuid, md.Params.Container, out settings))
-            {
-                _Logging.Warn("HttpGetContainer unable to retrieve settings for " + md.Params.UserGuid + "/" + md.Params.Container);
-                return new HttpResponse(md.Http, 500, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, null, null), true)));
-            }
-
+            #region Process
+             
             if (md.Params.Config)
             {
-                return new HttpResponse(md.Http, 200, null, "application/json", Encoding.UTF8.GetBytes(Common.SerializeJson(settings, true)));
+                md.Http.Response.StatusCode = 200;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(client.Container, true));
+                return;
             }
+              
+            EnumerationFilter filter = EnumerationFilter.FromRequestMetadata(md);
 
-            #endregion
+            ContainerMetadata meta = client.Enumerate(
+                (int?)md.Params.Index,
+                (int?)md.Params.Count,
+                filter,
+                md.Params.OrderBy);
 
-            #region Enumerate-and-Return
-
-            int? index = null;
-            if (md.Params.Index != null) index = Convert.ToInt32(md.Params.Index);
-
-            int? count = null;
-            if (md.Params.Count != null) count = Convert.ToInt32(md.Params.Count);
-             
-            ContainerMetadata meta = _ContainerHandler.Enumerate(md, currContainer, index, count, md.Params.OrderBy);
-             
-            if (md.Params.Html)
+            if (md.Params.Keys)
             {
-                return new HttpResponse(md.Http, 200, null, "text/html", Encoding.UTF8.GetBytes(DirectoryListingPage(meta)));
+                Dictionary<string, string> vals = new Dictionary<string, string>();
+                client.ReadContainerKeyValues(out vals);
+                md.Http.Response.StatusCode = 200;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(vals, true));
+                return;
+            }
+            else if (md.Params.Html)
+            {
+                md.Http.Response.StatusCode = 200;
+                md.Http.Response.ContentType = "text/html";
+                await md.Http.Response.Send(DirectoryListingPage(meta));
+                return;
             }
             else
             {
-                return new HttpResponse(md.Http, 200, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(meta, true)));
+                md.Http.Response.StatusCode = 200;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(meta, true));
+                return;
             }
 
             #endregion 
@@ -110,7 +111,7 @@ namespace Kvpbase
             string ret =
                 "<html>" +
                 "   <head>" +
-                "      <title>Kvpbase :: Directory of /" + meta.User + "/" + meta.Name + "</title>" +
+                "      <title>Kvpbase :: Directory of /" + meta.UserGuid + "/" + meta.ContainerName + "</title>" +
                 "      <style>" +
                 "         body {" +
                 "         font-family: arial;" +
@@ -160,7 +161,7 @@ namespace Kvpbase
                 "      <pre>" +
                 WebUtility.HtmlEncode(Logo()) +
                 "  	   </pre>" +
-                "      <p>Directory of: /" + meta.User + "/" + meta.Name + "</p>" +
+                "      <p>Directory of: /" + meta.UserGuid + "/" + meta.ContainerName + "</p>" +
                 "      <p>" +
                 "      <table>" +
                 "         <tr>" +
@@ -177,7 +178,7 @@ namespace Kvpbase
                     // <a href='/foo/bar' target='_blank'>foo.bar</a>
                     ret +=
                         "         <tr>" +
-                        "            <td><a href='/" + meta.User + "/" + meta.Name + "/" + obj.Key + "' target='_blank'>" + obj.Key + "</a></td>" +
+                        "            <td><a href='/" + meta.UserGuid + "/" + meta.ContainerName + "/" + obj.ObjectKey + "' target='_blank'>" + obj.ObjectKey + "</a></td>" +
                         "            <td>" + obj.ContentType + "</td>" +
                         "            <td>" + obj.ContentLength + "</td>" +
                         "            <td>" + Convert.ToDateTime(obj.CreatedUtc).ToString(_TimestampFormat) + "</td>" +

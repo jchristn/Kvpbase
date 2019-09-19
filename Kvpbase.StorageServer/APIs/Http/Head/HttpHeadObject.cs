@@ -3,51 +3,46 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
+using Kvpbase.Classes;
 using Kvpbase.Containers;
-using Kvpbase.Core;
 
 namespace Kvpbase
 {
     public partial class StorageServer
     {
-        public static HttpResponse HttpHeadObject(RequestMetadata md)
-        { 
+        public static async Task HttpHeadObject(RequestMetadata md)
+        {
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+
             #region Retrieve-Container
 
-            Container currContainer = null;
-            if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
-            {
-                List<Node> nodes = new List<Node>();
-                if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
-                {
-                    _Logging.Warn("HttpHeadObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, 404, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
-                }
-                else
-                {
-                    string redirectUrl = null;
-                    HttpResponse redirectRest = _OutboundMessageHandler.BuildRedirectResponse(md, nodes[0], out redirectUrl);
-                    _Logging.Debug("HttpHeadObject redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
-                    return redirectRest;
-                }
+            ContainerClient client = null;
+            if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
+            { 
+                _Logging.Warn(header + "HttpHeadObject unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                md.Http.Response.StatusCode = 404;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
+                return;
             }
-            bool isPublicRead = currContainer.IsPublicRead();
 
             #endregion
 
             #region Authenticate-and-Authorize
 
-            if (!isPublicRead)
+            if (!client.Container.IsPublicRead)
             {
-                if (md.User == null || !(md.User.Guid.ToLower().Equals(md.Params.UserGuid.ToLower())))
+                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
                 {
-                    _Logging.Warn("HttpHeadObject unauthorized unauthenticated access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                    return new HttpResponse(md.Http, 401, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                    _Logging.Warn(header + "HttpHeadObject unauthorized unauthenticated access attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    md.Http.Response.StatusCode = 401;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                    return;
                 }
             }
 
@@ -55,9 +50,11 @@ namespace Kvpbase
             {
                 if (!md.Perm.ReadObject)
                 {
-                    _Logging.Warn("HttpHeadObject unauthorized access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                    return new HttpResponse(md.Http, 401, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                    _Logging.Warn(header + "HttpHeadObject unauthorized access attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    md.Http.Response.StatusCode = 401;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                    return;
                 }
             }
 
@@ -65,14 +62,18 @@ namespace Kvpbase
               
             #region Retrieve-and-Return
              
-            if (!_ObjectHandler.Exists(md, currContainer, md.Params.ObjectKey))
+            if (!_ObjectHandler.Exists(md, client, md.Params.ObjectKey))
             {
-                _Logging.Warn("HttpHeadObject unable to find object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                return new HttpResponse(md.Http, 404, null); 
+                _Logging.Debug(header + "HttpHeadObject unable to find object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                md.Http.Response.StatusCode = 404;
+                await md.Http.Response.Send();
+                return;                
             }
             else
-            { 
-                return new HttpResponse(md.Http, 200, null);
+            {
+                md.Http.Response.StatusCode = 200;
+                await md.Http.Response.Send();
+                return;
             } 
 
             #endregion 

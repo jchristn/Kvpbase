@@ -3,84 +3,96 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
 using Kvpbase.Containers;
-using Kvpbase.Core; 
+using Kvpbase.Classes; 
 
 namespace Kvpbase
 {
     public partial class StorageServer
     {
-        public static HttpResponse HttpDeleteObject(RequestMetadata md)
+        public static async Task HttpDeleteObject(RequestMetadata md)
         {
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+
             #region Authenticate-and-Authorize
 
-            if (md.User == null || !(md.User.Guid.ToLower().Equals(md.Params.UserGuid.ToLower())))
+            if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
             {
-                _Logging.Warn("HttpDeleteObject unauthorized unauthenticated write attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                return new HttpResponse(md.Http, 401, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                _Logging.Warn(header + "HttpDeleteObject unauthorized unauthenticated write attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                md.Http.Response.StatusCode = 401;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                return;
             }
 
             if (!md.Perm.DeleteObject)
             {
-                _Logging.Warn("HttpDeleteObject unauthorized delete attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                return new HttpResponse(md.Http, 401, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                _Logging.Warn(header + "HttpDeleteObject unauthorized delete attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                md.Http.Response.StatusCode = 401;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                return;
             }
 
             #endregion
 
             #region Retrieve-Container
 
-            Container currContainer = null;
-            if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
-            {
-                List<Node> nodes = new List<Node>();
-                if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
-                {
-                    _Logging.Warn("HttpDeleteObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, 404, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
-                }
-                else
-                {
-                    string redirectUrl = null;
-                    HttpResponse redirectRest = _OutboundMessageHandler.BuildRedirectResponse(md, nodes[0], out redirectUrl);
-                    _Logging.Debug("HttpDeleteObject redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
-                    return redirectRest;
-                }
+            ContainerClient client = null;
+            if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
+            { 
+                _Logging.Warn(header + "HttpDeleteObject unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                md.Http.Response.StatusCode = 404;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
+                return;
             }
              
             #endregion
 
             #region Check-if-Object-Exists
              
-            if (!currContainer.Exists(md.Params.ObjectKey))
+            if (!client.Exists(md.Params.ObjectKey))
             {
-                _Logging.Warn("HttpDeleteObject object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + " does not exist");
-                return new HttpResponse(md.Http, 404, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true)));
+                _Logging.Warn(header + "HttpDeleteObject object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + " does not exist");
+                md.Http.Response.StatusCode = 404;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
+                return;
             }
 
             #endregion
-             
+
             #region Delete-and-Respond
 
             ErrorCode error;
-            if (!_ObjectHandler.Delete(md, currContainer, md.Params.ObjectKey, out error))
+
+            if (md.Params.Keys)
             {
-                _Logging.Warn("HttpDeleteObject unable to delete object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey + ": " + error.ToString());
-                return new HttpResponse(md.Http, 500, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, "Unable to delete object.", error), true)));
+                _ObjectHandler.WriteKeyValues(md, client, md.Params.ObjectKey, null, out error);
+                md.Http.Response.StatusCode = 204;
+                await md.Http.Response.Send();
+                return;
+            }
+
+            if (!_ObjectHandler.Delete(md, client, md.Params.ObjectKey, out error))
+            {
+                _Logging.Warn(header + "HttpDeleteObject unable to delete object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                md.Http.Response.StatusCode = 500;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(4, 500, "Unable to delete object.", error), true));
+                return;
             }
             else
             {
-                _Logging.Debug("HttpDeleteObject deleted object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                _OutboundMessageHandler.ObjectDelete(md, currContainer.Settings);
-                return new HttpResponse(md.Http, 204, null);
+                _Logging.Debug(header + "HttpDeleteObject deleted object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                md.Http.Response.StatusCode = 204;
+                await md.Http.Response.Send();
+                return;
             } 
             
             #endregion 

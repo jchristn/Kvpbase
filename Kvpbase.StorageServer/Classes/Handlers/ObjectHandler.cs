@@ -8,7 +8,7 @@ using SyslogLogging;
 
 using Kvpbase.Classes.Managers;
 using Kvpbase.Containers;
-using Kvpbase.Core;
+using Kvpbase.Classes;
 
 namespace Kvpbase.Classes.Handlers
 {
@@ -22,21 +22,21 @@ namespace Kvpbase.Classes.Handlers
 
         private Settings _Settings;
         private LoggingModule _Logging;
-        private UrlLockManager _UrlLockMgr;
+        private ConfigManager _Config;
 
         #endregion
 
         #region Constructors-and-Factories
 
-        public ObjectHandler(Settings settings, LoggingModule logging, UrlLockManager urlLock)
+        public ObjectHandler(Settings settings, LoggingModule logging, ConfigManager config)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
-            if (urlLock == null) throw new ArgumentNullException(nameof(urlLock));
-            
+            if (config == null) throw new ArgumentNullException(nameof(config));
+
             _Settings = settings;
             _Logging = logging;
-            _UrlLockMgr = urlLock;
+            _Config = config;
         }
 
         #endregion
@@ -45,106 +45,44 @@ namespace Kvpbase.Classes.Handlers
 
         public bool Delete(
             RequestMetadata md,
-            Container container,
+            ContainerClient client,
             string objectName,
             out ErrorCode error)
         {
             error = ErrorCode.None;
             if (md == null) throw new ArgumentNullException(nameof(md));
-            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " Delete " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
 
-            if (!_UrlLockMgr.AddWriteLock(md))
+            if (!_Config.AddWriteLock(md))
             {
+                _Logging.Warn(logMessage + "unable to add write lock");
                 return false;
             }
-              
-            if (!container.RemoveObject(objectName, out error))
+
+            if (!client.RemoveObject(objectName, out error))
             {
+                _Logging.Warn(logMessage + "unable to remove object: " + error.ToString());
+                _Config.RemoveWriteLock(md);
                 return false;
             }
             else
             {
                 string logData =
-                   "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
-                   "User: " + md.Params.UserGuid;
+                    "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                    "User: " + md.Params.UserGuid;
 
-                container.AddAuditLogEntry(objectName, AuditLogEntryType.Delete, logData, false);
+                client.AddAuditLogEntry(objectName, AuditLogEntryType.Delete, logData, false);
+                _Config.RemoveWriteLock(md);
+                _Logging.Debug(logMessage + "deleted object");
                 return true;
             } 
         }
-
+         
         public bool Read(
             RequestMetadata md,
-            Container container,
-            string objectName,
-            long? indexStart,
-            int? count,
-            out string contentType,
-            out byte[] data,
-            out ErrorCode error)
-        {
-            error = ErrorCode.None;
-            contentType = null;
-            data = null;
-            if (md == null) throw new ArgumentNullException(nameof(md));
-            if (container == null) throw new ArgumentNullException(nameof(container));
-            if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
-
-            if (!_UrlLockMgr.AddReadLock(md))
-            {
-                return false;
-            }
-              
-            if (indexStart != null && count != null)
-            {
-                #region Range-Read
-
-                if (!container.ReadRangeObject(objectName, Convert.ToInt64(indexStart), Convert.ToInt32(count), out contentType, out data, out error))
-                {
-                    _UrlLockMgr.RemoveReadLock(md);
-                    return false;
-                }
-                else
-                {
-                    _UrlLockMgr.RemoveReadLock(md);
-                    string logData =
-                       "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
-                       "User: " + md.Params.UserGuid;
-                    logData += " Index: " + indexStart;
-                    logData += " Count: " + count;
-                    container.AddAuditLogEntry(objectName, AuditLogEntryType.ReadRange, logData, false);
-                    return true;
-                }
-
-                #endregion
-            }
-            else
-            {
-                #region Full-Read
-
-                if (!container.ReadObject(objectName, out contentType, out data, out error))
-                {
-                    _UrlLockMgr.RemoveReadLock(md);
-                    return false;
-                }
-                else
-                {
-                    _UrlLockMgr.RemoveReadLock(md);
-                    string logData =
-                       "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
-                       "User: " + md.Params.UserGuid;
-                    container.AddAuditLogEntry(objectName, AuditLogEntryType.Read, logData, false);
-                    return true;
-                }
-
-                #endregion
-            } 
-        }
-
-        public bool Read(
-            RequestMetadata md,
-            Container container,
+            ContainerClient client,
             string objectName,
             long? indexStart,
             int? count,
@@ -158,11 +96,13 @@ namespace Kvpbase.Classes.Handlers
             contentLength = 0;
             stream = null;
             if (md == null) throw new ArgumentNullException(nameof(md));
-            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " Read " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
 
-            if (!_UrlLockMgr.AddReadLock(md))
+            if (!_Config.AddReadLock(md))
             {
+                _Logging.Warn(logMessage + "unable to add read lock");
                 return false;
             }
 
@@ -170,20 +110,22 @@ namespace Kvpbase.Classes.Handlers
             {
                 #region Range-Read
 
-                if (!container.ReadRangeObject(objectName, Convert.ToInt64(indexStart), Convert.ToInt32(count), out contentType, out stream, out error))
+                if (!client.ReadRangeObject(objectName, Convert.ToInt64(indexStart), Convert.ToInt32(count), out contentType, out stream, out error))
                 {
-                    _UrlLockMgr.RemoveReadLock(md);
+                    _Logging.Warn(logMessage + "unable to read range: " + error.ToString());
+                    _Config.RemoveReadLock(md);
                     return false;
                 }
                 else
                 {
-                    _UrlLockMgr.RemoveReadLock(md);
+                    _Config.RemoveReadLock(md);
                     string logData =
-                       "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
-                       "User: " + md.Params.UserGuid;
+                        "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                        "User: " + md.Params.UserGuid;
                     logData += " Index: " + indexStart;
                     logData += " Count: " + count;
-                    container.AddAuditLogEntry(objectName, AuditLogEntryType.ReadRange, logData, false);
+                    client.AddAuditLogEntry(objectName, AuditLogEntryType.ReadRange, logData, false);
+                    contentLength = (long)count;
                     return true;
                 }
 
@@ -193,51 +135,54 @@ namespace Kvpbase.Classes.Handlers
             {
                 #region Full-Read
 
-                if (!container.ReadObject(objectName, out contentType, out contentLength, out stream, out error))
+                if (!client.ReadObject(objectName, out contentType, out contentLength, out stream, out error))
                 {
-                    _UrlLockMgr.RemoveReadLock(md);
+                    _Logging.Warn(logMessage + "unable to read object: " + error.ToString());
+                    _Config.RemoveReadLock(md);
                     return false;
                 }
                 else
                 {
-                    _UrlLockMgr.RemoveReadLock(md);
+                    _Config.RemoveReadLock(md);
                     string logData =
-                       "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
-                       "User: " + md.Params.UserGuid;
-                    container.AddAuditLogEntry(objectName, AuditLogEntryType.Read, logData, false);
+                        "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                        "User: " + md.Params.UserGuid;
+                    client.AddAuditLogEntry(objectName, AuditLogEntryType.Read, logData, false);
                     return true;
                 }
 
                 #endregion
-            }
+            } 
         }
-
+        
         public bool Exists(
             RequestMetadata md, 
-            Container container,
+            ContainerClient client,
             string objectName)
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
-            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
-             
-            if (!container.Exists(objectName))
-            { 
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " Exists " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
+
+            if (!client.Exists(objectName))
+            {
+                _Logging.Debug(logMessage + "object does not exist");
                 return false;
             }
             else
             { 
                 string logData =
-                   "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
+                   "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
                    "User: " + md.Params.UserGuid;
-                container.AddAuditLogEntry(objectName, AuditLogEntryType.Exists, logData, false);
+                client.AddAuditLogEntry(objectName, AuditLogEntryType.Exists, logData, false);
                 return true;
             } 
         }
 
         public bool Create(
             RequestMetadata md,
-            Container container,
+            ContainerClient client,
             string objectName,
             string contentType,
             byte[] data,  
@@ -245,36 +190,40 @@ namespace Kvpbase.Classes.Handlers
         {
             error = ErrorCode.None;
             if (md == null) throw new ArgumentNullException(nameof(md));
-            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
-
-            if (!_UrlLockMgr.AddWriteLock(md))
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " Create " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
+             
+            if (!_Config.AddWriteLock(md))
             {
+                _Logging.Warn(logMessage + "unable to add write lock");
                 return false;
             }
 
-            if (!container.WriteObject(objectName, md.Http.ContentType, md.Http.Data, Common.CsvToStringList(md.Params.Tags), out error))
+            if (!client.WriteObject(objectName, md.Http.Request.ContentType, md.Http.Request.ContentLength, md.Http.Request.Data, Common.CsvToStringList(md.Params.Tags), out error))
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Logging.Warn(logMessage + "unable to write object: " + error.ToString());
+                _Config.RemoveWriteLock(md);
                 return false;
             }
             else
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Config.RemoveWriteLock(md);
                 int dataLen = 0;
-                if (md.Http.Data != null) dataLen = md.Http.Data.Length;
+                if (md.Http.Request.Data != null) dataLen = (int)md.Http.Request.ContentLength;
                 string logData =
-                   "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
-                   "User: " + md.Params.UserGuid + " " +
-                   "Bytes: " + dataLen;
-                container.AddAuditLogEntry(objectName, AuditLogEntryType.Write, logData, false);
+                    "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                    "User: " + md.Params.UserGuid + " " +
+                    "Bytes: " + dataLen;
+                client.AddAuditLogEntry(objectName, AuditLogEntryType.Write, logData, false);
+                _Logging.Debug(logMessage + "created object");
                 return true;
             } 
         }
 
         public bool Create(
             RequestMetadata md,
-            Container container,
+            ContainerClient client,
             string objectName,
             string contentType,
             long contentLength,
@@ -283,71 +232,79 @@ namespace Kvpbase.Classes.Handlers
         {
             error = ErrorCode.None;
             if (md == null) throw new ArgumentNullException(nameof(md));
-            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " Create " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
 
-            if (!_UrlLockMgr.AddWriteLock(md))
+            if (!_Config.AddWriteLock(md))
             {
+                _Logging.Warn(logMessage + "unable to add write lock");
                 return false;
             }
 
-            if (!container.WriteObject(objectName, contentType, contentLength, stream, Common.CsvToStringList(md.Params.Tags), out error))
+            if (!client.WriteObject(objectName, contentType, contentLength, stream, Common.CsvToStringList(md.Params.Tags), out error))
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Logging.Warn(logMessage + "unable to write object: " + error.ToString());
+                _Config.RemoveWriteLock(md);
                 return false;
             }
             else
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Config.RemoveWriteLock(md);
                 int dataLen = 0;
-                if (md.Http.Data != null) dataLen = md.Http.Data.Length;
+                if (md.Http.Request.Data != null) dataLen = (int)md.Http.Request.ContentLength;
                 string logData =
-                   "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
+                   "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
                    "User: " + md.Params.UserGuid + " " +
                    "Bytes: " + dataLen;
-                container.AddAuditLogEntry(objectName, AuditLogEntryType.Write, logData, false);
+                client.AddAuditLogEntry(objectName, AuditLogEntryType.Write, logData, false);
+                _Logging.Debug(logMessage + "created object");
                 return true;
             }
         }
 
         public bool Rename(
             RequestMetadata md,
-            Container container,
+            ContainerClient client,
             string originalName,
             string updatedName,
             out ErrorCode error)
         {
             error = ErrorCode.None;
             if (md == null) throw new ArgumentNullException(nameof(md));
-            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrEmpty(originalName)) throw new ArgumentNullException(nameof(originalName));
             if (String.IsNullOrEmpty(updatedName)) throw new ArgumentNullException(nameof(updatedName));
-             
-            if (!_UrlLockMgr.AddWriteLock(md))
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " Rename " + client.Container.UserGuid + "/" + client.Container.Name + "/" + originalName + " to " + updatedName + " ";
+
+            if (!_Config.AddWriteLock(md))
             {
+                _Logging.Warn(logMessage + "unable to add write lock");
                 return false;
             }
 
-            if (!container.RenameObject(originalName, updatedName, out error))
+            if (!client.RenameObject(originalName, updatedName, out error))
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Logging.Warn(logMessage + "unable to rename object: " + error.ToString());
+                _Config.RemoveWriteLock(md);
                 return false;
             }
             else
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Config.RemoveWriteLock(md);
                 string logData =
-                   "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
+                   "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
                    "User: " + md.Params.UserGuid + " " +
                    "RenameTo: " + updatedName;
-                container.AddAuditLogEntry(originalName, AuditLogEntryType.Rename, logData, true);
+                client.AddAuditLogEntry(originalName, AuditLogEntryType.Rename, logData, true);
+                _Logging.Debug(logMessage + "renamed object");
                 return true;
             } 
         }
 
         public bool WriteRange(
             RequestMetadata md,
-            Container container,
+            ContainerClient client,
             string objectName,
             long indexStart,
             byte[] data, 
@@ -355,37 +312,41 @@ namespace Kvpbase.Classes.Handlers
         {
             error = ErrorCode.None;
             if (md == null) throw new ArgumentNullException(nameof(md));
-            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " WriteRange " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
 
-            if (!_UrlLockMgr.AddWriteLock(md))
+            if (!_Config.AddWriteLock(md))
             {
+                _Logging.Warn(logMessage + "unable to add write lock");
                 return false;
             }
 
-            if (!container.WriteRangeObject(objectName, indexStart, data, out error))
+            if (!client.WriteRangeObject(objectName, indexStart, data, out error))
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Logging.Warn(logMessage + "unable to write range: " + error.ToString());
+                _Config.RemoveWriteLock(md);
                 return false;
             }
             else
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Config.RemoveWriteLock(md);
                 int dataLen = 0;
-                if (md.Http.Data != null) dataLen = md.Http.Data.Length;
+                if (md.Http.Request.Data != null) dataLen = (int)md.Http.Request.ContentLength;
                 string logData =
-                  "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
+                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
                   "User: " + md.Params.UserGuid + " " +
                   "Index: " + indexStart + " " +
                   "Bytes: " + dataLen;
-                container.AddAuditLogEntry(objectName, AuditLogEntryType.WriteRange, logData, true);
+                client.AddAuditLogEntry(objectName, AuditLogEntryType.WriteRange, logData, true);
+                _Logging.Debug(logMessage + "wrote object range");
                 return true;
             } 
         }
 
         public bool WriteRange(
             RequestMetadata md,
-            Container container,
+            ContainerClient client,
             string objectName,
             long indexStart,
             long numBytes,
@@ -394,69 +355,206 @@ namespace Kvpbase.Classes.Handlers
         {
             error = ErrorCode.None;
             if (md == null) throw new ArgumentNullException(nameof(md));
-            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " WriteRange " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
 
-            if (!_UrlLockMgr.AddWriteLock(md))
+            if (!_Config.AddWriteLock(md))
             {
+                _Logging.Warn(logMessage + "unable to add write lock");
                 return false;
             }
 
-            if (!container.WriteRangeObject(objectName, indexStart, numBytes, stream, out error))
+            if (!client.WriteRangeObject(objectName, indexStart, numBytes, stream, out error))
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Logging.Warn(logMessage + "unable to write range: " + error.ToString());
+                _Config.RemoveWriteLock(md);
                 return false;
             }
             else
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Config.RemoveWriteLock(md);
                 int dataLen = 0;
-                if (md.Http.Data != null) dataLen = md.Http.Data.Length;
+                if (md.Http.Request.Data != null) dataLen = (int)md.Http.Request.ContentLength;
                 string logData =
-                  "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
+                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
                   "User: " + md.Params.UserGuid + " " +
                   "Index: " + indexStart + " " +
                   "Bytes: " + dataLen;
-                container.AddAuditLogEntry(objectName, AuditLogEntryType.WriteRange, logData, true);
+                client.AddAuditLogEntry(objectName, AuditLogEntryType.WriteRange, logData, true);
+                _Logging.Debug(logMessage + "wrote object range");
                 return true;
             }
         }
 
         public bool WriteTags(
             RequestMetadata md,
-            Container container,
+            ContainerClient client,
             string objectName,
             string tags,
             out ErrorCode error)
         {
             error = ErrorCode.None;
             if (md == null) throw new ArgumentNullException(nameof(md));
-            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
-            if (String.IsNullOrEmpty(tags)) throw new ArgumentNullException(nameof(tags));
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " WriteTags " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
 
-            if (!_UrlLockMgr.AddWriteLock(md))
+            if (!_Config.AddWriteLock(md))
             {
+                _Logging.Warn(logMessage + "unable to add write lock");
                 return false;
             }
 
-            if (!container.WriteObjectTags(objectName, tags, out error))
+            if (!client.WriteObjectTags(objectName, tags, out error))
             {
-                _UrlLockMgr.RemoveWriteLock(md);
+                _Logging.Warn(logMessage + "unable to write tags: " + error.ToString());
+                _Config.RemoveWriteLock(md);
                 return false;
             }
             else
             {
-                _UrlLockMgr.RemoveWriteLock(md);
-                int dataLen = 0;
-                if (md.Http.Data != null) dataLen = md.Http.Data.Length;
+                _Config.RemoveWriteLock(md); 
                 string logData =
-                  "Source: " + md.Http.SourceIp + ":" + md.Http.SourcePort + " " +
+                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
                   "User: " + md.Params.UserGuid + " " +
                   "Tags: " + tags;
-                container.AddAuditLogEntry(objectName, AuditLogEntryType.WriteTags, logData, true);
+                client.AddAuditLogEntry(objectName, AuditLogEntryType.WriteTags, logData, true);
+                _Logging.Debug(logMessage + "wrote object tags");
                 return true;
             }
+        }
+
+        public bool DeleteTags(
+            RequestMetadata md,
+            ContainerClient client,
+            string objectName, 
+            out ErrorCode error)
+        {
+            error = ErrorCode.None;
+            if (md == null) throw new ArgumentNullException(nameof(md));
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " DeleteTags " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
+
+            if (!_Config.AddWriteLock(md))
+            {
+                _Logging.Warn(logMessage + "unable to add write lock");
+                return false;
+            }
+
+            if (!client.WriteObjectTags(objectName, null, out error))
+            {
+                _Logging.Warn(logMessage + "unable to delete tags: " + error.ToString());
+                _Config.RemoveWriteLock(md);
+                return false;
+            }
+            else
+            {
+                _Config.RemoveWriteLock(md); 
+                string logData =
+                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                  "User: " + md.Params.UserGuid;
+                client.AddAuditLogEntry(objectName, AuditLogEntryType.DeleteTags, logData, true);
+                _Logging.Debug(logMessage + "deleted object tags");
+                return true;
+            }
+        }
+
+        public bool WriteKeyValues(
+            RequestMetadata md,
+            ContainerClient client,
+            string objectName,
+            Dictionary<string, string> dict,
+            out ErrorCode error)
+        {
+            error = ErrorCode.None;
+            if (md == null) throw new ArgumentNullException(nameof(md));
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " WriteKeyValues " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
+
+            if (!_Config.AddWriteLock(md))
+            {
+                _Logging.Warn(logMessage + "unable to add write lock");
+                return false;
+            }
+
+            if (!client.WriteObjectKeyValuePairs(objectName, dict, out error))
+            {
+                _Logging.Warn(logMessage + "unable to write key values: " + error.ToString());
+                _Config.RemoveWriteLock(md);
+                return false;
+            }
+            else
+            {
+                _Config.RemoveWriteLock(md); 
+                string logData =
+                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                  "User: " + md.Params.UserGuid;
+                client.AddAuditLogEntry(objectName, AuditLogEntryType.WriteKeyValue, logData, true);
+                _Logging.Debug(logMessage + "wrote key values");
+                return true;
+            }
+        }
+
+        public bool DeleteKeyValues(
+            RequestMetadata md,
+            ContainerClient client,
+            string objectName,
+            out ErrorCode error)
+        {
+            error = ErrorCode.None;
+            if (md == null) throw new ArgumentNullException(nameof(md));
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " DeleteKeyValues " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
+
+            if (!_Config.AddWriteLock(md))
+            {
+                _Logging.Warn(logMessage + "unable to add write lock");
+                return false;
+            }
+
+            if (!client.WriteObjectKeyValuePairs(objectName, null, out error))
+            {
+                _Logging.Warn(logMessage + "unable to delete key values: " + error.ToString());
+                _Config.RemoveWriteLock(md);
+                return false;
+            }
+            else
+            {
+                _Config.RemoveWriteLock(md); 
+                string logData =
+                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                  "User: " + md.Params.UserGuid;
+                client.AddAuditLogEntry(objectName, AuditLogEntryType.DeleteKeyValue, logData, true);
+                _Logging.Debug(logMessage + "deleted key values");
+                return true;
+            }
+        }
+
+        public bool ReadKeyValues(
+            RequestMetadata md,
+            ContainerClient client,
+            string objectName,
+            out Dictionary<string, string> dict,
+            out ErrorCode error)
+        {
+            error = ErrorCode.None;
+            dict = new Dictionary<string, string>();
+            if (md == null) throw new ArgumentNullException(nameof(md));
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (String.IsNullOrEmpty(objectName)) throw new ArgumentNullException(nameof(objectName));
+            string logMessage = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ReadKeyValues " + client.Container.UserGuid + "/" + client.Container.Name + "/" + objectName + " ";
+
+            if (!client.ReadObjectKeyValues(objectName, out dict, out error))
+            {
+                _Logging.Warn(logMessage + "unable to read key values: " + error.ToString());
+                return false;
+            }
+
+            return true; 
         }
 
         #endregion

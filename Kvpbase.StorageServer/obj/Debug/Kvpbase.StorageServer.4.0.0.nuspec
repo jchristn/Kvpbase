@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Kvpbase.StorageServer</id>
+    <version>4.0.0</version>
+    <authors>Joel Christner</authors>
+    <owners>Joel Christner</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="file">LICENSE.md</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <projectUrl>https://github.com/kvpbase/storage-server</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</iconUrl>
+    <description>Object storage system with integrated replication and a simple RESTful API.</description>
+    <releaseNotes>Major refactor with numerous enhancements and fixes, please refer to repository README for more information.</releaseNotes>
+    <copyright>(c)2019 Joel Christner</copyright>
+    <tags>kvpbase object storage s3 blob azure cloud rest</tags>
+    <repository type="Github" url="https://github.com/kvpbase/storage-server" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="DatabaseWrapper" version="1.4.4" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="12.0.2" exclude="Build,Analyzers" />
+        <dependency id="SyslogLogging" version="1.2.0" exclude="Build,Analyzers" />
+        <dependency id="Watson" version="3.0.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETCoreApp2.2">
+        <dependency id="DatabaseWrapper" version="1.4.4" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="12.0.2" exclude="Build,Analyzers" />
+        <dependency id="SyslogLogging" version="1.2.0" exclude="Build,Analyzers" />
+        <dependency id="Watson" version="3.0.2" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\code\kvpbase\storageserver-4.0\Kvpbase.StorageServer\bin\Debug\net461\Kvpbase.StorageServer.exe" target="lib\net461\Kvpbase.StorageServer.exe" />
+    <file src="C:\code\kvpbase\storageserver-4.0\Kvpbase.StorageServer\bin\Debug\netcoreapp2.2\Kvpbase.StorageServer.runtimeconfig.json" target="lib\netcoreapp2.2\Kvpbase.StorageServer.runtimeconfig.json" />
+    <file src="C:\code\kvpbase\storageserver-4.0\Kvpbase.StorageServer\bin\Debug\netcoreapp2.2\Kvpbase.StorageServer.dll" target="lib\netcoreapp2.2\Kvpbase.StorageServer.dll" />
+    <file src="C:\code\kvpbase\storageserver-4.0\LICENSE.md" target="LICENSE.md" />
+  </files>
+</package>

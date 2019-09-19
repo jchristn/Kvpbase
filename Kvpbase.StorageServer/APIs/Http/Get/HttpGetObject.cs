@@ -1,54 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
 using Kvpbase.Containers;
-using Kvpbase.Core;
+using Kvpbase.Classes;
 
 namespace Kvpbase
 {
     public partial class StorageServer
     {
-        public static HttpResponse HttpGetObject(RequestMetadata md)
-        { 
+        public static async Task HttpGetObject(RequestMetadata md)
+        {
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+
             #region Retrieve-Container
-             
-            Container currContainer = null;
-            if (!_ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.Container, out currContainer))
-            {
-                List<Node> nodes = new List<Node>();
-                if (!_OutboundMessageHandler.FindContainerOwners(md, out nodes))
-                {
-                    _Logging.Warn("HttpGetObject unable to find container " + md.Params.UserGuid + "/" + md.Params.Container);
-                    return new HttpResponse(md.Http, 404, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(5, 404, "Unknown user or container.", null), true)));
-                }
-                else
-                {
-                    string redirectUrl = null;
-                    HttpResponse redirectRest = _OutboundMessageHandler.BuildRedirectResponse(md, nodes[0], out redirectUrl);
-                    _Logging.Debug("HttpGetObject redirecting container " + md.Params.UserGuid + "/" + md.Params.Container + " to " + redirectUrl);
-                    return redirectRest;
-                }
+
+            ContainerClient client = null;
+            if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
+            { 
+                _Logging.Warn(header + "HttpGetObject unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                md.Http.Response.StatusCode = 404;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
+                return;
             }
-
-            bool isPublicRead = currContainer.IsPublicRead();
-
+             
             #endregion
 
             #region Authenticate-and-Authorize
 
-            if (!isPublicRead)
+            if (!client.Container.IsPublicRead)
             {
-                if (md.User == null || !(md.User.Guid.ToLower().Equals(md.Params.UserGuid.ToLower())))
+                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
                 {
-                    _Logging.Warn("HttpGetObject unauthorized unauthenticated access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                    return new HttpResponse(md.Http, 401, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                    _Logging.Warn(header + "HttpGetObject unauthorized unauthenticated access attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    md.Http.Response.StatusCode = 401;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                    return;
                 }
             }
 
@@ -56,9 +51,11 @@ namespace Kvpbase
             {
                 if (!md.Perm.ReadObject)
                 {
-                    _Logging.Warn("HttpGetObject unauthorized access attempt to object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
-                    return new HttpResponse(md.Http, 401, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                    _Logging.Warn(header + "HttpGetObject unauthorized access attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    md.Http.Response.StatusCode = 401;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                    return;
                 }
             }
 
@@ -66,23 +63,51 @@ namespace Kvpbase
 
             #region Retrieve-Metadata
 
+            ErrorCode error;
             ObjectMetadata metadata = null;
-            if (!currContainer.ReadObjectMetadata(md.Params.ObjectKey, out metadata))
+            if (!client.ReadObjectMetadata(md.Params.ObjectKey, out metadata))
             {
-                _Logging.Warn("HttpGetObject unable to retrieve metadata for " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                _Logging.Warn(header + "HttpGetObject unable to retrieve metadata for " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
 
                 int statusCode = 0;
                 int id = 0;
                 Helper.StatusFromContainerErrorCode(ErrorCode.NotFound, out statusCode, out id);
 
-                return new HttpResponse(md.Http, statusCode, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(id, statusCode, null, ErrorCode.NotFound), true)));
+                md.Http.Response.StatusCode = statusCode;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, null, ErrorCode.NotFound), true));
+                return;
             }
 
             if (md.Params.Metadata)
             {
-                return new HttpResponse(md.Http, 200, null, "application/json", Encoding.UTF8.GetBytes(Common.SerializeJson(metadata, true)));
+                md.Http.Response.StatusCode = 200;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(metadata, true));
+                return;
             }
+            else if (md.Params.Keys)
+            {
+                Dictionary<string, string> vals = new Dictionary<string, string>();
+                if (!_ObjectHandler.ReadKeyValues(md, client, md.Params.ObjectKey, out vals, out error))
+                {
+                    int statusCode = 0;
+                    int id = 0;
+                    Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+
+                    _Logging.Warn(header + "HttpGetObject unable to read key-values for " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+
+                    md.Http.Response.StatusCode = statusCode;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, null, error), true));
+                    return;
+                }
+
+                md.Http.Response.StatusCode = 200;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(vals, true));
+                return;
+            } 
 
             #endregion
 
@@ -92,18 +117,23 @@ namespace Kvpbase
             {
                 if (Convert.ToInt32(md.Params.Count) > _Settings.Server.MaxTransferSize)
                 {
-                    _Logging.Warn("HttpGetObject transfer size too large (count requested: " + md.Params.Count + ")");
-                    return new HttpResponse(md.Http, 413, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true)));
+                    _Logging.Warn(header + "HttpGetObject transfer size too large (count requested: " + md.Params.Count + ")");
+
+                    md.Http.Response.StatusCode = 413;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true));
+                    return; 
                 }
             }
             else
             {
                 if (metadata.ContentLength > _Settings.Server.MaxTransferSize)
                 {
-                    _Logging.Warn("HttpGetObject transfer size too large (content length: " + metadata.ContentLength + ")");
-                    return new HttpResponse(md.Http, 413, null, "application/json",
-                        Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true)));
+                    _Logging.Warn(header + "HttpGetObject transfer size too large (content length: " + metadata.ContentLength + ")");
+                    md.Http.Response.StatusCode = 413;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true));
+                    return;
                 }
             }
 
@@ -118,23 +148,28 @@ namespace Kvpbase
             if (md.Params.Count != null) count = Convert.ToInt32(md.Params.Count);
 
             string contentType = null;
-            byte[] data = null;
-            ErrorCode error;
-
-            if (!_ObjectHandler.Read(md, currContainer, md.Params.ObjectKey, index, count, out contentType, out data, out error))
+            long contentLength = 0;
+            Stream stream = null;
+             
+            if (!_ObjectHandler.Read(md, client, md.Params.ObjectKey, index, count, out contentType, out contentLength, out stream, out error))
             {
                 int statusCode = 0;
                 int id = 0;
                 Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
 
-                _Logging.Warn("HttpGetObject unable to read object " + md.Params.UserGuid + "/" + md.Params.Container + "/" + md.Params.ObjectKey);
+                _Logging.Warn(header + "HttpGetObject unable to read object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
 
-                return new HttpResponse(md.Http, statusCode, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(id, statusCode, null, error), true)));
+                md.Http.Response.StatusCode = statusCode;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, null, error), true));
+                return;
             }
             else
             {
-                return new HttpResponse(md.Http, 200, null, contentType, data);
+                md.Http.Response.StatusCode = 200;
+                md.Http.Response.ContentType = contentType;
+                await md.Http.Response.Send(contentLength, stream);
+                return;
             }
                  
             #endregion 

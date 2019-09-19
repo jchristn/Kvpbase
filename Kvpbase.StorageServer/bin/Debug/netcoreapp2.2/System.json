@@ -1,0 +1,42 @@
+{
+  "EnableConsole": true,
+  "Server": {
+    "HeaderApiKey": "x-api-key",
+    "HeaderEmail": "x-email",
+    "HeaderPassword": "x-password",
+    "HeaderVersion": "x-version",
+    "MaxObjectSize": 2199023255552,
+    "MaxTransferSize": 536870912,
+    "Port": 8000,
+    "DnsHostname": "localhost",
+    "Ssl": false
+  },
+  "Storage": {
+    "Directory": "./Storage/"
+  },
+  "Syslog": {
+    "ServerIp": "127.0.0.1",
+    "ServerPort": 514,
+    "Header": "kvpbase",
+    "MinimumLevel": 0,
+    "LogHttpRequests": false,
+    "LogHttpResponses": false,
+    "ConsoleLogging": true
+  },
+  "ConfigDatabase": {
+    "Type": 0,
+    "Hostname": "localhost",
+    "Port": 1433,
+    "DatabaseName": "Kvpbase",
+    "Username": "sa",
+    "Password": "Joel$5298116"
+  },
+  "StorageDatabase": {
+    "Type": 0,
+    "Hostname": "localhost",
+    "Port": 1433,
+    "DatabaseName": "Kvpbase",
+    "Username": "sa",
+    "Password": "Joel$5298116"
+  }
+}

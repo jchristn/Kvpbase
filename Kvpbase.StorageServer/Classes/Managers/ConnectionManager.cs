@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SyslogLogging;
 using WatsonWebserver;
-
-using Kvpbase.Core;
-
+ 
 namespace Kvpbase.Classes.Managers
 {
     public class ConnectionManager
@@ -34,19 +32,20 @@ namespace Kvpbase.Classes.Managers
 
         #region Public-Methods
 
-        public void Add(int threadId, HttpRequest req)
+        public void Add(int threadId, HttpContext ctx)
         {
             if (threadId <= 0) return;
-            if (req == null) return;
+            if (ctx == null) return;
+            if (ctx.Request == null) return;
 
             Connection conn = new Connection();
             conn.ThreadId = threadId;
-            conn.SourceIp = req.SourceIp;
-            conn.SourcePort = req.SourcePort;
+            conn.SourceIp = ctx.Request.SourceIp;
+            conn.SourcePort = ctx.Request.SourcePort;
             conn.UserMasterId = 0;
             conn.Email = "";
-            conn.Method = req.Method;
-            conn.RawUrl = req.RawUrlWithoutQuery;
+            conn.Method = ctx.Request.Method;
+            conn.RawUrl = ctx.Request.RawUrlWithoutQuery;
             conn.StartTime = DateTime.Now;
             conn.EndTime = DateTime.Now;
 
@@ -83,7 +82,7 @@ namespace Kvpbase.Classes.Managers
                     }
                     else
                     {
-                        curr.UserMasterId = user.UserMasterId;
+                        curr.UserMasterId = user.Id;
                         curr.Email = user.Email;
                         tempList.Add(curr);
                     }

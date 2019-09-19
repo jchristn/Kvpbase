@@ -1,0 +1,1362 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Kvpbase.StorageServer</name>
+    </assembly>
+    <members>
+        <member name="T:Kvpbase.Classes.ApiKey">
+            <summary>
+            API key for use when accessing the RESTful HTTP API.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ApiKey.Id">
+            <summary>
+            Row ID in the database.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ApiKey.GUID">
+            <summary>
+            Object GUID.  This value is used as the actual API key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ApiKey.UserMasterId">
+            <summary>
+            ID of the user to which the API key is mapped.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ApiKey.Notes">
+            <summary>
+            Administrator notes for the API key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ApiKey.Active">
+            <summary>
+            Indicates if the account is active or disabled.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ApiKey.CreatedUtc">
+            <summary>
+            The timestamp from when the object was created.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.ApiKey.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.ApiKey.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>ApiKey.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.ApiKey.ToInsertDictionary">
+            <summary>
+            Create a Dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.ApiKey.GetTableColumns">
+            <summary>
+            Retrieve the list of columns required to create the table.
+            </summary>
+            <returns>List of columns.</returns>
+        </member>
+        <member name="T:Kvpbase.Classes.Common">
+            <summary>
+            Common static methods used by Kvpbase.
+            </summary>
+        </member>
+        <member name="T:Kvpbase.Classes.ConcurrentList`1">
+            <summary>
+            A thread-safe list with support for:
+            1) negative indexes (read from end).  "myList[-1]" gets the last value
+            2) modification while enumerating: enumerates a copy of the collection.
+            Taken from StackOverflow (see link in seealso).
+            </summary>
+            <seealso cref="!:http://stackoverflow.com/questions/9995266/how-to-create-a-thread-safe-generic-list"/>
+            <typeparam name="TValue"></typeparam>
+        </member>
+        <member name="P:Kvpbase.Classes.ConcurrentList`1.Item(System.Int32)">
+            <summary>
+            support for negative indexes (read from end).  "myList[-1]" gets the last value
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Kvpbase.Classes.Connection">
+            <summary>
+            An HTTP connection.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Connection.ThreadId">
+            <summary>
+            Thread ID of the connection.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Connection.SourceIp">
+            <summary>
+            Source IP address.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Connection.SourcePort">
+            <summary>
+            Source TCP port.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Connection.UserMasterId">
+            <summary>
+            User ID of the requestor.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Connection.Email">
+            <summary>
+            Email address of the requestor.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Connection.Method">
+            <summary>
+            HTTP method
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Connection.RawUrl">
+            <summary>
+            URL being accessed.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Connection.StartTime">
+            <summary>
+            When the connection was received.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Connection.EndTime">
+            <summary>
+            When the connection was terminated.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.Connection.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Kvpbase.Classes.ContainerKeyValuePair">
+            <summary>
+            Container key-value pair for metadata.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ContainerKeyValuePair.Id">
+            <summary>
+            Row ID in the database.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ContainerKeyValuePair.GUID">
+            <summary>
+            Object GUID.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ContainerKeyValuePair.MetaKey">
+            <summary>
+            Metadata key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ContainerKeyValuePair.MetaValue">
+            <summary>
+            Metadata value.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ContainerKeyValuePair.CreatedUtc">
+            <summary>
+            The timestamp from when the object was created.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.ContainerKeyValuePair.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.ContainerKeyValuePair.#ctor(System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="key">Key.</param>
+            <param name="val">Value.</param>
+        </member>
+        <member name="M:Kvpbase.Classes.ContainerKeyValuePair.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>ContainerKeyValuePair.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.ContainerKeyValuePair.ToInsertDictionary">
+            <summary>
+            Create a Dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.ContainerKeyValuePair.GetTableColumns">
+            <summary>
+            Retrieve the list of columns required to create the table.
+            </summary>
+            <returns>List of columns.</returns>
+        </member>
+        <member name="T:Kvpbase.Classes.DiskInfo">
+            <summary>
+            Information about attached disks.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.DiskInfo.Name">
+            <summary>
+            The name of the disk, i.e. 'C:\\'.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.DiskInfo.VolumeLabel">
+            <summary>
+            The volume label for the disk.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.DiskInfo.DriveFormat">
+            <summary>
+            The format of the disk, i.e. NTFS.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.DiskInfo.DriveType">
+            <summary>
+            The type of the disk, i.e. 'Fixed'.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.DiskInfo.TotalSizeBytes">
+            <summary>
+            The total size of the disk, in bytes.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.DiskInfo.TotalSizeGigabytes">
+            <summary>
+            The total size of the disk, in gigabytes.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.DiskInfo.AvailableSizeBytes">
+            <summary>
+            The amount of free space on the disk, in bytes.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.DiskInfo.AvailableSizeGigabytes">
+            <summary>
+            The amount of free space on the disk, in gigabytes.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.DiskInfo.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.DiskInfo.GetAllDisks">
+            <summary>
+            Retrieve information about all attached disks.
+            </summary>
+            <returns>List of DiskInfo.</returns>
+        </member>
+        <member name="T:Kvpbase.Classes.ErrorResponse">
+            <summary>
+            Object containing error-related information, used in HTTP API responses.
+            </summary>
+        </member>
+        <member name="F:Kvpbase.Classes.ErrorResponse.Success">
+            <summary>
+            Indicates success or failure of the operation.
+            </summary>
+        </member>
+        <member name="F:Kvpbase.Classes.ErrorResponse.Id">
+            <summary>
+            The ID of the error.
+            </summary>
+        </member>
+        <member name="F:Kvpbase.Classes.ErrorResponse.HttpStatus">
+            <summary>
+            The HTTP status of the error.
+            </summary>
+        </member>
+        <member name="F:Kvpbase.Classes.ErrorResponse.HttpText">
+            <summary>
+            The generic HTTP text for the error.
+            </summary>
+        </member>
+        <member name="F:Kvpbase.Classes.ErrorResponse.Text">
+            <summary>
+            The human readable text for the error.
+            </summary>
+        </member>
+        <member name="F:Kvpbase.Classes.ErrorResponse.Data">
+            <summary>
+            Any additional data associated with the error.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.ErrorResponse.#ctor(System.Int32,System.Int32,System.String,System.Object)">
+            <summary>
+            Instantiates the object.
+            </summary>
+            <param name="id">The ID of the error.</param>
+            <param name="status">The HTTP status of the error.</param>
+            <param name="textAppend">Text to append to the human-readable error text.</param>
+            <param name="data">Data associated with the error.</param>
+        </member>
+        <member name="T:Kvpbase.Classes.LockType">
+            <summary>
+            Entry types for URL locks.
+            </summary>
+        </member>
+        <member name="T:Kvpbase.Classes.MimeTypes">
+            <summary>
+            Static class to retrieve MIME type from file extension.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.MimeTypes.GetFromExtension(System.String)">
+            <summary>
+            Retrieve MIME type from file extension.
+            </summary>
+            <param name="extension">File extension.</param>
+            <returns>String containing MIME type.</returns>
+        </member>
+        <member name="T:Kvpbase.Classes.ObjectKeyValuePair">
+            <summary>
+            Object key-value pair for metadata.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectKeyValuePair.Id">
+            <summary>
+            Row ID in the database.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectKeyValuePair.GUID">
+            <summary>
+            Object GUID.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectKeyValuePair.ObjectKey">
+            <summary>
+            The object's key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectKeyValuePair.MetaKey">
+            <summary>
+            Metadata key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectKeyValuePair.MetaValue">
+            <summary>
+            Metadata value.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectKeyValuePair.CreatedUtc">
+            <summary>
+            The timestamp from when the object was created.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectKeyValuePair.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectKeyValuePair.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="objectKey">Object key.</param>
+            <param name="key">Key.</param>
+            <param name="val">Value.</param>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectKeyValuePair.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>ContainerKeyValuePair.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectKeyValuePair.ToInsertDictionary">
+            <summary>
+            Create a Dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectKeyValuePair.GetTableColumns">
+            <summary>
+            Retrieve the list of columns required to create the table.
+            </summary>
+            <returns>List of columns.</returns>
+        </member>
+        <member name="T:Kvpbase.Classes.ObjectMetadata">
+            <summary>
+            Metadata describing an object.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectMetadata.Id">
+            <summary>
+            The ID of the object.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectMetadata.GUID">
+            <summary>
+            The GUID of the object, also used as a unique name to store the object.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectMetadata.ObjectKey">
+            <summary>
+            The object's key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectMetadata.ContentType">
+            <summary>
+            The content type of the object.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectMetadata.ContentLength">
+            <summary>
+            The content length of the object.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectMetadata.Md5">
+            <summary>
+            The MD5 hash of the object's data.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectMetadata.Tags">
+            <summary>
+            The comma-separated list of tags associated with an object.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectMetadata.CreatedUtc">
+            <summary>
+            The creation timestamp, in UTC.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectMetadata.LastUpdateUtc">
+            <summary>
+            The time of last update, in UTC.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.ObjectMetadata.LastAccessUtc">
+            <summary>
+            The time of last access, in UTC.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectMetadata.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectMetadata.#ctor(System.String,System.String,System.Byte[],System.Collections.Generic.List{System.String})">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="key">The object's key.</param>
+            <param name="contentType">The content type of the object.</param>
+            <param name="data">The object's data.</param>
+            <param name="tags">Tags associated with the object.</param>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectMetadata.#ctor(System.String,System.String,System.Int64,System.Collections.Generic.List{System.String})">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="key">The object's key.</param>
+            <param name="contentType">The content type of the object.</param>
+            <param name="contentLength">The object's length.</param>
+            <param name="tags">Tags associated with the object.</param>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectMetadata.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>ObjectMetadata.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectMetadata.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Retrieve list of object metadata from a DataTable.
+            </summary>
+            <param name="dt">DataTable.</param>
+            <returns>List of ObjectMetadata.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectMetadata.ToInsertDictionary">
+            <summary>
+            Create a Dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.ObjectMetadata.GetTableColumns">
+            <summary>
+            Retrieve the list of columns required to create the table.
+            </summary>
+            <returns>List of columns.</returns>
+        </member>
+        <member name="T:Kvpbase.Classes.Permission">
+            <summary>
+            Permissions associated with a user or API key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.Id">
+            <summary>
+            Row ID in the database.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.GUID">
+            <summary>
+            Object GUID.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.UserMasterId">
+            <summary>
+            ID of the associated user.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.ApiKeyId">
+            <summary>
+            ID of the associated API key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.Notes">
+            <summary>
+            Administrator notes for the API key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.ReadObject">
+            <summary>
+            Indicates whether or not the user has permission to read objects.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.ReadContainer">
+            <summary>
+            Indicates whether or not the user has permission to read containers.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.WriteObject">
+            <summary>
+            Indicates whether or not the user has permission to write objects.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.WriteContainer">
+            <summary>
+            Indicates whether or not the user has permission to write containers.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.DeleteObject">
+            <summary>
+            Indicates whether or not the user has permission to delete objects.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.DeleteContainer">
+            <summary>
+            Indicates whether or not the user has permission to delete containers.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.Active">
+            <summary>
+            Indicates if the object is active or disabled.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.Permission.CreatedUtc">
+            <summary>
+            The timestamp from when the object was created.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.Permission.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.Permission.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Permission.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.Permission.ToInsertDictionary">
+            <summary>
+            Create a Dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.Permission.GetTableColumns">
+            <summary>
+            Retrieve the list of columns required to create the table.
+            </summary>
+            <returns>List of columns.</returns>
+        </member>
+        <member name="T:Kvpbase.Classes.RequestMetadata">
+            <summary>
+            Metadata for an incoming HTTP API request.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Http">
+            <summary>
+            The HttpContext object from the web server.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.User">
+            <summary>
+            The user object.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Key">
+            <summary>
+            The API key object.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Perm">
+            <summary>
+            The permission object associated with the requestor.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Params">
+            <summary>
+            Parameters as found in querystring key-value pairs and the URL itself.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.RequestMetadata.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Kvpbase.Classes.RequestMetadata.Parameters">
+            <summary>
+            Request parameters found in querystring key-value pairs and the URL itself.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.UserGuid">
+            <summary>
+            The user GUID.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.ContainerName">
+            <summary>
+            The name of the container.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.ObjectKey">
+            <summary>
+            The key of the object.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.AuditKey">
+            <summary>
+            The key for which to search when querying audit logs.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.Action">
+            <summary>
+            The action for which to search when querying audit logs.
+            </summary>
+        </member>
+        <member name="F:Kvpbase.Classes.RequestMetadata.Parameters.Index">
+            <summary>
+            The index, or, starting position.
+            </summary>
+        </member>
+        <member name="F:Kvpbase.Classes.RequestMetadata.Parameters.Count">
+            <summary>
+            The number of records to retrieve, or number of bytes.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.Rename">
+            <summary>
+            The name to which an object should be renamed.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.Config">
+            <summary>
+            Indicates if configuration-related information is desired.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.Html">
+            <summary>
+            Indicates if HTML output is desired.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.AuditLog">
+            <summary>
+            Indicates if the request is an audit log query.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.Metadata">
+            <summary>
+            Indicates if the request is a metadata query.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.Keys">
+            <summary>
+            Indicates if the request is to write object or container keys.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.Search">
+            <summary>
+            Indicates if the request is a search query.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.RequestMetadata">
+            <summary>
+            Indicates if the request is attempting to retrieve HTTP and internal metadata.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.CreatedBefore">
+            <summary>
+            For queries, the time before which the resource must have been created.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.CreatedAfter">
+            <summary>
+            For queries, the time after which the resource must have been created.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.UpdatedBefore">
+            <summary>
+            For queries, the time before which the resource must have been updated.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.UpdatedAfter">
+            <summary>
+            For queries, the time after which the resource must have been updated.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.LastAccessBefore">
+            <summary>
+            For queries, the time before which the resource must have been last accessed.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.LastAccessAfter">
+            <summary>
+            For queries, the time after which the resource must have been last accessed.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.Prefix">
+            <summary>
+            For queries, the prefix for the object key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.Md5">
+            <summary>
+            For queries, the MD5 that must match with the resource MD5.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.ContentType">
+            <summary>
+            For queries, the content type that must match with the resource content type.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.Tags">
+            <summary>
+            The tags associated with an object.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.SizeMin">
+            <summary>
+            For queries, the minimum size allowed.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.SizeMax">
+            <summary>
+            For queries, the maximum size allowed.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.RequestMetadata.Parameters.OrderBy">
+            <summary>
+            For queries, the SQL ordering that should be applied to the result.
+            i.e. 'ORDER BY LastUpdateUtc ASC'.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.RequestMetadata.Parameters.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.RequestMetadata.Parameters.FromHttpRequest(WatsonWebserver.HttpRequest)">
+            <summary>
+            Instantiates the object.
+            </summary>
+            <param name="req">HttpRequest.</param>
+            <returns>Parameters.</returns>
+        </member>
+        <member name="T:Kvpbase.Classes.UrlLock">
+            <summary>
+            A lock applied to a URL for an in-progress operation.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UrlLock.Id">
+            <summary>
+            Row ID in the database.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UrlLock.GUID">
+            <summary>
+            Object GUID.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UrlLock.LockType">
+            <summary>
+            The lock type.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UrlLock.Url">
+            <summary>
+            The raw URL that is locked.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UrlLock.UserGuid">
+            <summary>
+            The GUID of the user that holds the lock.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UrlLock.Hostname">
+            <summary>
+            The hostname upon which the lock was generated.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UrlLock.CreatedUtc">
+            <summary>
+            The timestamp from when the object was created.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.UrlLock.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.UrlLock.#ctor(Kvpbase.Classes.LockType,System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="lockType">Type of lock.</param>
+            <param name="url">Raw URL.</param>
+            <param name="userGuid">User GUID.</param>
+        </member>
+        <member name="M:Kvpbase.Classes.UrlLock.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>UrlLock.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.UrlLock.ToInsertDictionary">
+            <summary>
+            Create a Dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.UrlLock.GetTableColumns">
+            <summary>
+            Retrieve the list of columns required to create the table.
+            </summary>
+            <returns>List of columns.</returns>
+        </member>
+        <member name="T:Kvpbase.Classes.UserMaster">
+            <summary>
+            A Kvpbase user.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.Id">
+            <summary>
+            Row ID in the database.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.GUID">
+            <summary>
+            Object GUID.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.FirstName">
+            <summary>
+            The first name.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.LastName">
+            <summary>
+            The last name.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.CompanyName">
+            <summary>
+            The company name.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.Email">
+            <summary>
+            Email address.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.Password">
+            <summary>
+            Password.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.Cellphone">
+            <summary>
+            Cellular phone number.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.Address1">
+            <summary>
+            Address line 1.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.Address2">
+            <summary>
+            Address line 2.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.City">
+            <summary>
+            City.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.State">
+            <summary>
+            State.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.PostalCode">
+            <summary>
+            Postal code.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.Country">
+            <summary>
+            Country (recommend using the ISO A3 country code).
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.HomeDirectory">
+            <summary>
+            The user's home directory.  If null, a directory will be created under the default storage directory.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.Active">
+            <summary>
+            Indicates if the object is active or disabled.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Classes.UserMaster.CreatedUtc">
+            <summary>
+            The timestamp from when the object was created.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.UserMaster.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Classes.UserMaster.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>UserMaster.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.UserMaster.ToInsertDictionary">
+            <summary>
+            Create a Dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Kvpbase.Classes.UserMaster.GetTableColumns">
+            <summary>
+            Retrieve the list of columns required to create the table.
+            </summary>
+            <returns>List of columns.</returns>
+        </member>
+        <member name="T:Kvpbase.Containers.AuditLogEntry">
+            <summary>
+            Details about an audit log entry.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.AuditLogEntry.Id">
+            <summary>
+            Row ID in the database.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.AuditLogEntry.GUID">
+            <summary>
+            Object GUID.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.AuditLogEntry.ObjectKey">
+            <summary>
+            Key, if any, associated with the action.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.AuditLogEntry.Action">
+            <summary>
+            Action performed by the requestor.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.AuditLogEntry.Metadata">
+            <summary>
+            Metadata associated with the action.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.AuditLogEntry.CreatedUtc">
+            <summary>
+            Timestamp of the action.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Containers.AuditLogEntry.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Containers.AuditLogEntry.#ctor(System.String,Kvpbase.Containers.AuditLogEntryType,System.String)">
+            <summary>
+            Instantiates the object.
+            </summary>
+            <param name="key">Object key.</param>
+            <param name="action">Action performed.</param>
+            <param name="metadata">Request metadata.</param>
+        </member>
+        <member name="M:Kvpbase.Containers.AuditLogEntry.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>AuditLogEntry.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.AuditLogEntry.ToInsertDictionary">
+            <summary>
+            Create a Dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.AuditLogEntry.GetTableColumns">
+            <summary>
+            Retrieve the list of columns required to create the table.
+            </summary>
+            <returns>List of columns.</returns>
+        </member>
+        <member name="T:Kvpbase.Containers.AuditLogEntryType">
+            <summary>
+            Entry types for the container audit log.
+            </summary>
+        </member>
+        <member name="T:Kvpbase.Containers.Container">
+            <summary>
+            Object container.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.Container.Id">
+            <summary>
+            Row ID in the database.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.Container.GUID">
+            <summary>
+            Object GUID.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.Container.UserGuid">
+            <summary>
+            The username of the ontainer owner.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.Container.Name">
+            <summary>
+            The name of the container.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.Container.ObjectsDirectory">
+            <summary>
+            The full path to where container objects should be stored.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.Container.EnableAuditLogging">
+            <summary>
+            Enable or disable audit logging.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.Container.IsPublicRead">
+            <summary>
+            Enable or disable public read access.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.Container.IsPublicWrite">
+            <summary>
+            Enable or disable public write access.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.Container.CreatedUtc">
+            <summary>
+            The timestamp from when the object was created.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Containers.Container.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Containers.Container.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Container.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.Container.ToInsertDictionary">
+            <summary>
+            Create a Dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.Container.GetTableColumns">
+            <summary>
+            Retrieve the list of columns required to create the table.
+            </summary>
+            <returns>List of columns.</returns>
+        </member>
+        <member name="T:Kvpbase.Containers.ContainerMetadata">
+            <summary>
+            Metadata for a container.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.UserGuid">
+            <summary>
+            The user GUID that owns the container.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.ContainerName">
+            <summary>
+            The name of the container.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.ContainerGuid">
+            <summary>
+            GUID for the container.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.PublicRead">
+            <summary>
+            Indicates whether or not public users can read from the container.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.PublicWrite">
+            <summary>
+            Indicates whether or not public users can write to the container.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.Totals">
+            <summary>
+            Total counts for the container.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.Displayed">
+            <summary>
+            Counts for objects returned in this query.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.IndexStart">
+            <summary>
+            The requested starting index, if any.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.MaxResults">
+            <summary>
+            The requested number of results to retrieve, if any.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.Filter">
+            <summary>
+            The requested enumeration filter, if any.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.Objects">
+            <summary>
+            List of object metadata.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Containers.ContainerMetadata.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Kvpbase.Containers.ContainerMetadata.Counts">
+            <summary>
+            Summary statistics.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.Counts.Objects">
+            <summary>
+            Number of objects.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.ContainerMetadata.Counts.Bytes">
+            <summary>
+            Number of bytes.
+            </summary>
+        </member>
+        <member name="T:Kvpbase.Containers.EnumerationFilter">
+            <summary>
+            Filters to apply to container enumeration.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.CreatedBefore">
+            <summary>
+            If not null, match objects created before the specified time (UTC).
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.CreatedAfter">
+            <summary>
+            If not null, match objects created after the specified time (UTC).
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.UpdatedBefore">
+            <summary>
+            If not null, match objects updated before the specified time (UTC).
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.UpdatedAfter">
+            <summary>
+            If not null, match objects updated after the specified time (UTC).
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.LastAccessBefore">
+            <summary>
+            If not null, match objects last accessed before the specified time (UTC).
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.LastAccessAfter">
+            <summary>
+            If not null, match objects last accessed after the specified time (UTC).
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.Prefix">
+            <summary>
+            If not null, match objects with the specified prefix in the key.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.Md5">
+            <summary>
+            If not null, match objects with the specified MD5 hash value.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.ContentType">
+            <summary>
+            If not null, match objects of the specified content type.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.SizeMin">
+            <summary>
+            If not null, match objects of at least the specified size.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.SizeMax">
+            <summary>
+            If not null, match objects that are less than the specified size.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.Tags">
+            <summary>
+            If not null, match objects that contain each of the supplied tags.
+            </summary>
+        </member>
+        <member name="P:Kvpbase.Containers.EnumerationFilter.KeyValuePairs">
+            <summary>
+            If not null, match objects that contain each of the supplied key-value pairs.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Containers.EnumerationFilter.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Containers.EnumerationFilter.FromRequestMetadata(Kvpbase.Classes.RequestMetadata)">
+            <summary>
+            Create an EnumerationFilter from RequestMetadata.
+            </summary>
+            <param name="md">RequestMetadata.</param>
+            <returns>EnumerationFilter.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.EnumerationFilter.ToString">
+            <summary>
+            Create a human-readable string of the object.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Kvpbase.Containers.StorageDriver">
+            <summary>
+            Storage handler template.
+            </summary>
+        </member>
+        <member name="M:Kvpbase.Containers.StorageDriver.Exists(System.String)">
+            <summary>
+            Check if an object exists.
+            </summary>
+            <param name="fullFilename">The full path and filename of the object.</param>
+            <returns>True if exists.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.StorageDriver.Write(System.String,System.Int64,System.IO.Stream,System.String@,Kvpbase.Containers.ErrorCode@)">
+            <summary>
+            Write an object.
+            </summary>
+            <param name="fullFilename">The full path and filename of the object.  The file will be re-read in its entirety to calculate the MD5.</param>
+            <param name="contentLength">The length of the data.</param>
+            <param name="stream">The stream containing the data.</param>
+            <param name="md5">The MD5 of the data.</param>
+            <param name="error">Error code.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.StorageDriver.WriteRange(System.String,System.Int64,System.Int64,System.IO.Stream,System.String@,Kvpbase.Containers.ErrorCode@)">
+            <summary>
+            Write bytes to a specific position in an existing object.  The file will be re-read in its entirety to calculate the MD5.
+            </summary>
+            <param name="fullFilename">The full path and filename of the object.</param>
+            <param name="position">The byte position to which data should be written.</param>
+            <param name="contentLength">The content length of the bytes to write.</param>
+            <param name="stream">The stream containing the data.</param>
+            <param name="md5">The MD5 of the updated object.</param>
+            <param name="error">Error code.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.StorageDriver.Read(System.String,System.Int64@,System.IO.Stream@,Kvpbase.Containers.ErrorCode@)">
+            <summary>
+            Read an object.
+            </summary>
+            <param name="fullFilename">The full path and filename of the object.</param>
+            <param name="contentLength">The content length of the object.</param>
+            <param name="stream">The stream containing the object data.</param>
+            <param name="error">Error code.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.StorageDriver.ReadRange(System.String,System.Int64,System.Int32,System.IO.Stream@,Kvpbase.Containers.ErrorCode@)">
+            <summary>
+            Read bytes from a specific range in an existing object.
+            </summary>
+            <param name="fullFilename">The full path and filename of the object.</param>
+            <param name="position">The byte position from which data should be read.</param>
+            <param name="count">The number of bytes to read.</param>
+            <param name="stream">The stream containing the object data.</param>
+            <param name="error">Error code.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.StorageDriver.Delete(System.String,Kvpbase.Containers.ErrorCode@)">
+            <summary>
+            Delete an object.
+            </summary>
+            <param name="fullFilename">The full path and filename of the object.</param>
+            <param name="error">Error code.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.StorageDriver.Rename(System.String,System.String,Kvpbase.Containers.ErrorCode@)">
+            <summary>
+            Rename an object.
+            </summary>
+            <param name="original">The full path and filename of the object.</param>
+            <param name="updated">The desired full path and filename of the object.</param>
+            <param name="error">Error code.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Kvpbase.Containers.StorageDriver.GetObjectSize(System.String,System.Int64@,Kvpbase.Containers.ErrorCode@)">
+            <summary>
+            Retrieve the size of an object.
+            </summary>
+            <param name="fullFilename">The full path and filename of the object.</param>
+            <param name="size">The size of the object.</param>
+            <param name="error">Error code.</param>
+            <returns>True if successful.</returns>
+        </member>
+    </members>
+</doc>

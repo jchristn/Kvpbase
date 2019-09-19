@@ -3,46 +3,62 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
 using Kvpbase.Containers;
-using Kvpbase.Core;
+using Kvpbase.Classes;
 
 namespace Kvpbase
 {
     public partial class StorageServer
     {
-        public static HttpResponse HttpGetContainerList(RequestMetadata md)
+        public static async Task HttpGetContainerList(RequestMetadata md)
         {
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+
             #region Validate-Authentication
 
             if (md.User == null)
             {
-                _Logging.Warn("HttpGetContainerList no authentication material");
-                return new HttpResponse(md.Http, 401, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(3, 401, "Unauthorized.", null), true)));
+                _Logging.Warn(header + "HttpGetContainerList no authentication material");
+                md.Http.Response.StatusCode = 401;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                return;
+            }
+
+            if (!md.Http.Request.RawUrlEntries[0].Equals(md.User.GUID))
+            {
+                _Logging.Warn(header + "HttpGetContainerList attempt to list containers for another user");
+                md.Http.Response.StatusCode = 401;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
+                return;
             }
 
             #endregion
 
             #region Retrieve-and-Respond
 
-            List<ContainerSettings> containers = new List<ContainerSettings>();
-            if (!_ContainerMgr.GetContainers(out containers))
-            {
-                _Logging.Warn("HttpGetContainerList unable to retrieve containers");
-                return new HttpResponse(md.Http, 500, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(new ErrorResponse(4, 500, null, null), true)));
-            }
-
+            List<Container> containers = _ContainerMgr.GetContainersByUser(md.User.GUID); 
             if (containers == null || containers.Count < 1)
             {
-                return new HttpResponse(md.Http, 200, null, "application/json", Encoding.UTF8.GetBytes(Common.SerializeJson(new List<object>(), true)));
+                _Logging.Warn(header + "HttpGetContainerList no containers found for user " + md.Http.Request.RawUrlEntries[0]);
+                md.Http.Response.StatusCode = 404;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 404, null, null), true));
+                return;
             }
-             
-            return new HttpResponse(md.Http, 200, null, "application/json",
-                Encoding.UTF8.GetBytes(Common.SerializeJson(containers, true))); 
+
+            List<string> ret = new List<string>();
+            foreach (Container curr in containers) ret.Add(curr.Name);
+
+            md.Http.Response.StatusCode = 200;
+            md.Http.Response.ContentType = "application/json";
+            await md.Http.Response.Send(Common.SerializeJson(ret, true));
+            return;
 
             #endregion 
         }
