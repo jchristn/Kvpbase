@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
-using Kvpbase.Classes;
+using Kvpbase.StorageServer.Classes;
 
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpGetDisks(RequestMetadata md)
+        internal static async Task HttpGetDisks(RequestMetadata md)
         {
             List<DiskInfo> ret = DiskInfo.GetAllDisks();
             md.Http.Response.StatusCode = 200;

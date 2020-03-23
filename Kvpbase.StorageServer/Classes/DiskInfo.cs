@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.IO; 
 
-namespace Kvpbase.Classes
+namespace Kvpbase.StorageServer.Classes
 {
     /// <summary>
     /// Information about attached disks.
     /// </summary>
     public class DiskInfo
-    {
-        #region Public-Members
-
+    { 
         /// <summary>
         /// The name of the disk, i.e. 'C:\\'.
         /// </summary>
@@ -50,15 +48,7 @@ namespace Kvpbase.Classes
         /// The amount of free space on the disk, in gigabytes.
         /// </summary>
         public long AvailableSizeGigabytes { get; set; }
-
-        #endregion
-
-        #region Private-Members
-
-        #endregion
-
-        #region Constructors-and-Factories
-
+         
         /// <summary>
         /// Instantiates the object.
         /// </summary>
@@ -99,16 +89,6 @@ namespace Kvpbase.Classes
             }
 
             return ret;
-        }
-
-        #endregion
-
-        #region Public-Methods
-
-        #endregion
-
-        #region Private-Methods
-
-        #endregion
+        } 
     }
 }

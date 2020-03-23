@@ -6,20 +6,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
+using Kvpbase.StorageServer.Classes;
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
 
-using Kvpbase.Containers;
-using Kvpbase.Classes;
-
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpPutContainer(RequestMetadata md)
+        internal static async Task HttpPutContainer(RequestMetadata md)
         {
-            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-
-            #region Validate-Authentication
-
+            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+             
             if (md.User == null)
             {
                 _Logging.Warn(header + "HttpPutContainer no authentication material");
@@ -28,11 +25,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
                 return;
             }
-
-            #endregion
-
-            #region Validate-Request
-
+             
             if (md.Http.Request.RawUrlEntries.Count != 2)
             {
                 _Logging.Warn(header + "HttpPutContainer request URL does not have two entries");
@@ -50,11 +43,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
                 return;
             }
-
-            #endregion
-
-            #region Check-if-Container-Exists
-
+             
             ContainerClient client = null;
             if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
             { 
@@ -64,11 +53,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
                 return;
             }
-
-            #endregion
-
-            #region Process
-
+             
             if (md.Params.AuditLog)
             {
                 #region Audit-Log
@@ -224,8 +209,8 @@ namespace Kvpbase
 
                 #region Update
 
-                _ConfigMgr.UpdateContainer(container); 
-                _ContainerMgr.Delete(container.UserGuid, container.Name, false); 
+                _DatabaseMgr.Update<Container>(container);
+                _ContainerMgr.Delete(container.UserGUID, container.Name, false); 
                 _ContainerMgr.Add(container);
 
                 md.Http.Response.StatusCode = 200;
@@ -235,9 +220,7 @@ namespace Kvpbase
                 #endregion
 
                 #endregion
-            }
-
-            #endregion
+            } 
         }
     }
 }

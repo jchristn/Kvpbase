@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 
-using Kvpbase.Classes;
+using Kvpbase.StorageServer.Classes;
 
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
         static async Task UserApiHandler(RequestMetadata md)
         {
-            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-             
+            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+
             if (md.Params.RequestMetadata)
             {
                 md.Http.Response.StatusCode = 200;
@@ -33,25 +33,74 @@ namespace Kvpbase
                         await HttpGetContainerList(md);
                         return;
                     }
-                      
-                    await HttpGetHandler(md);
-                    return;
+                    else if (md.Http.Request.RawUrlEntries.Count == 1)
+                    {
+                        await HttpGetContainerList(md);
+                        return;
+                    }
+                    else if (md.Http.Request.RawUrlEntries.Count == 2)
+                    {
+                        await HttpGetContainer(md);
+                        return;
+                    }
+                    else if (md.Http.Request.RawUrlEntries.Count >= 3)
+                    {
+                        await HttpGetObject(md);
+                        return;
+                    }
+                    break;
 
-                case HttpMethod.PUT: 
-                    await HttpPutHandler(md);
-                    return;
+                case HttpMethod.PUT:
+                    if (md.Http.Request.RawUrlEntries.Count == 2)
+                    {
+                        await HttpPutContainer(md);
+                        return;
+                    }
+                    else if (md.Http.Request.RawUrlEntries.Count >= 3)
+                    {
+                        await HttpPutObject(md);
+                        return;
+                    }
+                    break;
 
-                case HttpMethod.POST: 
-                    await HttpPostHandler(md);
-                    return;
+                case HttpMethod.POST:
+                    if (md.Http.Request.RawUrlEntries.Count == 2)
+                    {
+                        await HttpPostContainer(md);
+                        return;
+                    }
+                    else if (md.Http.Request.RawUrlEntries.Count >= 3)
+                    {
+                        await HttpPostObject(md);
+                        return;
+                    }
+                    break;
 
-                case HttpMethod.DELETE: 
-                    await HttpDeleteHandler(md);
-                    return;
+                case HttpMethod.DELETE:
+                    if (md.Http.Request.RawUrlEntries.Count == 2)
+                    {
+                        await HttpDeleteContainer(md);
+                        return;
+                    }
+                    else if (md.Http.Request.RawUrlEntries.Count >= 3)
+                    {
+                        await HttpDeleteObject(md);
+                        return;
+                    }
+                    break;
 
-                case HttpMethod.HEAD: 
-                    await HttpHeadHandler(md);
-                    return;
+                case HttpMethod.HEAD:
+                    if (md.Http.Request.RawUrlEntries.Count == 2)
+                    {
+                        await HttpHeadContainer(md);
+                        return;
+                    }
+                    else if (md.Http.Request.RawUrlEntries.Count >= 3)
+                    {
+                        await HttpHeadObject(md);
+                        return;
+                    }
+                    break;
             }
              
             _Logging.Warn(header + "UserApiHandler unknown URL " + md.Http.Request.RawUrlWithoutQuery);

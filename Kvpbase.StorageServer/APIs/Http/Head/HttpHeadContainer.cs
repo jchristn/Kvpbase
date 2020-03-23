@@ -6,20 +6,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
+using Kvpbase.StorageServer.Classes;
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
 
-using Kvpbase.Classes;
-using Kvpbase.Containers;
-
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpHeadContainer(RequestMetadata md)
+        internal static async Task HttpHeadContainer(RequestMetadata md)
         {
-            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-
-            #region Retrieve-Container
-
+            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+             
             Container currContainer = _ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.ContainerName);
             if (currContainer == null)
             { 
@@ -34,9 +31,7 @@ namespace Kvpbase
                 md.Http.Response.StatusCode = 200;
                 await md.Http.Response.Send();
                 return; 
-            }
-            
-            #endregion
+            } 
         }
     }
 }

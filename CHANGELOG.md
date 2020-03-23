@@ -2,6 +2,18 @@
 
 ## Current Version
 
+v4.1.0
+
+- Maintenance release; now .NET Core only
+- Dependency updates
+- Added support for Sqlite (now supporting Sqlite, MS SQL, MySQL, and PostgreSQL)
+- Simplified database integration and usage to reduce cross-platform issues
+- Database tables are now automatically created if they don't exist
+- Logging to the file system in addition to syslog and console
+- Minor code refactor for manageability 
+
+## Previous Versions
+ 
 v4.0.1
 
 - Integration with external databases for configuration, thereby enabling consistency across nodes, simplicity, scale-out, and reducing JSON files
@@ -18,8 +30,6 @@ v4.0.1
 - Dependency updates
 - Retarget to both .NET Core 2.2 and .NET Framework 4.6.1
 
-## Previous Versions
- 
 v3.x
 
 - Enumeration support using object key prefixes

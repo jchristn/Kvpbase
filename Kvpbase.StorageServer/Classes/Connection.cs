@@ -1,15 +1,13 @@
 ﻿using System;
 using WatsonWebserver;
 
-namespace Kvpbase.Classes
+namespace Kvpbase.StorageServer.Classes
 {
     /// <summary>
     /// An HTTP connection.
     /// </summary>
     public class Connection
-    {
-        #region Public-Members
-
+    { 
         /// <summary>
         /// Thread ID of the connection.
         /// </summary>
@@ -26,15 +24,10 @@ namespace Kvpbase.Classes
         public int SourcePort { get; set; }
 
         /// <summary>
-        /// User ID of the requestor.
+        /// User GUID.
         /// </summary>
-        public int? UserMasterId { get; set; }
-
-        /// <summary>
-        /// Email address of the requestor.
-        /// </summary>
-        public string Email { get; set; }
-
+        public string UserGUID { get; set; }
+         
         /// <summary>
         /// HTTP method
         /// </summary>
@@ -54,31 +47,13 @@ namespace Kvpbase.Classes
         /// When the connection was terminated.
         /// </summary>
         public DateTime EndTime { get; set; }
-
-        #endregion
-
-        #region Private-Members
-
-        #endregion
-
-        #region Constructors-and-Factories
-
+         
         /// <summary>
         /// Instantiates the object.
         /// </summary>
         public Connection()
         {
 
-        }
-
-        #endregion
-
-        #region Public-Methods
-
-        #endregion
-
-        #region Private-Methods
-
-        #endregion
+        } 
     }
 }

@@ -6,19 +6,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
+using Kvpbase.StorageServer.Classes; 
 
-using Kvpbase.Containers;
-using Kvpbase.Classes; 
-
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpDeleteObject(RequestMetadata md)
+        internal static async Task HttpDeleteObject(RequestMetadata md)
         {
-            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-
-            #region Authenticate-and-Authorize
+            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
 
             if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
             {
@@ -37,11 +33,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
                 return;
             }
-
-            #endregion
-
-            #region Retrieve-Container
-
+             
             ContainerClient client = null;
             if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
             { 
@@ -51,11 +43,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
                 return;
             }
-             
-            #endregion
-
-            #region Check-if-Object-Exists
-             
+              
             if (!client.Exists(md.Params.ObjectKey))
             {
                 _Logging.Warn(header + "HttpDeleteObject object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + " does not exist");
@@ -65,12 +53,7 @@ namespace Kvpbase
                 return;
             }
 
-            #endregion
-
-            #region Delete-and-Respond
-
-            ErrorCode error;
-
+            ErrorCode error = ErrorCode.None;
             if (md.Params.Keys)
             {
                 _ObjectHandler.WriteKeyValues(md, client, md.Params.ObjectKey, null, out error);
@@ -93,9 +76,7 @@ namespace Kvpbase
                 md.Http.Response.StatusCode = 204;
                 await md.Http.Response.Send();
                 return;
-            } 
-            
-            #endregion 
+            }  
         }
     }
 }

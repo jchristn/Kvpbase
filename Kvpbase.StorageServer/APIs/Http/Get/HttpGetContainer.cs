@@ -7,20 +7,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
+using Kvpbase.StorageServer.Classes;
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
 
-using Kvpbase.Containers;
-using Kvpbase.Classes;
-
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpGetContainer(RequestMetadata md)
+        internal static async Task HttpGetContainer(RequestMetadata md)
         {
-            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-
-            #region Retrieve-Container
-
+            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+             
             ContainerClient client = null;
             if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
             { 
@@ -30,11 +27,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
                 return;
             }
-             
-            #endregion
-
-            #region Authenticate-and-Authorize
-
+              
             if (!client.Container.IsPublicRead)
             {
                 if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
@@ -58,10 +51,6 @@ namespace Kvpbase
                     return;
                 }
             }
-
-            #endregion
-
-            #region Process
              
             if (md.Params.Config)
             {
@@ -82,7 +71,7 @@ namespace Kvpbase
             if (md.Params.Keys)
             {
                 Dictionary<string, string> vals = new Dictionary<string, string>();
-                client.ReadContainerKeyValues(out vals);
+                vals = client.ReadContainerKeyValues();
                 md.Http.Response.StatusCode = 200;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(vals, true));
@@ -101,17 +90,15 @@ namespace Kvpbase
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(meta, true));
                 return;
-            }
-
-            #endregion 
+            } 
         }
 
-        public static string DirectoryListingPage(ContainerMetadata meta)
+        internal static string DirectoryListingPage(ContainerMetadata meta)
         {
             string ret =
                 "<html>" +
                 "   <head>" +
-                "      <title>Kvpbase :: Directory of /" + meta.UserGuid + "/" + meta.ContainerName + "</title>" +
+                "      <title>Kvpbase :: Directory of /" + meta.UserGUID + "/" + meta.ContainerName + "</title>" +
                 "      <style>" +
                 "         body {" +
                 "         font-family: arial;" +
@@ -161,7 +148,7 @@ namespace Kvpbase
                 "      <pre>" +
                 WebUtility.HtmlEncode(Logo()) +
                 "  	   </pre>" +
-                "      <p>Directory of: /" + meta.UserGuid + "/" + meta.ContainerName + "</p>" +
+                "      <p>Directory of: /" + meta.UserGUID + "/" + meta.ContainerName + "</p>" +
                 "      <p>" +
                 "      <table>" +
                 "         <tr>" +
@@ -178,7 +165,7 @@ namespace Kvpbase
                     // <a href='/foo/bar' target='_blank'>foo.bar</a>
                     ret +=
                         "         <tr>" +
-                        "            <td><a href='/" + meta.UserGuid + "/" + meta.ContainerName + "/" + obj.ObjectKey + "' target='_blank'>" + obj.ObjectKey + "</a></td>" +
+                        "            <td><a href='/" + meta.UserGUID + "/" + meta.ContainerName + "/" + obj.ObjectKey + "' target='_blank'>" + obj.ObjectKey + "</a></td>" +
                         "            <td>" + obj.ContentType + "</td>" +
                         "            <td>" + obj.ContentLength + "</td>" +
                         "            <td>" + Convert.ToDateTime(obj.CreatedUtc).ToString(_TimestampFormat) + "</td>" +

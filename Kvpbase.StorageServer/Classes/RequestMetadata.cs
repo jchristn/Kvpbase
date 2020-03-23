@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text; 
-using WatsonWebserver; 
+using WatsonWebserver;
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
 
-namespace Kvpbase.Classes
+namespace Kvpbase.StorageServer.Classes
 {
     /// <summary>
     /// Metadata for an incoming HTTP API request.
     /// </summary>
     public class RequestMetadata
-    {
-        #region Public-Members
-         
+    { 
         /// <summary>
         /// The HttpContext object from the web server.
         /// </summary>
@@ -36,15 +35,7 @@ namespace Kvpbase.Classes
         /// Parameters as found in querystring key-value pairs and the URL itself.
         /// </summary>
         public Parameters Params { get; set; }
-
-        #endregion
-
-        #region Private-Members
-
-        #endregion
-
-        #region Constructors-and-Factories
-
+         
         /// <summary>
         /// Instantiates the object.
         /// </summary>
@@ -52,26 +43,12 @@ namespace Kvpbase.Classes
         {
 
         }
-         
-        #endregion
-
-        #region Public-Methods
           
-        #endregion
-
-        #region Private-Methods
-
-        #endregion
-
-        #region Public-Embedded-Classes
-
         /// <summary>
         /// Request parameters found in querystring key-value pairs and the URL itself.
         /// </summary>
         public class Parameters
-        {
-            #region Public-Members
-             
+        { 
             /// <summary>
             /// The user GUID.
             /// </summary>
@@ -212,15 +189,7 @@ namespace Kvpbase.Classes
             /// i.e. 'ORDER BY LastUpdateUtc ASC'.
             /// </summary>
             public string OrderBy { get; set; }
-
-            #endregion
-
-            #region Private-Members
-
-            #endregion
-
-            #region Constructors-and-Factories
-
+             
             /// <summary>
             /// Instantiates the object.
             /// </summary>
@@ -255,72 +224,72 @@ namespace Kvpbase.Classes
                     ret.ObjectKey = vals[2];
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_auditlog")) ret.AuditLog = true; 
-                if (req.QuerystringEntries.ContainsKey("_metadata")) ret.Metadata = true;
-                if (req.QuerystringEntries.ContainsKey("_keys")) ret.Keys = true;
-                if (req.QuerystringEntries.ContainsKey("_search")) ret.Search = true;
-                if (req.QuerystringEntries.ContainsKey("_reqmetadata")) ret.RequestMetadata = true;
-                if (req.QuerystringEntries.ContainsKey("_config")) ret.Config = true; 
-                if (req.QuerystringEntries.ContainsKey("_html")) ret.Html = true;
+                if (req.QuerystringEntries.ContainsKey("auditlog")) ret.AuditLog = true; 
+                if (req.QuerystringEntries.ContainsKey("metadata")) ret.Metadata = true;
+                if (req.QuerystringEntries.ContainsKey("keys")) ret.Keys = true;
+                if (req.QuerystringEntries.ContainsKey("search")) ret.Search = true;
+                if (req.QuerystringEntries.ContainsKey("reqmetadata")) ret.RequestMetadata = true;
+                if (req.QuerystringEntries.ContainsKey("config")) ret.Config = true; 
+                if (req.QuerystringEntries.ContainsKey("html")) ret.Html = true;
 
-                if (req.QuerystringEntries.ContainsKey("_auditkey"))
-                    ret.AuditKey = req.QuerystringEntries["_auditkey"];
+                if (req.QuerystringEntries.ContainsKey("auditkey"))
+                    ret.AuditKey = req.QuerystringEntries["auditkey"];
 
-                if (req.QuerystringEntries.ContainsKey("_action"))
-                    ret.Action = req.QuerystringEntries["_action"];
+                if (req.QuerystringEntries.ContainsKey("action"))
+                    ret.Action = req.QuerystringEntries["action"];
 
-                if (req.QuerystringEntries.ContainsKey("_index"))
+                if (req.QuerystringEntries.ContainsKey("index"))
                 {
-                    if (Int32.TryParse(req.QuerystringEntries["_index"], out testInt))
+                    if (Int32.TryParse(req.QuerystringEntries["index"], out testInt))
                     {
                         if (testInt >= 0) ret.Index = testInt;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_count"))
+                if (req.QuerystringEntries.ContainsKey("count"))
                 {
-                    if (Int32.TryParse(req.QuerystringEntries["_count"], out testInt))
+                    if (Int32.TryParse(req.QuerystringEntries["count"], out testInt))
                     {
                         if (testInt >= 0) ret.Count = testInt;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_rename"))
-                    ret.Rename = req.QuerystringEntries["_rename"];
+                if (req.QuerystringEntries.ContainsKey("rename"))
+                    ret.Rename = req.QuerystringEntries["rename"];
 
-                if (req.QuerystringEntries.ContainsKey("_createdbefore"))
+                if (req.QuerystringEntries.ContainsKey("createdbefore"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["_createdbefore"], out testTimestamp))
+                    if (DateTime.TryParse(req.QuerystringEntries["createdbefore"], out testTimestamp))
                     {
                         ret.CreatedBefore = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_createdafter"))
+                if (req.QuerystringEntries.ContainsKey("createdafter"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["_createdafter"], out testTimestamp))
+                    if (DateTime.TryParse(req.QuerystringEntries["createdafter"], out testTimestamp))
                     {
                         ret.CreatedAfter = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_updatedbefore"))
+                if (req.QuerystringEntries.ContainsKey("updatedbefore"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["_updatedbefore"], out testTimestamp))
+                    if (DateTime.TryParse(req.QuerystringEntries["updatedbefore"], out testTimestamp))
                     {
                         ret.UpdatedBefore = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_updatedafter"))
+                if (req.QuerystringEntries.ContainsKey("updatedafter"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["_updatedafter"], out testTimestamp))
+                    if (DateTime.TryParse(req.QuerystringEntries["updatedafter"], out testTimestamp))
                     {
                         ret.UpdatedAfter = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_accessedbefore"))
+                if (req.QuerystringEntries.ContainsKey("accessedbefore"))
                 {
                     if (DateTime.TryParse(req.QuerystringEntries["_accessedbefore"], out testTimestamp))
                     {
@@ -328,7 +297,7 @@ namespace Kvpbase.Classes
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_accessedafter"))
+                if (req.QuerystringEntries.ContainsKey("accessedafter"))
                 {
                     if (DateTime.TryParse(req.QuerystringEntries["_accessedafter"], out testTimestamp))
                     {
@@ -336,43 +305,39 @@ namespace Kvpbase.Classes
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_prefix"))
-                    ret.Prefix = req.QuerystringEntries["_prefix"];
+                if (req.QuerystringEntries.ContainsKey("prefix"))
+                    ret.Prefix = req.QuerystringEntries["prefix"];
 
-                if (req.QuerystringEntries.ContainsKey("_md5"))
-                    ret.Md5 = req.QuerystringEntries["_md5"];
+                if (req.QuerystringEntries.ContainsKey("md5"))
+                    ret.Md5 = req.QuerystringEntries["md5"];
 
-                if (req.QuerystringEntries.ContainsKey("_orderby"))
-                    ret.OrderBy = req.QuerystringEntries["_orderby"];
+                if (req.QuerystringEntries.ContainsKey("orderby"))
+                    ret.OrderBy = req.QuerystringEntries["orderby"];
 
-                if (req.QuerystringEntries.ContainsKey("_contenttype"))
-                    ret.ContentType = req.QuerystringEntries["_contenttype"];
+                if (req.QuerystringEntries.ContainsKey("contenttype"))
+                    ret.ContentType = req.QuerystringEntries["contenttype"];
 
-                if (req.QuerystringEntries.ContainsKey("_tags"))
-                    ret.Tags = req.QuerystringEntries["_tags"];
+                if (req.QuerystringEntries.ContainsKey("tags"))
+                    ret.Tags = req.QuerystringEntries["tags"];
 
-                if (req.QuerystringEntries.ContainsKey("_sizemin"))
+                if (req.QuerystringEntries.ContainsKey("sizemin"))
                 {
-                    if (Int64.TryParse(req.QuerystringEntries["_sizemin"], out testLong))
+                    if (Int64.TryParse(req.QuerystringEntries["sizemin"], out testLong))
                     {
                         ret.SizeMin = testLong;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("_sizemax"))
+                if (req.QuerystringEntries.ContainsKey("sizemax"))
                 {
-                    if (Int64.TryParse(req.QuerystringEntries["_sizemax"], out testLong))
+                    if (Int64.TryParse(req.QuerystringEntries["sizemax"], out testLong))
                     {
                         ret.SizeMax = testLong;
                     }
                 }
                  
                 return ret;
-            }
-
-            #endregion
-        }
-
-        #endregion
+            } 
+        } 
     }
 }

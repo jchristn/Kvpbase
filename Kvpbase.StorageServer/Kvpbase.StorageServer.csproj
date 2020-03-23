@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>netcoreapp2.2;net461</TargetFrameworks>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <RootNamespace>Kvpbase.StorageServer</RootNamespace>
     <PackageId>Kvpbase.StorageServer</PackageId>
-    <Version>4.0.1</Version>
+    <Version>4.1.0</Version>
     <Authors>Joel Christner</Authors>
     <Product>Kvpbase Storage Server</Product>
     <Description>Object storage system with integrated replication and a simple RESTful API.</Description>
@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
-    <PackageReleaseNotes>Major refactor with numerous enhancements and fixes, please refer to repository README for more information.</PackageReleaseNotes>
+    <PackageReleaseNotes>Maintenance release.</PackageReleaseNotes>
     <ApplicationIcon />
     <StartupObject />
     <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
@@ -31,11 +31,15 @@
     <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
+    <DocumentationFile>C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\Kvpbase.StorageServer.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="DatabaseWrapper" Version="1.4.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="SyslogLogging" Version="1.2.0" />
-    <PackageReference Include="Watson" Version="3.0.2" />
+    <PackageReference Include="DatabaseWrapper" Version="2.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="SyslogLogging" Version="1.3.2" />
+    <PackageReference Include="Watson" Version="3.0.9" />
   </ItemGroup>
 
   <ItemGroup>

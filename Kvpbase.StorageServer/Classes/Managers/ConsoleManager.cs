@@ -8,29 +8,19 @@ using System.Threading.Tasks;
 using SyslogLogging; 
 using WatsonWebserver;
  
-using Kvpbase.Classes.Handlers;  
+using Kvpbase.StorageServer.Classes.Handlers;  
 
-namespace Kvpbase.Classes.Managers
+namespace Kvpbase.StorageServer.Classes.Managers
 {
-    public class ConsoleManager
-    {
-        #region Public-Members
-
-        #endregion
-
-        #region Private-Members
-
+    internal class ConsoleManager
+    { 
         private bool _Enabled { get; set; }
         private Settings _Settings { get; set; }   
         private LoggingModule _Logging { get; set; }  
         private ContainerManager _ContainerMgr { get; set; } 
-        private ObjectHandler _Objects { get; set; } 
-         
-        #endregion
+        private ObjectHandler _Objects { get; set; }
 
-        #region Constructors-and-Factories
-
-        public ConsoleManager(
+        internal ConsoleManager(
             Settings settings,
             LoggingModule logging,   
             ContainerManager containerMgr, 
@@ -49,11 +39,7 @@ namespace Kvpbase.Classes.Managers
             _Objects = objects; 
         }
 
-        #endregion
-
-        #region Public-Methods
-         
-        public void Worker()
+        internal void Worker()
         {
             string userInput = "";
 
@@ -86,11 +72,7 @@ namespace Kvpbase.Classes.Managers
                 }
             }
         }
-
-        #endregion
-
-        #region Private-Methods
-
+         
         private void Menu()
         {
             Console.WriteLine(Common.Line(79, "-"));
@@ -99,8 +81,6 @@ namespace Kvpbase.Classes.Managers
             Console.WriteLine("  quit / q                  exit the application");     
             Console.WriteLine("");
             return;
-        }
-           
-        #endregion 
+        } 
     }
 }

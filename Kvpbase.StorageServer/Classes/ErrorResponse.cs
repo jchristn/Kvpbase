@@ -1,14 +1,12 @@
 ﻿using System;
 
-namespace Kvpbase.Classes
+namespace Kvpbase.StorageServer.Classes
 {
     /// <summary>
     /// Object containing error-related information, used in HTTP API responses.
     /// </summary>
     public class ErrorResponse
-    {
-        #region Public-Members
-
+    { 
         /// <summary>
         /// Indicates success or failure of the operation.
         /// </summary>
@@ -37,15 +35,7 @@ namespace Kvpbase.Classes
         /// <summary>
         /// Any additional data associated with the error.
         /// </summary>
-        public object Data;
-
-        #endregion
-
-        #region Private-Members
-
-        #endregion
-
-        #region Constructors-and-Factories
+        public object Data; 
 
         /// <summary>
         /// Instantiates the object.
@@ -199,16 +189,6 @@ namespace Kvpbase.Classes
             {
                 Text += "  " + textAppend;
             }
-        }
-
-        #endregion
-
-        #region Public-Methods
-         
-        #endregion
-
-        #region Private-Methods
-
-        #endregion
+        } 
     }
 }

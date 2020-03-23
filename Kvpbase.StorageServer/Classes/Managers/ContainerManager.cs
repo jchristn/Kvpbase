@@ -6,19 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Timers;
 using System.Threading.Tasks;
-
-using Kvpbase.Containers;
-
 using DatabaseWrapper;
 using SyslogLogging;
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
  
-namespace Kvpbase.Classes.Managers
-{ 
-    public class ContainerManager
-    {
-        #region Public-Members
-
-        public int ContainerRecheckIntervalSeconds
+namespace Kvpbase.StorageServer.Classes.Managers
+{
+    internal class ContainerManager
+    { 
+        internal int ContainerRecheckIntervalSeconds
         {
             get
             {
@@ -30,37 +26,25 @@ namespace Kvpbase.Classes.Managers
                 _ContainerRecheckIntervalSeconds = value;
             }
         }
-
-        #endregion
-
-        #region Private-Members
-
+         
         private int _ContainerRecheckIntervalSeconds = 5;
-        private Timer _ContainerRecheck;
-
+        private Timer _ContainerRecheck; 
         private Settings _Settings;
         private LoggingModule _Logging;
-        private ConfigManager _Config;
-        private DatabaseClient _Database;
-
+        private DatabaseManager _Database;
+        // private string _Header = "[Kvpbase.ContainerManager] ";
         private readonly object _ContainersLock;
         private List<ContainerClient> _ContainerClients;
-         
-        #endregion
 
-        #region Constructors-and-Factories
-         
-        public ContainerManager(Settings settings, LoggingModule logging, ConfigManager config, DatabaseClient database)
+        internal ContainerManager(Settings settings, LoggingModule logging, DatabaseManager databaseMgr)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
-            if (config == null) throw new ArgumentNullException(nameof(config));
-            if (database == null) throw new ArgumentNullException(nameof(database));
+            if (databaseMgr == null) throw new ArgumentNullException(nameof(databaseMgr)); 
 
             _Settings = settings;
             _Logging = logging;
-            _Config = config;
-            _Database = database;
+            _Database = databaseMgr; 
 
             _ContainersLock = new object();
             _ContainerClients = new List<ContainerClient>();
@@ -73,41 +57,41 @@ namespace Kvpbase.Classes.Managers
             InitializeContainerClients();
         }
 
-        #endregion
-
-        #region Public-Methods
-         
-        public Container GetContainer(string userGuid, string name)
+        internal Container GetContainer(string userGuid, string name)
         { 
             if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+            Expression e = new Expression("userguid", Operators.Equals, userGuid);
+            e.PrependAnd("name", Operators.Equals, name);
+            return _Database.SelectByFilter<Container>(e, "ORDER BY id DESC");
+        }
 
-            return _Config.GetContainer(userGuid, name);
-        }
-         
-        public List<Container> GetContainers()
+        internal List<Container> GetContainers()
         {
-            return _Config.GetContainers();
+            return _Database.SelectMany<Container>(null, null, null, "ORDER BY id DESC");
         }
-          
-        public List<Container> GetContainersByUser(string userGuid)
+
+        internal List<Container> GetContainersByUser(string userGuid)
         {
             if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
-            return _Config.GetContainersByUser(userGuid); 
+            Expression e = new Expression("userguid", Operators.Equals, userGuid);
+            return _Database.SelectMany<Container>(null, null, e, "ORDER BY id DESC");
         }
-         
-        public bool GetContainerClient(string userGuid, string name, out ContainerClient client)
+
+        internal bool GetContainerClient(string userGuid, string name, out ContainerClient client)
         {
             if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
             lock (_ContainersLock)
             {
-                client = _ContainerClients.Where(c => c.Container.UserGuid.Equals(userGuid) && c.Container.Name.Equals(name)).FirstOrDefault();
+                client = _ContainerClients.Where(c => c.Container.UserGUID.Equals(userGuid) && c.Container.Name.Equals(name)).FirstOrDefault();
                 if (client != null && client != default(ContainerClient)) return true;
             }
 
-            Container container = _Config.GetContainer(userGuid, name);
+            Expression e = new Expression("name", Operators.Equals, name);
+            e.PrependAnd("userguid", Operators.Equals, userGuid);
+            Container container = _Database.SelectByFilter<Container>(e, "ORDER BY id DESC");
             if (container != null)
             {
                 client = InitializeContainerClient(container);
@@ -116,28 +100,40 @@ namespace Kvpbase.Classes.Managers
 
             return false;
         }
-         
-        public bool Add(Container container)
+
+        internal bool Add(Container container)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
             if (String.IsNullOrEmpty(container.Name)) return false;
-            if (String.IsNullOrEmpty(container.UserGuid)) return false;
+            if (String.IsNullOrEmpty(container.UserGUID)) return false;
             if (String.IsNullOrEmpty(container.GUID)) return false;
-             
-            bool success = _Config.AddContainer(container);
-            if (success) InitializeContainerClient(container);
-            return success;
+
+            if (String.IsNullOrEmpty(container.ObjectsDirectory))
+            {
+                container.ObjectsDirectory =
+                    _Settings.Storage.Directory +
+                    container.UserGUID + "/" +
+                    container.GUID + "/";
+            }
+
+            container = _Database.Insert<Container>(container);
+            if (container == null) return false;
+            InitializeContainerClient(container);
+            return true;
         }
-         
-        public bool Exists(string userGuid, string name)
+
+        internal bool Exists(string userGuid, string name)
         {
             if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
-
-            return _Config.ContainerExists(userGuid, name);
+            Expression e = new Expression("userguid", Operators.Equals, userGuid);
+            e.PrependAnd(new Expression("name", Operators.Equals, name));
+            Container container = _Database.SelectByFilter<Container>(e, "ORDER BY id DESC");
+            if (container != null) return true;
+            return false;
         }
-         
-        public void Delete(string userGuid, string name, bool cleanup)
+
+        internal void Delete(string userGuid, string name, bool cleanup)
         {
             if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
@@ -145,7 +141,11 @@ namespace Kvpbase.Classes.Managers
             ContainerClient client = null;
             if (GetContainerClient(userGuid, name, out client))
             {
-                _Config.RemoveContainer(client.Container);
+                Expression e = new Expression("userguid", Operators.Equals, userGuid);
+                e.PrependAnd("name", Operators.Equals, name);
+
+                Container container = _Database.SelectByFilter<Container>(e, "ORDER BY id DESC");
+                if (container != null) _Database.Delete<Container>(container);
 
                 if (cleanup) client.Destroy();
                 else client.Dispose();
@@ -156,15 +156,10 @@ namespace Kvpbase.Classes.Managers
                 }
             }
         }
-        
-        #endregion
-
-        #region Private-Methods
-           
+         
         private void InitializeContainerClients()
         {
-            List<Container> containers = _Config.GetContainers();
-
+            List<Container> containers = GetContainers(); 
             if (containers != null && containers.Count > 0)
             {
                 foreach (Container curr in containers) InitializeContainerClient(curr);
@@ -183,7 +178,7 @@ namespace Kvpbase.Classes.Managers
                     _ContainerClients.Remove(remove);
                 }
 
-                ContainerClient client = new ContainerClient(_Settings, _Logging, _Config, _Database, container);
+                ContainerClient client = new ContainerClient(_Settings, _Logging, _Database, container);
                 _ContainerClients.Add(client);
                 return client;
             } 
@@ -201,7 +196,7 @@ namespace Kvpbase.Classes.Managers
                     if (!_ContainerClients.Exists(c => c.Container.GUID.Equals(curr.GUID)))
                     {
                         // new container found in the database
-                        ContainerClient client = new ContainerClient(_Settings, _Logging, _Config, _Database, curr);
+                        ContainerClient client = new ContainerClient(_Settings, _Logging, _Database, curr);
                         _ContainerClients.Add(client);
                     }
                 }
@@ -217,8 +212,6 @@ namespace Kvpbase.Classes.Managers
                     }
                 }
             }
-        }
-
-        #endregion
+        } 
     }
 }

@@ -16,3 +16,11 @@ C:\code\kvpbase\storageserver-4.0\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpb
 C:\code\kvpbase\storageserver-4.0\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.AssemblyInfo.cs
 C:\code\kvpbase\storageserver-4.0\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.dll
 C:\code\kvpbase\storageserver-4.0\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.pdb
+C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\bin\Release\netstandard2.0\Kvpbase.Stream.deps.json
+C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\bin\Release\netstandard2.0\Kvpbase.Stream.dll
+C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\bin\Release\netstandard2.0\Kvpbase.Stream.pdb
+C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.csprojAssemblyReference.cache
+C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.AssemblyInfoInputs.cache
+C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.AssemblyInfo.cs
+C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.dll
+C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.pdb

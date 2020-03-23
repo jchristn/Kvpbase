@@ -7,41 +7,45 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-
+using System.Threading.Tasks; 
 using DatabaseWrapper;
 using SyslogLogging;
-using WatsonWebserver;
- 
-using Kvpbase.Classes.Handlers;
-using Kvpbase.Classes.Managers; 
-using Kvpbase.Containers;
-using Kvpbase.Classes;
+using WatsonWebserver; 
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
+using Kvpbase.StorageServer.Classes.Handlers;
+using Kvpbase.StorageServer.Classes.Managers; 
+using Kvpbase.StorageServer.Classes;
 
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    /// <summary>
+    /// Kvpbase Storage Server.
+    /// </summary>
+    public partial class Program
     {
-        public static Settings _Settings;
-        public static LoggingModule _Logging;
-        public static DatabaseClient _ConfigDb;
-        public static DatabaseClient _StorageDb;
-        public static ConfigManager _ConfigMgr;
-         
-        public static ContainerManager _ContainerMgr;
-        public static ObjectHandler _ObjectHandler;  
-        public static ConnectionManager _ConnMgr;  
-        public static ConsoleManager _ConsoleMgr; 
-        public static ConcurrentQueue<Dictionary<string, object>> _FailedRequests;
-        public static Server _Server;
+        private static Settings _Settings;
+        private static LoggingModule _Logging;
+        private static DatabaseClient _Database;
+        private static DatabaseManager _DatabaseMgr;
+        private static AuthManager _AuthMgr;
+        private static LockManager _LockMgr;
 
-        public static string _TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
-        public static string _Version = null;
+        private static ContainerManager _ContainerMgr;
+        private static ObjectHandler _ObjectHandler;
+        private static ConnectionManager _ConnMgr;
+        private static ConsoleManager _ConsoleMgr; 
+        private static Server _Server;
 
+        private static string _TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
+        private static string _Version = null;
+        private static string _Header = "[Kvpbase] ";
+
+        /// <summary>
+        /// Main method.
+        /// </summary>
+        /// <param name="args">Command line arguments.</param>
         public static void Main(string[] args)
-        {  
-            #region Load-Settings
-
+        {
             bool initialSetup = false;
             if (args != null && args.Length >= 1)
             {
@@ -53,25 +57,17 @@ namespace Kvpbase
             {
                 Setup setup = new Setup();
             }
-             
+
             _Settings = Settings.FromFile("System.json");
 
             Welcome();
             CreateDirectories();
 
-            #endregion
-             
-            #region Initialize-Globals
-
-            //
-            // Global logging
-            //
-
             _Logging = new LoggingModule(
                 _Settings.Syslog.ServerIp,
                 _Settings.Syslog.ServerPort,
                 _Settings.EnableConsole,
-                (LoggingModule.Severity)_Settings.Syslog.MinimumLevel,
+                (Severity)_Settings.Syslog.MinimumLevel,
                 false,
                 true,
                 true,
@@ -79,41 +75,40 @@ namespace Kvpbase
                 false,
                 false);
 
-            // 
-            // Databases
-            //
+            if (_Settings.Syslog.FileLogging)
+            {
+                _Logging.FileLogging = FileLoggingMode.FileWithDate;
+                _Logging.LogFilename = "Kvpbase.StorageServer.Log";
+            }
 
-            _ConfigDb = new DatabaseClient(
-                _Settings.ConfigDatabase.Type,
-                _Settings.ConfigDatabase.Hostname,
-                _Settings.ConfigDatabase.Port,
-                _Settings.ConfigDatabase.Username,
-                _Settings.ConfigDatabase.Password,
-                _Settings.ConfigDatabase.InstanceName,
-                _Settings.ConfigDatabase.DatabaseName);
-
-            _StorageDb = new DatabaseClient(
-                _Settings.StorageDatabase.Type,
-                _Settings.StorageDatabase.Hostname,
-                _Settings.StorageDatabase.Port,
-                _Settings.StorageDatabase.Username,
-                _Settings.StorageDatabase.Password,
-                _Settings.StorageDatabase.InstanceName,
-                _Settings.StorageDatabase.DatabaseName);
-
-            //
-            // Authentication, state, and encrypted related managers
-            //
-
-            _ConfigMgr = new ConfigManager(_Settings, _Logging, _ConfigDb); 
-            _ConnMgr = new ConnectionManager();  
-
-            //
-            // Managers and handlers for containers, objects
-            //
-             
-            _ContainerMgr = new ContainerManager(_Settings, _Logging, _ConfigMgr, _StorageDb);  
-            _ObjectHandler = new ObjectHandler(_Settings, _Logging, _ConfigMgr);
+            switch (_Settings.Database.Type)
+            {
+                case DbTypes.Sqlite:
+                    _Database = new DatabaseClient(
+                        _Settings.Database.Filename);
+                    break;
+                case DbTypes.MsSql:
+                case DbTypes.MySql:
+                case DbTypes.PgSql:
+                    _Database = new DatabaseClient(
+                        _Settings.Database.Type,
+                        _Settings.Database.Hostname,
+                        _Settings.Database.Port,
+                        _Settings.Database.Username,
+                        _Settings.Database.Password,
+                        _Settings.Database.InstanceName,
+                        _Settings.Database.DatabaseName);
+                    break;
+                default:
+                    throw new ArgumentException("Unknown database type: " + _Settings.Database.Type.ToString());
+            }
+              
+            _DatabaseMgr = new DatabaseManager(_Settings, _Logging, _Database);
+            _AuthMgr = new AuthManager(_Settings, _Logging, _DatabaseMgr);
+            _LockMgr = new LockManager(_Settings, _Logging, _DatabaseMgr);
+            _ConnMgr = new ConnectionManager(); 
+            _ContainerMgr = new ContainerManager(_Settings, _Logging, _DatabaseMgr);  
+            _ObjectHandler = new ObjectHandler(_Settings, _Logging, _DatabaseMgr, _LockMgr);
               
             _Server = new Server(
                 _Settings.Server.DnsHostname,
@@ -128,11 +123,7 @@ namespace Kvpbase
                 _Logging, 
                 _ContainerMgr, 
                 _ObjectHandler);
-
-            #endregion
-
-            #region Wait-for-Server-Thread
-
+             
             if (_Settings.EnableConsole)
             {
                 _ConsoleMgr.Worker();
@@ -148,12 +139,10 @@ namespace Kvpbase
                 while (!waitHandleSignal);
             }
 
-            _Logging.Debug("StorageServer exiting");
-
-            #endregion
+            _Logging.Debug(_Header + "exiting"); 
         }
-        
-        static void Welcome()
+
+        private static void Welcome()
         {
             // http://patorjk.com/software/taag/#p=display&f=Small&t=kvpbase
 
@@ -170,47 +159,37 @@ namespace Kvpbase
             Console.WriteLine(msg);
         }
 
-        static void CreateDirectories()
+        private static void CreateDirectories()
         {
             if (!Directory.Exists(_Settings.Storage.Directory)) Directory.CreateDirectory(_Settings.Storage.Directory);
+            if (!Directory.Exists(_Settings.Syslog.LogDirectory)) Directory.CreateDirectory(_Settings.Syslog.LogDirectory); 
         }
 
-        static async Task RequestReceived(HttpContext ctx)
+        private static async Task RequestReceived(HttpContext ctx)
         { 
-            string header = ctx.Request.SourceIp + ":" + ctx.Request.SourcePort + " ";
+            string header = _Header + ctx.Request.SourceIp + ":" + ctx.Request.SourcePort + " ";
 
+            DateTime startTime = DateTime.Now;
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
+            RequestMetadata md = new RequestMetadata();
+            md.Http = ctx;
+            md.User = null;
+            md.Key = null;
+            md.Perm = null;
+
             try
-            {
-                #region Variables
-
-                DateTime startTime = DateTime.Now;
-                 
-                RequestMetadata md = new RequestMetadata();
-                md.Http = ctx; 
-                md.User = null;
-                md.Key = null;
-                md.Perm = null;
-
-                if (Common.IsTrue(_Settings.Syslog.LogHttpRequests)) 
+            {  
+                if (Common.IsTrue(_Settings.Debug.HttpRequest)) 
                     _Logging.Debug(header + "RequestReceived request received: " + Environment.NewLine + md.Http.ToString()); 
-
-                #endregion
-
-                #region Options-Handler
-
+                 
                 if (ctx.Request.Method == HttpMethod.OPTIONS)
                 {
                     await OptionsHandler(ctx);
                     return;
                 }
-
-                #endregion
-
-                #region Favicon-Robots-Root
-
+                 
                 if (ctx.Request.RawUrlEntries != null && ctx.Request.RawUrlEntries.Count > 0)
                 {
                     if (ctx.Request.RawUrlWithoutQuery.Equals("/favicon.ico"))
@@ -236,21 +215,10 @@ namespace Kvpbase
                     await ctx.Response.Send(DefaultPage("http://github.com/kvpbase"));
                     return;
                 }
-
-                #endregion
-
-                #region Add-Connection
-
+                 
                 _ConnMgr.Add(Thread.CurrentThread.ManagedThreadId, ctx);
-
-                #endregion
-                   
-                #region Authenticate-and-Build-Metadata
-
+                 
                 string apiKeyVal = ctx.Request.RetrieveHeaderValue(_Settings.Server.HeaderApiKey);
-                string emailVal = ctx.Request.RetrieveHeaderValue(_Settings.Server.HeaderEmail);
-                string passwordVal = ctx.Request.RetrieveHeaderValue(_Settings.Server.HeaderPassword);
-
                 UserMaster user = null;
                 ApiKey apiKey = null;
                 AuthResult authResult = AuthResult.None;
@@ -258,7 +226,7 @@ namespace Kvpbase
 
                 if (!String.IsNullOrEmpty(apiKeyVal))
                 { 
-                    if (!_ConfigMgr.Authenticate(apiKeyVal, out user, out apiKey, out effectivePermissions, out authResult))
+                    if (!_AuthMgr.Authenticate(apiKeyVal, out user, out apiKey, out effectivePermissions, out authResult))
                     {
                         _Logging.Warn("RequestReceived unable to verify API key " + apiKeyVal + ": " + authResult);
                         ctx.Response.StatusCode = 401;
@@ -267,19 +235,6 @@ namespace Kvpbase
                         return;
                     }
                 }
-                else if ((!String.IsNullOrEmpty(emailVal)) && (!String.IsNullOrEmpty(passwordVal)))
-                {
-                    if (!_ConfigMgr.Authenticate(emailVal, passwordVal, out user, out apiKey, out effectivePermissions, out authResult))
-                    {
-                        _Logging.Warn("RequestReceived unable to verify credentials for email " + emailVal);
-                        ctx.Response.StatusCode = 401;
-                        ctx.Response.ContentType = "application/json";
-                        await ctx.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
-                        return;
-                    }
-
-                    effectivePermissions = Permission.DefaultPermit(user);
-                }
                  
                 md.User = user;
                 md.Key = apiKey;
@@ -287,9 +242,7 @@ namespace Kvpbase
                 md.Params = RequestMetadata.Parameters.FromHttpRequest(ctx.Request);
                 if (md.User != null) md.Params.UserGuid = md.User.GUID; 
                 _ConnMgr.Update(Thread.CurrentThread.ManagedThreadId, md.User);
-
-                #endregion
-
+                 
                 await UserApiHandler(md);
                 return;
             }
@@ -308,7 +261,7 @@ namespace Kvpbase
                 _ConnMgr.Close(Thread.CurrentThread.ManagedThreadId);
 
                 string msg =
-                    ctx.Request.SourceIp + ":" + ctx.Request.SourcePort + " " +
+                    header + 
                     ctx.Request.Method + " " + ctx.Request.RawUrlWithoutQuery + " " +
                     ctx.Response.StatusCode + " " +
                     "[" + sw.ElapsedMilliseconds + "ms]";
@@ -317,7 +270,7 @@ namespace Kvpbase
             }
         }
 
-        static async Task OptionsHandler(HttpContext ctx)
+        private static async Task OptionsHandler(HttpContext ctx)
         { 
             Dictionary<string, string> responseHeaders = new Dictionary<string, string>();
 
@@ -336,10 +289,7 @@ namespace Kvpbase
                 }
             }
 
-            string headers =
-                _Settings.Server.HeaderApiKey + ", " +
-                _Settings.Server.HeaderEmail + ", " +
-                _Settings.Server.HeaderPassword;
+            string headers = _Settings.Server.HeaderApiKey;
 
             if (requestedHeaders != null)
             {
@@ -372,13 +322,12 @@ namespace Kvpbase
             await ctx.Response.Send();
         }
 
-        static bool WebserverException(string ip, int port, Exception e)
+        private static void WebserverException(string ip, int port, Exception e)
         {
-            _Logging.Exception("StorageServer", "Webserver [" + ip + ":" + port + "]", e);
-            return true;
+            _Logging.Exception("StorageServer", "Webserver [" + ip + ":" + port + "]", e); 
         }
 
-        static string DefaultPage(string link)
+        private static string DefaultPage(string link)
         {
             string html =
                 "<html>" + Environment.NewLine +
@@ -428,8 +377,8 @@ namespace Kvpbase
 
             return html;
         }
-        
-        static string Logo()
+
+        private static string Logo()
         {
             // http://patorjk.com/software/taag/#p=display&f=Small&t=kvpbase
 
@@ -444,10 +393,10 @@ namespace Kvpbase
 
             return ret;
         }
-         
-        static bool ExitApplication()
+
+        private static bool ExitApplication()
         {
-            _Logging.Info("StorageServer exiting due to console request");
+            _Logging.Info(_Header + "exiting due to console request");
             Environment.Exit(0);
             return true;
         }

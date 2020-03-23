@@ -4,35 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using SyslogLogging;
 using WatsonWebserver;
- 
-namespace Kvpbase.Classes.Managers
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
+
+namespace Kvpbase.StorageServer.Classes.Managers
 {
-    public class ConnectionManager
-    {
-        #region Public-Members
-
-        #endregion
-
-        #region Private-Members
-
+    internal class ConnectionManager
+    { 
         private List<Connection> _Connections;
         private readonly object _ConnectionsLock;
 
-        #endregion
-
-        #region Constructors-and-Factories
-
-        public ConnectionManager()
+        internal ConnectionManager()
         {
             _Connections = new List<Connection>();
             _ConnectionsLock = new object();
         }
 
-        #endregion
-
-        #region Public-Methods
-
-        public void Add(int threadId, HttpContext ctx)
+        internal void Add(int threadId, HttpContext ctx)
         {
             if (threadId <= 0) return;
             if (ctx == null) return;
@@ -42,8 +29,7 @@ namespace Kvpbase.Classes.Managers
             conn.ThreadId = threadId;
             conn.SourceIp = ctx.Request.SourceIp;
             conn.SourcePort = ctx.Request.SourcePort;
-            conn.UserMasterId = 0;
-            conn.Email = "";
+            conn.UserGUID = null; 
             conn.Method = ctx.Request.Method;
             conn.RawUrl = ctx.Request.RawUrlWithoutQuery;
             conn.StartTime = DateTime.Now;
@@ -55,7 +41,7 @@ namespace Kvpbase.Classes.Managers
             }
         }
 
-        public void Close(int threadId)
+        internal void Close(int threadId)
         {
             if (threadId <= 0) return;
 
@@ -65,7 +51,7 @@ namespace Kvpbase.Classes.Managers
             }
         }
 
-        public void Update(int threadId, UserMaster user)
+        internal void Update(int threadId, UserMaster user)
         {
             if (threadId <= 0) return;
             if (user == null) return;
@@ -82,8 +68,7 @@ namespace Kvpbase.Classes.Managers
                     }
                     else
                     {
-                        curr.UserMasterId = user.Id;
-                        curr.Email = user.Email;
+                        curr.UserGUID = user.GUID;
                         tempList.Add(curr);
                     }
                 }
@@ -92,7 +77,7 @@ namespace Kvpbase.Classes.Managers
             }
         }
 
-        public List<Connection> GetActiveConnections()
+        internal List<Connection> GetActiveConnections()
         {
             List<Connection> curr = new List<Connection>();
 
@@ -102,12 +87,6 @@ namespace Kvpbase.Classes.Managers
             }
 
             return curr;
-        }
-
-        #endregion
-
-        #region Private-Methods
-
-        #endregion
+        } 
     }
 }

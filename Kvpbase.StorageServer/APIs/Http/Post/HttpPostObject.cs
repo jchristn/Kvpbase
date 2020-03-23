@@ -6,21 +6,17 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
-using WatsonWebserver;
+using WatsonWebserver; 
+using Kvpbase.StorageServer.Classes;
 
-using Kvpbase.Containers;
-using Kvpbase.Classes;
-
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpPostObject(RequestMetadata md)
+        internal static async Task HttpPostObject(RequestMetadata md)
         {
-            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-
-            #region Retrieve-Container
-
+            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+             
             ContainerClient client = null;
             ErrorCode error;
 
@@ -32,11 +28,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
                 return;
             }
-                 
-            #endregion
-
-            #region Authenticate-and-Authorize
-
+                  
             if (!client.Container.IsPublicWrite)
             {
                 if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
@@ -60,11 +52,7 @@ namespace Kvpbase
                     return;
                 }
             }
-
-            #endregion
-
-            #region Check-if-Object-Exists
-
+             
             if (client.Exists(md.Params.ObjectKey))
             {
                 _Logging.Warn(header + "HttpPostObject object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + " already exists");
@@ -73,11 +61,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(7, 409, null, null), true));
                 return; 
             }
-
-            #endregion
-
-            #region Verify-Transfer-Size
-
+             
             if (_Settings.Server.MaxObjectSize > 0 && md.Http.Request.ContentLength > _Settings.Server.MaxObjectSize)
             {
                 _Logging.Warn(header + "HttpPostObject object size too large (" + md.Http.Request.ContentLength + " bytes)");
@@ -86,18 +70,14 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(11, 413, null, null), true));
                 return;
             }
-
-            #endregion
-
-            #region Write-and-Return
-                  
+             
             if (!_ObjectHandler.Create(md, client, md.Params.ObjectKey, md.Http.Request.ContentType, md.Http.Request.ContentLength, md.Http.Request.Data, out error))
             {
                 _Logging.Warn(header + "HttpPostObject unable to write object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
 
                 int statusCode = 0;
                 int id = 0;
-                Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+                ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
 
                 md.Http.Response.StatusCode = statusCode;
                 md.Http.Response.ContentType = "application/json";
@@ -109,9 +89,7 @@ namespace Kvpbase
                 md.Http.Response.StatusCode = 201;
                 await md.Http.Response.Send();
                 return;
-            }
-
-            #endregion 
+            } 
         }
     }
 }

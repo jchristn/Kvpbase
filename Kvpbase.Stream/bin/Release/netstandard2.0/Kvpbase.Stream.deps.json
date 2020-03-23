@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETStandard,Version=v2.0/",
-    "signature": "efe20bc665aec778e707564e4cbf939396924f27"
+    "signature": ""
   },
   "compilationOptions": {},
   "targets": {
@@ -98,14 +98,14 @@
     "Newtonsoft.Json/12.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-jmVyoEyk0In8r+AObYQyFKVFm7uSRzE0XSHSbEtBJcZDMV6DqJoyB4FLcHwprPVhAh826so0db3DIKXVnpGoPA==",
+      "sha512": "sha512-pBR3wCgYWZGiaZDYP+HHYnalVnPJlpP1q55qvVb+adrDHmFMDc1NAKio61xTwftK3Pw5h7TZJPJEEVMd6ty8rg==",
       "path": "newtonsoft.json/12.0.1",
       "hashPath": "newtonsoft.json.12.0.1.nupkg.sha512"
     },
     "RestWrapper/1.0.9": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ycRBjjtvX85+IowkgfRPkSiqdYS3FS+MjNqQsIfYPqBH0o8A8dAatarm06rPQ/CIxhhfgds5oYH4HJxOxS3n5g==",
+      "sha512": "sha512-biIYDyxyxf2+9F9VH3qntrOt3wUQLDNgSpc5oL9EhhEVBiHO5XRWsquWUw/KnTy2tczcGjoHSf/V9ydF1MPkZA==",
       "path": "restwrapper/1.0.9",
       "hashPath": "restwrapper.1.0.9.nupkg.sha512"
     }

@@ -6,20 +6,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
+using Kvpbase.StorageServer.Classes;
 
-using Kvpbase.Classes;
-using Kvpbase.Containers;
-
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpHeadObject(RequestMetadata md)
+        internal static async Task HttpHeadObject(RequestMetadata md)
         {
-            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-
-            #region Retrieve-Container
-
+            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+             
             ContainerClient client = null;
             if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
             { 
@@ -29,11 +25,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
                 return;
             }
-
-            #endregion
-
-            #region Authenticate-and-Authorize
-
+             
             if (!client.Container.IsPublicRead)
             {
                 if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
@@ -57,10 +49,6 @@ namespace Kvpbase
                     return;
                 }
             }
-
-            #endregion
-              
-            #region Retrieve-and-Return
              
             if (!_ObjectHandler.Exists(md, client, md.Params.ObjectKey))
             {
@@ -74,9 +62,7 @@ namespace Kvpbase
                 md.Http.Response.StatusCode = 200;
                 await md.Http.Response.Send();
                 return;
-            } 
-
-            #endregion 
+            }  
         }
     }
 }

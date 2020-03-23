@@ -6,21 +6,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
-using WatsonWebserver;
+using WatsonWebserver; 
+using Kvpbase.StorageServer.Classes;
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
 
-using Kvpbase.Containers;
-using Kvpbase.Classes;
-
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpGetObject(RequestMetadata md)
+        internal static async Task HttpGetObject(RequestMetadata md)
         {
             string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-
-            #region Retrieve-Container
-
+             
             ContainerClient client = null;
             if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
             { 
@@ -30,11 +27,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
                 return;
             }
-             
-            #endregion
-
-            #region Authenticate-and-Authorize
-
+              
             if (!client.Container.IsPublicRead)
             {
                 if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
@@ -58,11 +51,7 @@ namespace Kvpbase
                     return;
                 }
             }
-
-            #endregion
-
-            #region Retrieve-Metadata
-
+             
             ErrorCode error;
             ObjectMetadata metadata = null;
             if (!client.ReadObjectMetadata(md.Params.ObjectKey, out metadata))
@@ -71,7 +60,7 @@ namespace Kvpbase
 
                 int statusCode = 0;
                 int id = 0;
-                Helper.StatusFromContainerErrorCode(ErrorCode.NotFound, out statusCode, out id);
+                ContainerClient.HttpStatusFromErrorCode(ErrorCode.NotFound, out statusCode, out id);
 
                 md.Http.Response.StatusCode = statusCode;
                 md.Http.Response.ContentType = "application/json";
@@ -93,7 +82,7 @@ namespace Kvpbase
                 {
                     int statusCode = 0;
                     int id = 0;
-                    Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+                    ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
 
                     _Logging.Warn(header + "HttpGetObject unable to read key-values for " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
 
@@ -108,11 +97,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(vals, true));
                 return;
             } 
-
-            #endregion
-
-            #region Verify-Transfer-Size
-
+             
             if (md.Params.Index != null && md.Params.Count != null)
             {
                 if (Convert.ToInt32(md.Params.Count) > _Settings.Server.MaxTransferSize)
@@ -136,11 +121,7 @@ namespace Kvpbase
                     return;
                 }
             }
-
-            #endregion
-
-            #region Retrieve-and-Return
-
+             
             int? index = null;
             if (md.Params.Index != null) index = Convert.ToInt32(md.Params.Index);
 
@@ -155,7 +136,7 @@ namespace Kvpbase
             {
                 int statusCode = 0;
                 int id = 0;
-                Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+                ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
 
                 _Logging.Warn(header + "HttpGetObject unable to read object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
 
@@ -170,9 +151,7 @@ namespace Kvpbase
                 md.Http.Response.ContentType = contentType;
                 await md.Http.Response.Send(contentLength, stream);
                 return;
-            }
-                 
-            #endregion 
+            } 
         }
     }
 }

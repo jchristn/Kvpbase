@@ -6,20 +6,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
+using Kvpbase.StorageServer.Classes; 
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
 
-using Kvpbase.Containers;
-using Kvpbase.Classes;
-
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpGetContainerList(RequestMetadata md)
+        internal static async Task HttpGetContainerList(RequestMetadata md)
         {
-            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-
-            #region Validate-Authentication
-
+            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+             
             if (md.User == null)
             {
                 _Logging.Warn(header + "HttpGetContainerList no authentication material");
@@ -37,11 +34,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
                 return;
             }
-
-            #endregion
-
-            #region Retrieve-and-Respond
-
+             
             List<Container> containers = _ContainerMgr.GetContainersByUser(md.User.GUID); 
             if (containers == null || containers.Count < 1)
             {
@@ -58,9 +51,7 @@ namespace Kvpbase
             md.Http.Response.StatusCode = 200;
             md.Http.Response.ContentType = "application/json";
             await md.Http.Response.Send(Common.SerializeJson(ret, true));
-            return;
-
-            #endregion 
+            return; 
         }
     }
 }

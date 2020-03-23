@@ -3,41 +3,21 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-
 using DatabaseWrapper;
 using SyslogLogging;
+using Kvpbase.StorageServer.Classes;
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
+using Kvpbase.StorageServer.Classes.Managers;
 
-using Kvpbase.Classes;
-using Kvpbase.Classes.Managers;
-using Kvpbase.Containers;
-
-namespace Kvpbase.Classes
+namespace Kvpbase.StorageServer.Classes
 {
-    public class Setup
+    internal class Setup
     {
-        #region Public-Members
-
-        #endregion
-
-        #region Private-Members
-
-        #endregion
-
-        #region Constructors-and-Factories
-
-        public Setup()
+        internal Setup()
         {
             RunSetup();
         }
-
-        #endregion
-
-        #region Public-Methods
-
-        #endregion
-
-        #region Private-Methods
-
+        
         private void RunSetup()
         {
             #region Variables
@@ -78,9 +58,7 @@ namespace Kvpbase.Classes
             settings.Server.Port = 8000;
             settings.Server.DnsHostname = "localhost";
             settings.Server.Ssl = false;
-            settings.Server.HeaderApiKey = "x-api-key";
-            settings.Server.HeaderEmail = "x-email";
-            settings.Server.HeaderPassword = "x-password";
+            settings.Server.HeaderApiKey = "x-api-key"; 
             settings.Server.MaxObjectSize = 2199023255552;      // 2TB object size
             settings.Server.MaxTransferSize = 536870912;        // 512MB transfer size
              
@@ -93,9 +71,15 @@ namespace Kvpbase.Classes
             settings.Syslog.Header = "kvpbase";
             settings.Syslog.ServerIp = "127.0.0.1";
             settings.Syslog.ServerPort = 514;
-            settings.Syslog.LogHttpRequests = false;
-            settings.Syslog.LogHttpResponses = false;
-            settings.Syslog.MinimumLevel = 1;
+            settings.Syslog.MinimumLevel = Severity.Info;
+            settings.Syslog.FileLogging = true;
+            settings.Syslog.LogDirectory = "./Logs/";
+            
+            if (!Directory.Exists(settings.Syslog.LogDirectory)) Directory.CreateDirectory(settings.Syslog.LogDirectory);
+
+            settings.Debug = new Settings.SettingsDebug();
+            settings.Debug.Database = false;
+            settings.Debug.HttpRequest = false; 
 
             #endregion
 
@@ -104,115 +88,57 @@ namespace Kvpbase.Classes
             //                          1         2         3         4         5         6         7
             //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
             Console.WriteLine("");
-            Console.WriteLine("Kvpbase requires access to an external database, either Microsoft SQL Server,");
-            Console.WriteLine("MySQL, or PostgreSQL, for holding configuration-related information.  Please");
-            Console.WriteLine("provide access details for your database.  The user account supplied must have");
-            Console.WriteLine("the ability to CREATE and DROP tables along with issue queries containing");
-            Console.WriteLine("SELECT, INSERT, UPDATE, and DELETE.");
-            Console.WriteLine("");
-            Console.WriteLine("IMPORTANT: The database must be created before continuing.  Kvpbase will");
-            Console.WriteLine("automatically create the tables for you.");
+            Console.WriteLine("Kvpbase requires access to a database, either Sqlite, Microsoft SQL Server,");
+            Console.WriteLine("MySQL, or PostgreSQL.  Please provide access details for your database.  The");
+            Console.WriteLine("user account supplied must have the ability to CREATE and DROP tables along");
+            Console.WriteLine("with issue queries containing SELECT, INSERT, UPDATE, and DELETE.  Setup will");
+            Console.WriteLine("attempt to create tables on your behalf if they dont exist.");
             Console.WriteLine("");
 
-            settings.ConfigDatabase = new Settings.SettingsDatabase();
+            settings.Database = new Settings.SettingsDatabase();
 
             bool dbSet = false;
             while (!dbSet)
             {
-                string userInput = Common.InputString("Database type [mssql|mysql|pgsql]:", "mssql", false);
+                string userInput = Common.InputString("Database type [sqlite|mssql|mysql|pgsql]:", "sqlite", false);
                 switch (userInput)
                 {
+                    case "sqlite":
+                        settings.Database.Type = DatabaseWrapper.DbTypes.Sqlite;
+                        settings.Database.Filename = Common.InputString("Filename:", "./Kvpbase.db", false);
+                        dbSet = true;
+                        break;
                     case "mssql":
-                        settings.ConfigDatabase.Type = DatabaseWrapper.DbTypes.MsSql;
-                        settings.ConfigDatabase.Hostname = Common.InputString("Hostname:", "localhost", false);
-                        settings.ConfigDatabase.Port = Common.InputInteger("Port:", 1433, true, false);
-                        settings.ConfigDatabase.Username = Common.InputString("Username:", "sa", false);
-                        settings.ConfigDatabase.Password = Common.InputString("Password:", null, false);
-                        settings.ConfigDatabase.InstanceName = Common.InputString("Instance (for SQLEXPRESS):", null, true);
-                        settings.ConfigDatabase.DatabaseName = Common.InputString("Database name:", "kvpbaseconfig", false);
+                        settings.Database.Type = DatabaseWrapper.DbTypes.MsSql;
+                        settings.Database.Hostname = Common.InputString("Hostname:", "localhost", false);
+                        settings.Database.Port = Common.InputInteger("Port:", 1433, true, false);
+                        settings.Database.Username = Common.InputString("Username:", "sa", false);
+                        settings.Database.Password = Common.InputString("Password:", null, false);
+                        settings.Database.InstanceName = Common.InputString("Instance (for SQLEXPRESS):", null, true);
+                        settings.Database.DatabaseName = Common.InputString("Database name:", "kvpbaseconfig", false);
                         dbSet = true;
                         break;
                     case "mysql":
-                        settings.ConfigDatabase.Type = DatabaseWrapper.DbTypes.MySql;
-                        settings.ConfigDatabase.Hostname = Common.InputString("Hostname:", "localhost", false);
-                        settings.ConfigDatabase.Port = Common.InputInteger("Port:", 3306, true, false);
-                        settings.ConfigDatabase.Username = Common.InputString("Username:", "root", false);
-                        settings.ConfigDatabase.Password = Common.InputString("Password:", null, false);
-                        settings.ConfigDatabase.DatabaseName = Common.InputString("Schema name:", "kvpbaseconfig", false);
+                        settings.Database.Type = DatabaseWrapper.DbTypes.MySql;
+                        settings.Database.Hostname = Common.InputString("Hostname:", "localhost", false);
+                        settings.Database.Port = Common.InputInteger("Port:", 3306, true, false);
+                        settings.Database.Username = Common.InputString("Username:", "root", false);
+                        settings.Database.Password = Common.InputString("Password:", null, false);
+                        settings.Database.DatabaseName = Common.InputString("Schema name:", "kvpbaseconfig", false);
                         dbSet = true;
                         break;
                     case "pgsql":
-                        settings.ConfigDatabase.Type = DatabaseWrapper.DbTypes.PgSql;
-                        settings.ConfigDatabase.Hostname = Common.InputString("Hostname:", "localhost", false);
-                        settings.ConfigDatabase.Port = Common.InputInteger("Port:", 5432, true, false);
-                        settings.ConfigDatabase.Username = Common.InputString("Username:", "postgres", false);
-                        settings.ConfigDatabase.Password = Common.InputString("Password:", null, false);
-                        settings.ConfigDatabase.DatabaseName = Common.InputString("Schema name:", "kvpbaseconfig", false);
+                        settings.Database.Type = DatabaseWrapper.DbTypes.PgSql;
+                        settings.Database.Hostname = Common.InputString("Hostname:", "localhost", false);
+                        settings.Database.Port = Common.InputInteger("Port:", 5432, true, false);
+                        settings.Database.Username = Common.InputString("Username:", "postgres", false);
+                        settings.Database.Password = Common.InputString("Password:", null, false);
+                        settings.Database.DatabaseName = Common.InputString("Schema name:", "kvpbaseconfig", false);
                         dbSet = true;
                         break;
                 }
             }
-
-            //                          1         2         3         4         5         6         7
-            //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-            Console.WriteLine("");
-            Console.WriteLine("Kvpbase also requires database access for storage metadata.  This database can");
-            Console.WriteLine("be the same as your configuration database or different.");
-            Console.WriteLine("");
-
-            bool useConfigDatabase = Common.InputBoolean("Use configuration database settings for storage database?", true);
-
-            if (useConfigDatabase)
-            {
-                settings.StorageDatabase = new Settings.SettingsDatabase();
-                settings.StorageDatabase.Type = settings.ConfigDatabase.Type;
-                settings.StorageDatabase.Hostname = settings.ConfigDatabase.Hostname;
-                settings.StorageDatabase.Port = settings.ConfigDatabase.Port;
-                settings.StorageDatabase.Username = settings.ConfigDatabase.Username;
-                settings.StorageDatabase.Password = settings.ConfigDatabase.Password;
-                settings.StorageDatabase.InstanceName = settings.ConfigDatabase.InstanceName;
-                settings.StorageDatabase.DatabaseName = Common.InputString("Database name: ", "kvpbasedata", false);
-            }
-            else
-            {
-                dbSet = false;
-                while (!dbSet)
-                {
-                    string userInput = Common.InputString("Database type [mssql|mysql|pgsql]:", "mssql", false);
-                    switch (userInput)
-                    {
-                        case "mssql":
-                            settings.StorageDatabase.Type = DatabaseWrapper.DbTypes.MsSql;
-                            settings.StorageDatabase.Hostname = Common.InputString("Hostname:", "localhost", false);
-                            settings.StorageDatabase.Port = Common.InputInteger("Port:", 1433, true, false);
-                            settings.StorageDatabase.Username = Common.InputString("Username:", "sa", false);
-                            settings.StorageDatabase.Password = Common.InputString("Password:", null, false);
-                            settings.StorageDatabase.InstanceName = Common.InputString("Instance (for SQLEXPRESS):", null, true);
-                            settings.StorageDatabase.DatabaseName = Common.InputString("Database name:", "kvpbaseconfig", false);
-                            dbSet = true;
-                            break;
-                        case "mysql":
-                            settings.StorageDatabase.Type = DatabaseWrapper.DbTypes.MySql;
-                            settings.StorageDatabase.Hostname = Common.InputString("Hostname:", "localhost", false);
-                            settings.StorageDatabase.Port = Common.InputInteger("Port:", 3306, true, false);
-                            settings.StorageDatabase.Username = Common.InputString("Username:", "root", false);
-                            settings.StorageDatabase.Password = Common.InputString("Password:", null, false);
-                            settings.StorageDatabase.DatabaseName = Common.InputString("Schema name:", "kvpbaseconfig", false);
-                            dbSet = true;
-                            break;
-                        case "pgsql":
-                            settings.StorageDatabase.Type = DatabaseWrapper.DbTypes.PgSql;
-                            settings.StorageDatabase.Hostname = Common.InputString("Hostname:", "localhost", false);
-                            settings.StorageDatabase.Port = Common.InputInteger("Port:", 5432, true, false);
-                            settings.StorageDatabase.Username = Common.InputString("Username:", "postgres", false);
-                            settings.StorageDatabase.Password = Common.InputString("Password:", null, false);
-                            settings.StorageDatabase.DatabaseName = Common.InputString("Schema name:", "kvpbaseconfig", false);
-                            dbSet = true;
-                            break;
-                    }
-                }
-            }
-
+             
             #endregion
 
             #region Write-Files-and-Records
@@ -227,89 +153,74 @@ namespace Kvpbase.Classes
             LoggingModule logging = new LoggingModule("127.0.0.1", 514);
 
             Console.WriteLine(
-                "| Initializing config DB: " + settings.ConfigDatabase.Hostname +
-                "/" + settings.ConfigDatabase.DatabaseName +
-                " [" + settings.ConfigDatabase.Type.ToString() + "]");
+                "| Initializing database: " + settings.Database.Hostname +
+                "/" + settings.Database.DatabaseName +
+                " [" + settings.Database.Type.ToString() + "]");
 
-            DatabaseClient configDb = new DatabaseClient(
-                settings.ConfigDatabase.Type,
-                settings.ConfigDatabase.Hostname,
-                settings.ConfigDatabase.Port,
-                settings.ConfigDatabase.Username,
-                settings.ConfigDatabase.Password,
-                settings.ConfigDatabase.InstanceName,
-                settings.ConfigDatabase.DatabaseName);
-             
-            Console.WriteLine(
-                "| Initializing storage DB: " + settings.StorageDatabase.Hostname +
-                "/" + settings.StorageDatabase.DatabaseName +
-                " [" + settings.StorageDatabase.Type.ToString() + "]");
+            DatabaseClient db = null;
 
-            DatabaseClient storageDb = new DatabaseClient(
-                settings.StorageDatabase.Type,
-                settings.StorageDatabase.Hostname,
-                settings.StorageDatabase.Port,
-                settings.StorageDatabase.Username,
-                settings.StorageDatabase.Password,
-                settings.StorageDatabase.InstanceName,
-                settings.StorageDatabase.DatabaseName);
+            switch (settings.Database.Type)
+            {
+                case DbTypes.Sqlite:
+                    db = new DatabaseClient(settings.Database.Filename);
+                    break;
+                case DbTypes.MsSql:
+                case DbTypes.MySql:
+                case DbTypes.PgSql:
+                    db = new DatabaseClient(
+                        settings.Database.Type,
+                        settings.Database.Hostname,
+                        settings.Database.Port,
+                        settings.Database.Username,
+                        settings.Database.Password,
+                        settings.Database.InstanceName,
+                        settings.Database.DatabaseName);
+                    break;
+                default:
+                    throw new ArgumentException("Unknown database type: " + settings.Database.Type.ToString());
+            }
              
             Console.WriteLine("| Initializing configuration manager");
 
-            ConfigManager configMgr = new ConfigManager(settings, logging, configDb);
+            DatabaseManager dbMgr = new DatabaseManager(settings, logging, db);
 
             Console.WriteLine("| Adding user [default]");
 
-            UserMaster currUser = new UserMaster();
-            currUser.GUID = "default";
-            currUser.Email = "default@default.com";
-            currUser.Password = "default";
-            currUser.Address1 = "123 Some Street";
-            currUser.Cellphone = "408-555-1212";
-            currUser.City = "San Jose";
-            currUser.CompanyName = "Default Company";
-            currUser.Country = "USA";
-            currUser.FirstName = "First";
-            currUser.LastName = "Last";
-            currUser.PostalCode = "95128";
-            currUser.State = "CA"; 
-            currUser.CreatedUtc = timestamp;
-            currUser.Active = true;
-
-            configMgr.AddUser(currUser);
-            currUser = configMgr.GetUserByGuid("default");
+            UserMaster user = new UserMaster();
+            user.GUID = "default";
+            user.Email = "default@default.com";
+            user.Password = "default";
+            user.FirstName = "Default";
+            user.LastName = "User";
+            user.CreatedUtc = timestamp;
+            user.Active = true; 
+            user = dbMgr.Insert<UserMaster>(user);
 
             Console.WriteLine("| Adding API key [default]");
 
-            ApiKey currApiKey = new ApiKey();
-            currApiKey = new ApiKey(); 
-            currApiKey.GUID = "default";
-            currApiKey.Notes = "Created by setup script";
-            currApiKey.UserMasterId = currUser.Id;
-            currApiKey.Active = true;
-            currApiKey.CreatedUtc = timestamp;
-
-            configMgr.AddApiKey(currApiKey);
-            currApiKey = configMgr.GetApiKeyByGuid("default");
+            ApiKey apiKey = new ApiKey();
+            apiKey = new ApiKey(); 
+            apiKey.GUID = "default"; 
+            apiKey.UserGUID = user.GUID;
+            apiKey.Active = true;  
+            apiKey = dbMgr.Insert<ApiKey>(apiKey); 
 
             Console.WriteLine("| Adding permission [default]");
 
-            Permission currPerm = new Permission();
-            currPerm.GUID = "default";
-            currPerm.DeleteContainer = true;
-            currPerm.DeleteObject = true;
-            currPerm.ReadContainer = true;
-            currPerm.ReadObject = true; 
-            currPerm.WriteContainer = true;
-            currPerm.WriteObject = true;
-            currPerm.ApiKeyId = currApiKey.Id; 
-            currPerm.Notes = "Created by setup script";
-            currPerm.UserMasterId = currUser.Id;
-            currPerm.Active = true;
-            currPerm.CreatedUtc = timestamp;
-
-            configMgr.AddPermission(currPerm);
-            currPerm = configMgr.GetPermissionByGuid("default");
+            Permission perm = new Permission();
+            perm.GUID = Guid.NewGuid().ToString();
+            perm.UserGUID = user.GUID;
+            perm.ContainerGUID = "default";
+            perm.DeleteContainer = true;
+            perm.DeleteObject = true;
+            perm.ReadContainer = true;
+            perm.ReadObject = true; 
+            perm.WriteContainer = true;
+            perm.WriteObject = true;
+            perm.ApiKeyGUID = apiKey.GUID; 
+            perm.Notes = "Created by setup script";
+            perm.Active = true;
+            perm = dbMgr.Insert<Permission>(perm); 
 
             Console.WriteLine("| Creating container [default]");
 
@@ -317,17 +228,16 @@ namespace Kvpbase.Classes
             string textFile = SampleTextFile("http://github.com/kvpbase");
             string jsonFile = SampleJsonFile("http://github.com/kvpbase");
 
-            ContainerManager containerMgr = new ContainerManager(settings, logging, configMgr, storageDb);
+            ContainerManager containerMgr = new ContainerManager(settings, logging, dbMgr);
 
             Container container = new Container();
-            container.UserGuid = "default";
+            container.UserGUID = "default";
             container.Name = "default";
             container.GUID = "default";
-            container.ObjectsDirectory = settings.Storage.Directory + container.UserGuid + "/" + container.Name + "/";
+            container.ObjectsDirectory = settings.Storage.Directory + container.UserGUID + "/" + container.Name + "/";
             container.EnableAuditLogging = true;
             container.IsPublicRead = true;
-            container.IsPublicWrite = false;
-
+            container.IsPublicWrite = false; 
             containerMgr.Add(container); 
 
             ContainerClient client = null;
@@ -350,18 +260,18 @@ namespace Kvpbase.Classes
             Console.WriteLine(Common.Line(79, "-")); 
             Console.WriteLine("");
             Console.WriteLine("We have created your first user account and permissions.");
-            Console.WriteLine("  Email    : " + currUser.Email);
-            Console.WriteLine("  Password : " + currUser.Password);
-            Console.WriteLine("  GUID     : " + currUser.GUID);
-            Console.WriteLine("  API Key  : " + currApiKey.GUID); 
+            Console.WriteLine("  Email    : " + user.Email);
+            Console.WriteLine("  Password : " + user.Password);
+            Console.WriteLine("  GUID     : " + user.GUID);
+            Console.WriteLine("  API Key  : " + apiKey.GUID); 
             Console.WriteLine("");
             Console.WriteLine("We've also created sample files for you so that you can see your node in");
             Console.WriteLine("action.  Go to the following URLs in your browser and see what happens!");
             Console.WriteLine("");
             Console.WriteLine("  http://localhost:8000/");
-            Console.WriteLine("  http://localhost:8000/default/default?_container&_html");
+            Console.WriteLine("  http://localhost:8000/default/default?_container&html");
             Console.WriteLine("  http://localhost:8000/default/default/hello.html");
-            Console.WriteLine("  http://localhost:8000/default/default/hello.html?_metadata=true");
+            Console.WriteLine("  http://localhost:8000/default/default/hello.html?metadata");
             Console.WriteLine("  http://localhost:8000/default/default/hello.txt");
             Console.WriteLine("  http://localhost:8000/default/default/hello.json"); 
             Console.WriteLine("");
@@ -437,8 +347,6 @@ namespace Kvpbase.Classes
                 "Find us on Github here: " + link + Environment.NewLine + Environment.NewLine;
 
             return text;
-        }
-
-        #endregion
+        } 
     }
 }

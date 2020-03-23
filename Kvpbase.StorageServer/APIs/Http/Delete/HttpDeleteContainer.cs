@@ -6,20 +6,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
+using Kvpbase.StorageServer.Classes;
 
-using Kvpbase.Containers;
-using Kvpbase.Classes;
-
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpDeleteContainer(RequestMetadata md)
+        internal static async Task HttpDeleteContainer(RequestMetadata md)
         {
-            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-
-            #region Validate-Authentication
-
+            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+             
             if (md.User == null)
             {
                 _Logging.Warn(header + "HttpDeleteContainer no authentication material");
@@ -28,11 +24,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
                 return;
             }
-
-            #endregion
-
-            #region Validate-Request
-
+             
             if (!md.Params.UserGuid.ToLower().Equals(md.User.GUID.ToLower()))
             {
                 _Logging.Warn(header + "HttpDeleteContainer user " + md.User.GUID + " attempting to create container in user " + md.Params.UserGuid);
@@ -50,11 +42,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
                 return;
             }
-
-            #endregion
-
-            #region Retrieve-Container-Client
-
+             
             ContainerClient client = null;
             if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
             {
@@ -64,11 +52,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
                 return; 
             }
-
-            #endregion
-
-            #region Process
-
+             
             if (md.Params.AuditLog)
             {
                 client.ClearAuditLog(); 
@@ -91,9 +75,7 @@ namespace Kvpbase
                 md.Http.Response.StatusCode = 204;
                 await md.Http.Response.Send();
                 return;
-            }
-
-            #endregion
+            } 
         }
     }
 }

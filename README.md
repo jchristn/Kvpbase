@@ -6,65 +6,36 @@
 
 Scalable, simple RESTful object storage platform, written in C#
 
-## Introducing v4.0
+## New in v4.1
 
-We're happy to release v4.0, bringing a wealth of new features, optimizations, and fixes to enable you to deploy a more performant and scalable object storage platform.  We have a healthy pipeline of features and capabilities we plan to bring to Kvpbase.  If you have any suggestions, please file an issue and let us know!
-
-### New Features
-
-- Integration with external databases for configuration, thereby enabling consistency across nodes, simplicity, scale-out, and reducing JSON files
-- Removed Kvpbase.Core library (merged into StorageServer and KvpbaseSDK directly) for simplicity
-- Reduced ```System.json``` file for simplicity
-- Async APIs for better performance and scale
-- New search API at ```PUT /<container>/?_search``` using an ```EnumerationFilter``` allowing filtering by timestamps, prefix, content-type, MD5, and tags
-- Certain querystring elements no longer require ```=true```
-- Support for hierarchical structures within a container using zero-byte objects (folders) and objects with ```/``` in the name
-- Each object now stored using a unique identifier to enable support for versioning (future)
-- Optimized memory utilization with large objects (internal optimizations now rely on streams)
-- Support for object tagging and extensible key-value pair metadata 
-- Enhanced container statistics
+- Maintenance release; now .NET Core only
 - Dependency updates
-- Retarget to both .NET Core 2.2 and .NET Framework 4.6.1
+- Added support for Sqlite (now supporting Sqlite, MS SQL, MySQL, and PostgreSQL)
+- Simplified database integration and usage to reduce cross-platform issues
+- Database tables are now automatically created if they don't exist
+- Logging to the file system in addition to syslog and console
+- Minor code refactor for manageability 
 
-### Fixes
-
-- Major code refactor and simplification
-- Fixed issues associated with object range reads
-- Fixed issues associated with container cleanup on delete
- 
 ## Help and Feedback
 
 First things first - do you need help or have feedback?  File an issue here!
 
 ## Initial Setup
 
-The binaries for Kvpbase can be created by compiling from source or using the pre-compiled binaries found in ```Kvpbase.StorageServer\bin\release\[framework]\``` (I intentionally did not ```.gitignore``` these files).  Executing the binaries will create the requisite configuration files and database tables.
+The binaries for Kvpbase can be created by compiling from source or using the pre-compiled binaries found in ```Kvpbase.StorageServer\bin\release\netcoreapp2.0\``` (I intentionally did not ```.gitignore``` these files).  Executing the binaries will create the requisite configuration files and database tables.
 
-Important: you MUST create the database to be used by Kvpbase prior to running the application.  Kvpbase will automatically create the tables for you.
-
-### Windows (.NET Framework)
-```
-> Kvpbase.StorageServer.exe
-```
-
-### Windows, Linux, Mac (.NET Core)
 ```
 $ dotnet Kvpbase.StorageServer.dll
 ```
 
-### Mono
-```
-$ sudo mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server Kvpbase.StorageServer.exe
-$ sudo mono --server Kvpbase.StorageServer.exe
-```
+By default, Kvpbase will listen on ```localhost``` and only handle requests from the local machine.  If you wish to change this, modify ```Server.DnsHostname``` in the ```System.json``` file.  When modifying this value, follow these rules:
 
-When specifying the listener hostname ```Server.DnsHostname``` in the ```system.json``` file, follow these rules:
 - If you are using an IP address that listens on any interface such as ```0.0.0.0```, ```*```, or ```+```, Kvpbase must be run using elevated privileges
 - If using any other IP address or DNS name, the HOST header on incoming requests *MUST* match the value for this parameter
 
 ## Your First GET Requests
 
-By default, data is stored within ```./storage/[userguid]/[containername]```.  The setup process will create a series of sample files within the ```default``` user's container, also named ```default```, which is configured for public/unauthenticated read access:
+By default, data is stored within ```./Storage/[userguid]/[containername]```.  The setup process will create a series of sample files within the ```default``` user's container, also named ```default```, which is configured for public/unauthenticated read access:
 
 - GET http://localhost:8000/default/default/hello.html 
 - GET http://localhost:8000/default/default/hello.txt 
@@ -108,11 +79,7 @@ The response is simply a 200/OK.
 ## Documentation
 
 Please visit our documentation [https://github.com/kvpbase/storage-server/wiki] for details on APIs, configuration files, deployment scenarios, and more. 
- 
-## Compatibility with Previous Versions
-
-Kvpbase v4.x interacts with an external database whereas previous versions relied on an internally-managed SQLite database.  If you wish to migrate from a previous version to v4.x, please file an issue and we will prioritize documenting the new database schema so you can better script the migration.
-
+  
 ## Use Cases
 
 Core use cases for Kvpbase Storage Server:

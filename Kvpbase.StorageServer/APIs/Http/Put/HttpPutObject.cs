@@ -6,21 +6,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
-using WatsonWebserver;
+using WatsonWebserver; 
+using Kvpbase.StorageServer.Classes;
+using Kvpbase.StorageServer.Classes.DatabaseObjects;
 
-using Kvpbase.Containers;
-using Kvpbase.Classes;
-
-namespace Kvpbase
+namespace Kvpbase.StorageServer
 {
-    public partial class StorageServer
+    public partial class Program
     {
-        public static async Task HttpPutObject(RequestMetadata md)
+        internal static async Task HttpPutObject(RequestMetadata md)
         {
             string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-
-            #region Retrieve-Container
-
+             
             ContainerClient client = null;
             if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
             { 
@@ -30,11 +27,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
                 return;
             }
-             
-            #endregion
-
-            #region Authenticate-and-Authorize
-
+              
             if (!client.Container.IsPublicWrite)
             {
                 if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
@@ -58,11 +51,7 @@ namespace Kvpbase
                     return;
                 }
             }
-
-            #endregion
-
-            #region Check-if-Object-Exists
-
+             
             if (!client.Exists(md.Params.ObjectKey))
             {
                 _Logging.Warn(header + "HttpPutObject object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + " does not exists");
@@ -71,11 +60,7 @@ namespace Kvpbase
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
                 return;
             }
-
-            #endregion
-            
-            #region Process
-
+             
             ErrorCode error;  
 
             if (!String.IsNullOrEmpty(md.Params.Rename))
@@ -88,7 +73,7 @@ namespace Kvpbase
 
                     int statusCode = 0;
                     int id = 0;
-                    Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+                    ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
 
                     md.Http.Response.StatusCode = statusCode;
                     md.Http.Response.ContentType = "application/json";
@@ -177,7 +162,7 @@ namespace Kvpbase
 
                     int statusCode = 0;
                     int id = 0;
-                    Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+                    ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
 
                     md.Http.Response.StatusCode = statusCode;
                     md.Http.Response.ContentType = "application/json";
@@ -221,7 +206,7 @@ namespace Kvpbase
 
                     int statusCode = 0;
                     int id = 0;
-                    Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+                    ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
 
                     md.Http.Response.StatusCode = statusCode;
                     md.Http.Response.ContentType = "application/json";
@@ -269,7 +254,7 @@ namespace Kvpbase
 
                     int statusCode = 0;
                     int id = 0;
-                    Helper.StatusFromContainerErrorCode(error, out statusCode, out id);
+                    ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
 
                     md.Http.Response.StatusCode = statusCode;
                     md.Http.Response.ContentType = "application/json";
@@ -292,9 +277,7 @@ namespace Kvpbase
                 md.Http.Response.ContentType = "application.json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 400, "Querystring must contain values for '_index', '_rename', or '_tags'.", null), true));
                 return; 
-            }
-
-            #endregion 
+            } 
         }
     }
 }

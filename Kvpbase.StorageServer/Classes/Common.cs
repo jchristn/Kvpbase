@@ -13,16 +13,13 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq; 
 
-namespace Kvpbase.Classes
-{
-    /// <summary>
-    /// Common static methods used by Kvpbase.
-    /// </summary>
-    public static class Common
+namespace Kvpbase.StorageServer.Classes
+{ 
+    internal static class Common
     { 
         #region Input
 
-        public static bool InputBoolean(string question, bool yesDefault)
+        internal static bool InputBoolean(string question, bool yesDefault)
         {
             Console.Write(question);
 
@@ -65,7 +62,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static string InputString(string question, string defaultAnswer, bool allowNull)
+        internal static string InputString(string question, string defaultAnswer, bool allowNull)
         {
             while (true)
             {
@@ -91,7 +88,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static List<string> InputStringList(string question, bool allowEmpty)
+        internal static List<string> InputStringList(string question, bool allowEmpty)
         {
             List<string> ret = new List<string>();
 
@@ -113,7 +110,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static int InputInteger(string question, int defaultAnswer, bool positiveOnly, bool allowZero)
+        internal static int InputInteger(string question, int defaultAnswer, bool positiveOnly, bool allowZero)
         {
             while (true)
             {
@@ -159,7 +156,7 @@ namespace Kvpbase.Classes
 
         #region Directory
            
-        public static List<string> GetSubdirectoryList(string directory, bool recursive)
+        internal static List<string> GetSubdirectoryList(string directory, bool recursive)
         {
             try
             {
@@ -204,7 +201,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool DeleteDirectory(string dir, bool recursive)
+        internal static bool DeleteDirectory(string dir, bool recursive)
         {
             try
             {
@@ -217,7 +214,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool RenameDirectory(string from, string to)
+        internal static bool RenameDirectory(string from, string to)
         {
             try
             {
@@ -233,7 +230,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool MoveDirectory(string from, string to)
+        internal static bool MoveDirectory(string from, string to)
         {
             try
             {
@@ -249,7 +246,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool WalkDirectory(
+        internal static bool WalkDirectory(
             string environment,
             int depth,
             string directory,
@@ -331,7 +328,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool DirectoryStatistics(
+        internal static bool DirectoryStatistics(
             DirectoryInfo dirinfo,
             bool recursive,
             out long bytes,
@@ -389,7 +386,7 @@ namespace Kvpbase.Classes
 
         #region File
 
-        public static bool DeleteFile(string filename)
+        internal static bool DeleteFile(string filename)
         {
             try
             {
@@ -402,12 +399,12 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool FileExists(string filename)
+        internal static bool FileExists(string filename)
         {
             return File.Exists(filename);
         }
 
-        public static bool VerifyFileReadAccess(string filename)
+        internal static bool VerifyFileReadAccess(string filename)
         {
             try
             {
@@ -422,7 +419,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static List<string> GetFileList(string environment, string directory, bool prependFilename)
+        internal static List<string> GetFileList(string environment, string directory, bool prependFilename)
         {
             try
             {
@@ -451,7 +448,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool WriteFile(string filename, string content, bool append)
+        internal static bool WriteFile(string filename, string content, bool append)
         {
             using (StreamWriter writer = new StreamWriter(filename, append))
             {
@@ -460,7 +457,7 @@ namespace Kvpbase.Classes
             return true;
         }
 
-        public static bool WriteFile(string filename, byte[] content)
+        internal static bool WriteFile(string filename, byte[] content)
         {
             if (content != null && content.Length > 0)
             {
@@ -474,7 +471,7 @@ namespace Kvpbase.Classes
             return true;
         }
 
-        public static bool WriteFile(string filename, byte[] content, int pos)
+        internal static bool WriteFile(string filename, byte[] content, int pos)
         {
             using (Stream stream = new FileStream(filename, System.IO.FileMode.OpenOrCreate))
             {
@@ -484,7 +481,7 @@ namespace Kvpbase.Classes
             return true;
         }
 
-        public static string ReadTextFile(string filename)
+        internal static string ReadTextFile(string filename)
         {
             try
             {
@@ -496,7 +493,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static byte[] ReadBinaryFile(string filename, int from, int len)
+        internal static byte[] ReadBinaryFile(string filename, int from, int len)
         {
             try
             {
@@ -518,7 +515,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static byte[] ReadBinaryFile(string filename)
+        internal static byte[] ReadBinaryFile(string filename)
         {
             try
             {
@@ -530,7 +527,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static string GetFileExtension(string filename)
+        internal static string GetFileExtension(string filename)
         {
             try
             {
@@ -543,7 +540,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool RenameFile(string from, string to)
+        internal static bool RenameFile(string from, string to)
         {
             try
             {
@@ -560,7 +557,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool MoveFile(string from, string to)
+        internal static bool MoveFile(string from, string to)
         {
             try
             {
@@ -581,18 +578,18 @@ namespace Kvpbase.Classes
 
         #region IsTrue
          
-        public static bool IsTrue(bool val)
+        internal static bool IsTrue(bool val)
         {
             return val;
         }
 
-        public static bool IsTrue(bool? val)
+        internal static bool IsTrue(bool? val)
         {
             if (val == null) return false;
             return Convert.ToBoolean(val);
         }
 
-        public static bool IsTrue(string val)
+        internal static bool IsTrue(string val)
         {
             if (String.IsNullOrEmpty(val)) return false;
             val = val.ToLower().Trim();
@@ -606,7 +603,7 @@ namespace Kvpbase.Classes
          
         #region Compress
 
-        public static byte[] GzipCompress(byte[] input)
+        internal static byte[] GzipCompress(byte[] input)
         {
             if (input == null) return null;
             if (input.Length < 1) return null;
@@ -621,7 +618,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static byte[] GzipDecompress(byte[] input)
+        internal static byte[] GzipDecompress(byte[] input)
         {
             if (input == null) return null;
             if (input.Length < 1) return null;
@@ -651,7 +648,7 @@ namespace Kvpbase.Classes
 
         #region Misc
 
-        public static string StringRemove(string original, string remove)
+        internal static string StringRemove(string original, string remove)
         {
             if (String.IsNullOrEmpty(original)) return null;
             if (String.IsNullOrEmpty(remove)) return original;
@@ -664,7 +661,7 @@ namespace Kvpbase.Classes
             return ret;
         }
 
-        public static string Line(int count, string fill)
+        internal static string Line(int count, string fill)
         {
             if (count < 1) return "";
 
@@ -677,7 +674,7 @@ namespace Kvpbase.Classes
             return ret;
         }
 
-        public static string RandomString(int numChar)
+        internal static string RandomString(int numChar)
         {
             string ret = "";
             if (numChar < 1) return null;
@@ -705,7 +702,7 @@ namespace Kvpbase.Classes
             return ret;
         }
 
-        public static double TotalMsFrom(DateTime startTime)
+        internal static double TotalMsFrom(DateTime startTime)
         {
             try
             {
@@ -719,7 +716,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool IsLaterThanNow(DateTime? dt)
+        internal static bool IsLaterThanNow(DateTime? dt)
         {
             try
             {
@@ -732,7 +729,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool IsLaterThanNow(DateTime dt)
+        internal static bool IsLaterThanNow(DateTime dt)
         {
             if (DateTime.Compare(dt, DateTime.Now) > 0)
             {
@@ -744,7 +741,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static bool ContainsUnsafeCharacters(string data)
+        internal static bool ContainsUnsafeCharacters(string data)
         {
             /*
              * 
@@ -812,7 +809,7 @@ namespace Kvpbase.Classes
             return false;
         }
 
-        public static bool ContainsUnsafeCharacters(List<string> data)
+        internal static bool ContainsUnsafeCharacters(List<string> data)
         {
             if (data == null || data.Count < 1) return true;
             foreach (string curr in data)
@@ -822,7 +819,7 @@ namespace Kvpbase.Classes
             return false;
         }
 
-        public static int GuidToInt(string guid)
+        internal static int GuidToInt(string guid)
         {
             if (String.IsNullOrEmpty(guid)) return 0;
             byte[] bytes = Encoding.UTF8.GetBytes(guid);
@@ -836,7 +833,7 @@ namespace Kvpbase.Classes
             return ret;
         }
 
-        public static byte[] AppendBytes(byte[] head, byte[] tail)
+        internal static byte[] AppendBytes(byte[] head, byte[] tail)
         {
             byte[] arrayCombined = new byte[head.Length + tail.Length];
             Array.Copy(head, 0, arrayCombined, 0, head.Length);
@@ -844,7 +841,7 @@ namespace Kvpbase.Classes
             return arrayCombined;
         }
 
-        public static string ByteArrayToHex(byte[] data)
+        internal static string ByteArrayToHex(byte[] data)
         {
             StringBuilder hex = new StringBuilder(data.Length * 2);
             foreach (byte b in data) hex.AppendFormat("{0:x2}", b);
@@ -855,7 +852,7 @@ namespace Kvpbase.Classes
 
         #region Dictionary
 
-        public static Dictionary<string, string> AddToDictionary(string key, string val, Dictionary<string, string> existing)
+        internal static Dictionary<string, string> AddToDictionary(string key, string val, Dictionary<string, string> existing)
         {
             Dictionary<string, string> ret = new Dictionary<string, string>();
 
@@ -875,7 +872,7 @@ namespace Kvpbase.Classes
 
         #region Serialization
 
-        public static T CopyObject<T>(T source)
+        internal static T CopyObject<T>(T source)
         {
             if (source == null) return default(T);
 
@@ -890,7 +887,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static string SerializeJson(object obj, bool pretty)
+        internal static string SerializeJson(object obj, bool pretty)
         {
             if (obj == null) return null;
             string json;
@@ -919,7 +916,7 @@ namespace Kvpbase.Classes
             return json;
         }
         
-        public static T DeserializeJson<T>(string json)
+        internal static T DeserializeJson<T>(string json)
         {
             if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json));
 
@@ -940,7 +937,7 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static T DeserializeJson<T>(byte[] data)
+        internal static T DeserializeJson<T>(byte[] data)
         {
             if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data));
             return DeserializeJson<T>(Encoding.UTF8.GetString(data));
@@ -950,7 +947,7 @@ namespace Kvpbase.Classes
 
         #region Crypto
 
-        public static string Md5(byte[] data)
+        internal static string Md5(byte[] data)
         {
             if (data == null) return null;
 
@@ -962,7 +959,7 @@ namespace Kvpbase.Classes
             return ret;
         }
 
-        public static string Md5(string data)
+        internal static string Md5(string data)
         {
             if (String.IsNullOrEmpty(data)) return null;
 
@@ -975,7 +972,7 @@ namespace Kvpbase.Classes
             return ret;
         }
 
-        public static string Md5(Stream stream)
+        internal static string Md5(Stream stream)
         {
             if (stream == null || !stream.CanRead) return null;
 
@@ -991,7 +988,7 @@ namespace Kvpbase.Classes
 
         #region Encoding
 
-        public static byte[] StreamToBytes(Stream input)
+        internal static byte[] StreamToBytes(Stream input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             if (!input.CanRead) throw new InvalidOperationException("Input stream is not readable");
@@ -1010,33 +1007,33 @@ namespace Kvpbase.Classes
             }
         }
 
-        public static byte[] Base64ToBytes(string data)
+        internal static byte[] Base64ToBytes(string data)
         {
             return Convert.FromBase64String(data);
         }
 
-        public static string Base64ToString(string data)
+        internal static string Base64ToString(string data)
         {
             if (String.IsNullOrEmpty(data)) return null;
             byte[] bytes = System.Convert.FromBase64String(data);
             return System.Text.UTF8Encoding.UTF8.GetString(bytes);
         }
 
-        public static string BytesToBase64(byte[] data)
+        internal static string BytesToBase64(byte[] data)
         {
             if (data == null) return null;
             if (data.Length < 1) return null;
             return System.Convert.ToBase64String(data);
         }
 
-        public static string StringToBase64(string data)
+        internal static string StringToBase64(string data)
         {
             if (String.IsNullOrEmpty(data)) return null;
             byte[] bytes = System.Text.UTF8Encoding.UTF8.GetBytes(data);
             return System.Convert.ToBase64String(bytes);
         }
 
-        public static List<string> CsvToStringList(string csv)
+        internal static List<string> CsvToStringList(string csv)
         {
             if (String.IsNullOrEmpty(csv))
             {
@@ -1059,7 +1056,7 @@ namespace Kvpbase.Classes
             return ret;
         }
 
-        public static string StringListToCsv(List<string> strings)
+        internal static string StringListToCsv(List<string> strings)
         {
             if (strings == null || strings.Count < 1) return null;
 
