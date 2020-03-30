@@ -1089,7 +1089,7 @@ namespace Kvpbase.StorageServer.Classes
 
             if (filter != null && filter.KeyValuePairs != null && filter.KeyValuePairs.Count > 0)
             {
-                query += "INNER JOIN `" + DatabaseManager.OBJECTS_KVP_TABLE + "` AS `kv` ON `o`.`ObjectKey` = `kv`.`ObjectKey` ";
+                query += "INNER JOIN `" + DatabaseManager.OBJECTS_KVP_TABLE + "` AS `kv` ON `o`.`GUID` = `kv`.`ObjectGUID` ";
             }
 
             if (filter != null)
@@ -1161,15 +1161,15 @@ namespace Kvpbase.StorageServer.Classes
                         if (String.IsNullOrEmpty(curr.Key)) continue;
 
                         query +=
-                            "AND `kv`.`MetaKey` = '" + Sanitize(curr.Key) + "' ";
+                            "AND `kv`.`MetadataKey` = '" + Sanitize(curr.Key) + "' ";
 
                         if (String.IsNullOrEmpty(curr.Value))
                         {
-                            query += "AND `kv`.`MetaValue` IS NULL ";
+                            query += "AND `kv`.`MetadataValue` IS NULL ";
                         }
                         else
                         {
-                            query += "AND `kv`.`MetaValue` = '" + Sanitize(curr.Value) + "' ";
+                            query += "AND `kv`.`MetadataValue` = '" + Sanitize(curr.Value) + "' ";
                         }
                     }
                 }
@@ -1216,7 +1216,7 @@ namespace Kvpbase.StorageServer.Classes
 
             if (filter != null && filter.KeyValuePairs != null && filter.KeyValuePairs.Count > 0)
             {
-                query += "INNER JOIN [" + DatabaseManager.OBJECTS_KVP_TABLE + "] AS [kv] ON [o].[ObjectKey] = [kv].[ObjectKey] ";
+                query += "INNER JOIN [" + DatabaseManager.OBJECTS_KVP_TABLE + "] AS [kv] ON [o].[GUID] = [kv].[ObjectGUID] ";
             }
 
             if (filter != null)
@@ -1288,15 +1288,15 @@ namespace Kvpbase.StorageServer.Classes
                         if (String.IsNullOrEmpty(curr.Key)) continue;
 
                         query +=
-                            "AND [kv].[MetaKey] = '" + Sanitize(curr.Key) + "' ";
+                            "AND [kv].[MetadataKey] = '" + Sanitize(curr.Key) + "' ";
 
                         if (String.IsNullOrEmpty(curr.Value))
                         {
-                            query += "AND [kv].[MetaValue] IS NULL ";
+                            query += "AND [kv].[MetadataValue] IS NULL ";
                         }
                         else
                         {
-                            query += "AND [kv].[MetaValue] = '" + Sanitize(curr.Value) + "' ";
+                            query += "AND [kv].[MetadataValue] = '" + Sanitize(curr.Value) + "' ";
                         }
                     }
                 }
@@ -1332,7 +1332,7 @@ namespace Kvpbase.StorageServer.Classes
 
             if (filter != null && filter.KeyValuePairs != null && filter.KeyValuePairs.Count > 0)
             {
-                query += "INNER JOIN `" + DatabaseManager.OBJECTS_KVP_TABLE + "` AS `kv` ON `o`.`ObjectKey` = `kv`.`ObjectKey` ";
+                query += "INNER JOIN `" + DatabaseManager.OBJECTS_KVP_TABLE + "` AS `kv` ON `o`.`GUID` = `kv`.`ObjectGUID` ";
             }
 
             if (filter != null)
@@ -1404,15 +1404,15 @@ namespace Kvpbase.StorageServer.Classes
                         if (String.IsNullOrEmpty(curr.Key)) continue;
 
                         query +=
-                            "AND `kv`.`MetaKey` = '" + Sanitize(curr.Key) + "' ";
+                            "AND `kv`.`MetadataKey` = '" + Sanitize(curr.Key) + "' ";
 
                         if (String.IsNullOrEmpty(curr.Value))
                         {
-                            query += "AND `kv`.`MetaValue` IS NULL ";
+                            query += "AND `kv`.`MetadataValue` IS NULL ";
                         }
                         else
                         {
-                            query += "AND `kv`.`MetaValue` = '" + Sanitize(curr.Value) + "' ";
+                            query += "AND `kv`.`MetadataValue` = '" + Sanitize(curr.Value) + "' ";
                         }
                     }
                 }
@@ -1454,7 +1454,7 @@ namespace Kvpbase.StorageServer.Classes
 
             if (filter != null && filter.KeyValuePairs != null && filter.KeyValuePairs.Count > 0)
             {
-                query += "INNER JOIN \"" + DatabaseManager.OBJECTS_KVP_TABLE + "\" AS \"kv\" ON \"o\".\"ObjectKey\" = \"kv\".\"ObjectKey\" ";
+                query += "INNER JOIN \"" + DatabaseManager.OBJECTS_KVP_TABLE + "\" AS \"kv\" ON \"o\".\"GUID\" = \"kv\".\"ObjectGUID\" ";
             }
 
             if (filter != null)
@@ -1526,15 +1526,15 @@ namespace Kvpbase.StorageServer.Classes
                         if (String.IsNullOrEmpty(curr.Key)) continue;
 
                         query +=
-                            "AND \"kv\".\"MetaKey\" = '" + Sanitize(curr.Key) + "' ";
+                            "AND \"kv\".\"MetadataKey\" = '" + Sanitize(curr.Key) + "' ";
 
                         if (String.IsNullOrEmpty(curr.Value))
                         {
-                            query += "AND \"kv\".\"MetaValue\" IS NULL ";
+                            query += "AND \"kv\".\"MetadataValue\" IS NULL ";
                         }
                         else
                         {
-                            query += "AND \"kv\".\"MetaValue\" = '" + Sanitize(curr.Value) + "' ";
+                            query += "AND \"kv\".\"MetadataValue\" = '" + Sanitize(curr.Value) + "' ";
                         }
                     }
                 }

@@ -1,0 +1,353 @@
+{
+	"info": {
+		"_postman_id": "fa518bd7-5f34-95f0-10b4-802731827ce8",
+		"name": "kvpbase",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Retrieve audit log",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default?auditlog",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					],
+					"query": [
+						{
+							"key": "auditlog",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create an object",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default/test.txt",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"test.txt"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search a container",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"CreatedBefore\": \"2021-01-01\",\n  \"CreatedAfter\": \"2018-01-01\",\n  \"UpdatedBefore\": \"2021-01-01\",\n  \"UpdatedAfter\": \"2018-01-01\",\n  \"LastAccessBefore\": \"2021-01-01\",\n  \"LastAccessAfter\": \"2018-01-01\",\n  \"Prefix\": \"hello\",\n  \"Md5\": null,\n  \"ContentType\": null,\n  \"SizeMin\": 0,\n  \"SizeMax\": 99999999,\n  \"Tags\": null,\n  \"KeyValuePairs\": {\n    \"foo\": \"bar\"\n  }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default?search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Write object key-value pairs",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"foo\": \"bar\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.txt?keys",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.txt"
+					],
+					"query": [
+						{
+							"key": "keys",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve object key-value pairs",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"foo\": \"bar\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.txt?keys",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.txt"
+					],
+					"query": [
+						{
+							"key": "keys",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Enumerate container by prefix",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"CreatedBefore\": \"2020-01-01\",\n  \"CreatedAfter\": \"2018-01-01\",\n  \"UpdatedBefore\": \"2020-01-01\",\n  \"UpdatedAfter\": \"2018-01-01\",\n  \"LastAccessBefore\": \"2020-01-01\",\n  \"LastAccessAfter\": \"2018-01-01\",\n  \"Prefix\": \"hello\",\n  \"Md5\": null,\n  \"ContentType\": null,\n  \"SizeMin\": 0,\n  \"SizeMax\": 99999999,\n  \"Tags\": null,\n  \"KeyValuePairs\": {\n    \"foo\": \"bar\"\n  }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default?prefix=he",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					],
+					"query": [
+						{
+							"key": "prefix",
+							"value": "he"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve an object",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.txt",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.txt"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete an object",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default/test.txt",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"test.txt"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a container",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check if an object exists",
+			"request": {
+				"method": "HEAD",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.txt",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.txt"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check if a container exists",
+			"request": {
+				"method": "HEAD",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
