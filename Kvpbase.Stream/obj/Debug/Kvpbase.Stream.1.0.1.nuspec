@@ -27,8 +27,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\code\kvpbase\storageserver-4.1\Kvpbase.Stream\bin\Debug\net462\Kvpbase.Stream.dll" target="lib\net462\Kvpbase.Stream.dll" />
-    <file src="C:\code\kvpbase\storageserver-4.1\Kvpbase.Stream\bin\Debug\netstandard2.0\Kvpbase.Stream.dll" target="lib\netstandard2.0\Kvpbase.Stream.dll" />
-    <file src="C:\code\kvpbase\storageserver-4.1\LICENSE.md" target="LICENSE.md" />
+    <file src="D:\Code\storage-server\Kvpbase.Stream\bin\Debug\net462\Kvpbase.Stream.dll" target="lib\net462\Kvpbase.Stream.dll" />
+    <file src="D:\Code\storage-server\Kvpbase.Stream\bin\Debug\netstandard2.0\Kvpbase.Stream.dll" target="lib\netstandard2.0\Kvpbase.Stream.dll" />
+    <file src="D:\Code\storage-server\LICENSE.md" target="LICENSE.md" />
   </files>
 </package>

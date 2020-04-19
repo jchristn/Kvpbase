@@ -45,3 +45,14 @@ C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.csproj.CopyComplete
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.dll
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.pdb
+D:\Code\storage-server\Kvpbase.Stream\bin\Debug\net462\Kvpbase.Stream.dll
+D:\Code\storage-server\Kvpbase.Stream\bin\Debug\net462\Kvpbase.Stream.pdb
+D:\Code\storage-server\Kvpbase.Stream\bin\Debug\net462\KvpbaseSDK.dll
+D:\Code\storage-server\Kvpbase.Stream\bin\Debug\net462\Newtonsoft.Json.dll
+D:\Code\storage-server\Kvpbase.Stream\bin\Debug\net462\RestWrapper.dll
+D:\Code\storage-server\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.csprojAssemblyReference.cache
+D:\Code\storage-server\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.AssemblyInfoInputs.cache
+D:\Code\storage-server\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.AssemblyInfo.cs
+D:\Code\storage-server\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.csproj.CopyComplete
+D:\Code\storage-server\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.dll
+D:\Code\storage-server\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.pdb

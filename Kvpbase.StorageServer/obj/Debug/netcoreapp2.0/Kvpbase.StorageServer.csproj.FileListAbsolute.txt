@@ -11,3 +11,14 @@ C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.xml
 C:\code\kvpbase\storageserver-4.1\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\Kvpbase.StorageServer.genruntimeconfig.cache
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\Kvpbase.StorageServer.csproj.CoreCompileInputs.cache
+D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.deps.json
+D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.runtimeconfig.json
+D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.runtimeconfig.dev.json
+D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.dll
+D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.pdb
+D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.xml
+D:\Code\storage-server\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\Kvpbase.StorageServer.csprojAssemblyReference.cache
+D:\Code\storage-server\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\Kvpbase.StorageServer.AssemblyInfoInputs.cache
+D:\Code\storage-server\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\Kvpbase.StorageServer.AssemblyInfo.cs
+D:\Code\storage-server\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\Kvpbase.StorageServer.dll
+D:\Code\storage-server\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\Kvpbase.StorageServer.pdb

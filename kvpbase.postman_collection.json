@@ -77,7 +77,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"CreatedBefore\": \"2021-01-01\",\n  \"CreatedAfter\": \"2018-01-01\",\n  \"UpdatedBefore\": \"2021-01-01\",\n  \"UpdatedAfter\": \"2018-01-01\",\n  \"LastAccessBefore\": \"2021-01-01\",\n  \"LastAccessAfter\": \"2018-01-01\",\n  \"Prefix\": \"hello\",\n  \"Md5\": null,\n  \"ContentType\": null,\n  \"SizeMin\": 0,\n  \"SizeMax\": 99999999,\n  \"Tags\": null,\n  \"KeyValuePairs\": {\n    \"foo\": \"bar\"\n  }\n}"
+					"raw": "{\n  \"CreatedBefore\": \"2021-01-01\",\n  \"CreatedAfter\": \"2018-01-01\",\n  \"UpdatedBefore\": \"2021-01-01\",\n  \"UpdatedAfter\": \"2018-01-01\",\n  \"LastAccessBefore\": \"2021-01-01\",\n  \"LastAccessAfter\": \"2018-01-01\",\n  \"Prefix\": \"hello\",\n  \"Md5\": null,\n  \"ContentType\": null,\n  \"SizeMin\": 0,\n  \"SizeMax\": 99999999,\n  \"Tags\": null,\n  \"KeyValuePairs\": {\n    \"foo\": \"bar\"\n  }\n}",
+					"options": {
+						"raw": {}
+					}
 				},
 				"url": {
 					"raw": "http://localhost:8000/default/default?search",
@@ -113,7 +116,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"foo\": \"bar\"\n}"
+					"raw": "{\n  \"foo\": \"bar\"\n}",
+					"options": {
+						"raw": {}
+					}
 				},
 				"url": {
 					"raw": "http://localhost:8000/default/default/hello.txt?keys",
@@ -153,7 +159,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"foo\": \"bar\"\n}"
+					"raw": "{\n  \"foo\": \"bar\"\n}",
+					"options": {
+						"raw": {}
+					}
 				},
 				"url": {
 					"raw": "http://localhost:8000/default/default/hello.txt?keys",
@@ -193,7 +202,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"CreatedBefore\": \"2020-01-01\",\n  \"CreatedAfter\": \"2018-01-01\",\n  \"UpdatedBefore\": \"2020-01-01\",\n  \"UpdatedAfter\": \"2018-01-01\",\n  \"LastAccessBefore\": \"2020-01-01\",\n  \"LastAccessAfter\": \"2018-01-01\",\n  \"Prefix\": \"hello\",\n  \"Md5\": null,\n  \"ContentType\": null,\n  \"SizeMin\": 0,\n  \"SizeMax\": 99999999,\n  \"Tags\": null,\n  \"KeyValuePairs\": {\n    \"foo\": \"bar\"\n  }\n}"
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
 				},
 				"url": {
 					"raw": "http://localhost:8000/default/default?prefix=he",
@@ -348,6 +360,43 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Enumerate container",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					]
+				}
+			},
+			"response": []
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }

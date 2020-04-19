@@ -25,9 +25,9 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.runtimeconfig.json" target="lib\netcoreapp2.0\Kvpbase.StorageServer.runtimeconfig.json" />
-    <file src="C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.dll" target="lib\netcoreapp2.0\Kvpbase.StorageServer.dll" />
-    <file src="C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.xml" target="lib\netcoreapp2.0\Kvpbase.StorageServer.xml" />
-    <file src="C:\Code\KVPbase\storageserver-4.1\LICENSE.md" target="LICENSE.md" />
+    <file src="D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.runtimeconfig.json" target="lib\netcoreapp2.0\Kvpbase.StorageServer.runtimeconfig.json" />
+    <file src="D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.dll" target="lib\netcoreapp2.0\Kvpbase.StorageServer.dll" />
+    <file src="D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.xml" target="lib\netcoreapp2.0\Kvpbase.StorageServer.xml" />
+    <file src="D:\Code\storage-server\LICENSE.md" target="LICENSE.md" />
   </files>
 </package>
