@@ -10,7 +10,6 @@ C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\Kvpbase.StorageServer.pdb
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.xml
 C:\code\kvpbase\storageserver-4.1\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\Kvpbase.StorageServer.genruntimeconfig.cache
-C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Debug\netcoreapp2.0\Kvpbase.StorageServer.csproj.CoreCompileInputs.cache
 D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.deps.json
 D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.runtimeconfig.json
 D:\Code\storage-server\Kvpbase.StorageServer\bin\Debug\netcoreapp2.0\Kvpbase.StorageServer.runtimeconfig.dev.json

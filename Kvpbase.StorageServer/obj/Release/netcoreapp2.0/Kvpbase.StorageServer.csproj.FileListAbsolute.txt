@@ -7,3 +7,5 @@ C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Release\netcoreapp2.
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Release\netcoreapp2.0\Kvpbase.StorageServer.AssemblyInfo.cs
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Release\netcoreapp2.0\Kvpbase.StorageServer.dll
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Release\netcoreapp2.0\Kvpbase.StorageServer.pdb
+C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Release\netcoreapp2.0\Kvpbase.StorageServer.csprojAssemblyReference.cache
+C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\obj\Release\netcoreapp2.0\Kvpbase.StorageServer.genruntimeconfig.cache

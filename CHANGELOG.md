@@ -2,6 +2,12 @@
 
 ## Current Version
 
+v4.1.1
+
+- More informative startup (cases where listening only on localhost vs wildcards)
+
+## Previous Versions
+
 v4.1.0
 
 - Maintenance release; now .NET Core only
@@ -11,8 +17,6 @@ v4.1.0
 - Database tables are now automatically created if they don't exist
 - Logging to the file system in addition to syslog and console
 - Minor code refactor for manageability 
-
-## Previous Versions
  
 v4.0.1
 

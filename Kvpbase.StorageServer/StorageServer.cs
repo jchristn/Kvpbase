@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks; 
@@ -46,6 +47,8 @@ namespace Kvpbase.StorageServer
         /// <param name="args">Command line arguments.</param>
         public static void Main(string[] args)
         {
+            _Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
             bool initialSetup = false;
             if (args != null && args.Length >= 1)
             {
@@ -146,17 +149,42 @@ namespace Kvpbase.StorageServer
         {
             // http://patorjk.com/software/taag/#p=display&f=Small&t=kvpbase
 
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            _Version = fvi.FileVersion;
+            ConsoleColor prior = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.DarkGray;
 
-            string msg =
-                Logo() + 
-                Environment.NewLine +
-                "  Kvpbase Storage Server v" + _Version + Environment.NewLine +
-                Environment.NewLine;
+            Console.WriteLine(Logo()); 
+            Console.WriteLine("Kvpbase | Object storage platform | v" + _Version);
+            Console.WriteLine("");
+            Console.ForegroundColor = ConsoleColor.Gray;
+             
+            if (_Settings.Server.DnsHostname.Equals("localhost") || _Settings.Server.DnsHostname.Equals("127.0.0.1"))
+            {
+                //                          1         2         3         4         5         6         7         8
+                //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("WARNING: Kvpbase started on '" + _Settings.Server.DnsHostname + "'");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Kvpbase can only service requests from the local machine.  If you wish to serve");
+                Console.WriteLine("external requests, edit the System.json file and specify a DNS-resolvable");
+                Console.WriteLine("hostname in the Server.DnsHostname field.");
+                Console.WriteLine("");
+            }
 
-            Console.WriteLine(msg);
+            List<string> adminListeners = new List<string> { "*", "+", "0.0.0.0" };
+
+            if (adminListeners.Contains(_Settings.Server.DnsHostname))
+            {
+                //                          1         2         3         4         5         6         7         8
+                //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("NOTICE: Kvpbase listening on a wildcard hostname: '" + _Settings.Server.DnsHostname + "'");
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.WriteLine("Kvpbase must be run with administrative privileges, otherwise it will not be");
+                Console.WriteLine("able to respond to incoming requests.");
+                Console.WriteLine("");
+            }
+
+            Console.ForegroundColor = prior;
         }
 
         private static void CreateDirectories()
@@ -389,7 +417,8 @@ namespace Kvpbase.StorageServer
                 @"  | / /\ V / '_ \ '_ \/ _` (_-</ -_)  " + Environment.NewLine +
                 @"  |_\_\ \_/| .__/_.__/\__,_/__/\___|  " + Environment.NewLine +
                 @"           |_|                        " + Environment.NewLine +
-                @"                                      " + Environment.NewLine;
+                @"                                      " + Environment.NewLine +
+                Environment.NewLine;
 
             return ret;
         }
