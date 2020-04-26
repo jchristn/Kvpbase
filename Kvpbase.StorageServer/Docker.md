@@ -24,7 +24,7 @@ mcr.microsoft.com/dotnet/core/runtime   3.1                 4b555235dfc0        
  
 4) Execute the container:
 ```
-$ docker run --user ContainerAdministrator -d -p 8000:8000 kvpbase 
+$ docker run -d -p 8000:8000 kvpbase 
 ```
 
 5) Connect to Kvpbase in your browser: 

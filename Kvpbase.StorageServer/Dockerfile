@@ -20,6 +20,7 @@ RUN dotnet publish -f netcoreapp3.1 -c Release -o out
 FROM mcr.microsoft.com/dotnet/core/runtime:3.1
 WORKDIR /app
 EXPOSE 8000/tcp
+COPY ./System.json /app/out
 COPY --from=build /app/out .
  
 # Set the entrypoint for the container
