@@ -1,6 +1,6 @@
 # Running Kvpbase in Docker
  
-Getting an ```HttpListener``` application (such as Kvpbase or any application using Watson Webserver, HTTP.sys, etc) up and running in Docker can be rather tricky given how 1) Docker acts as a network proxy and 2) HttpListener isn't friendly to ```HOST``` header mismatches.  Thus, it is **critical** that you run your containers using ```--user ContainerAdministrator``` to bypass the ```HttpListener``` restrictions.  There are likely ways around this, but I have been unable to find one.  
+Getting an ```HttpListener``` application (such as Kvpbase or any application using Watson Webserver, HTTP.sys, etc) up and running in Docker can be rather tricky given how 1) Docker acts as a network proxy and 2) HttpListener isn't friendly to ```HOST``` header mismatches.  Thus, it is **critical** that you run your containers using ```--user ContainerAdministrator``` (Windows) or ```--user root``` (Linux or Mac) to bypass the ```HttpListener``` restrictions.  There are likely ways around this, but I have been unable to find one.  
 
 ## Before you Begin
 
