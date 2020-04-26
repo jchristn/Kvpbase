@@ -1,8 +1,3 @@
-#
-# Built using Docker Desktop with Windows containers
-# See: https://docs.docker.com/engine/examples/dotnetcore/
-#
-
 # Use SDK
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
@@ -22,8 +17,10 @@ WORKDIR /app
 EXPOSE 8000/tcp
 COPY --from=build /app/out .
 
-# If you have a System.json file or a Kvpbase.db, be sure to copy them in by 
-# uncommenting the following lines.
+#
+# Copy in the System.json file containing the appropriate external
+# database and storage settings.  Refer to Docker.md for details.
+#
 # COPY ./System.json .
 # RUN mkdir Logs
 # RUN mkdir Storage
