@@ -20,8 +20,13 @@ RUN dotnet publish -f netcoreapp3.1 -c Release -o out
 FROM mcr.microsoft.com/dotnet/core/runtime:3.1
 WORKDIR /app
 EXPOSE 8000/tcp
-COPY ./System.json /app/out
 COPY --from=build /app/out .
- 
+
+# If you have a System.json file or a Kvpbase.db, be sure to copy them in by 
+# uncommenting the following lines.
+# COPY ./System.json .
+# RUN mkdir Logs
+# RUN mkdir Storage
+
 # Set the entrypoint for the container
 ENTRYPOINT ["dotnet", "Kvpbase.StorageServer.dll"]

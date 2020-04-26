@@ -69,7 +69,7 @@ namespace Kvpbase.StorageServer
             _Logging = new LoggingModule(
                 _Settings.Syslog.ServerIp,
                 _Settings.Syslog.ServerPort,
-                _Settings.EnableConsole,
+                _Settings.Syslog.ConsoleLogging,
                 (Severity)_Settings.Syslog.MinimumLevel,
                 false,
                 true,

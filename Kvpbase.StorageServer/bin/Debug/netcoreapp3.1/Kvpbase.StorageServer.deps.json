@@ -6,12 +6,12 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "Kvpbase.StorageServer/4.1.2": {
+      "Kvpbase.StorageServer/4.1.3": {
         "dependencies": {
-          "DatabaseWrapper": "2.0.2",
+          "DatabaseWrapper": "2.0.4",
           "Newtonsoft.Json": "12.0.3",
           "SyslogLogging": "1.3.2",
-          "Watson": "3.0.9"
+          "Watson": "3.0.10"
         },
         "runtime": {
           "Kvpbase.StorageServer.dll": {}
@@ -30,7 +30,7 @@
           }
         }
       },
-      "DatabaseWrapper/2.0.2": {
+      "DatabaseWrapper/2.0.4": {
         "dependencies": {
           "Microsoft.CSharp": "4.7.0",
           "Microsoft.Windows.Compatibility": "3.1.0",
@@ -42,8 +42,8 @@
         },
         "runtime": {
           "lib/netstandard2.0/DatabaseWrapper.dll": {
-            "assemblyVersion": "2.0.2.0",
-            "fileVersion": "2.0.2.0"
+            "assemblyVersion": "2.0.4.0",
+            "fileVersion": "2.0.4.0"
           }
         }
       },
@@ -1671,7 +1671,7 @@
           }
         }
       },
-      "Watson/3.0.9": {
+      "Watson/3.0.10": {
         "dependencies": {
           "IpMatcher": "1.0.1",
           "Newtonsoft.Json": "12.0.3",
@@ -1679,15 +1679,15 @@
         },
         "runtime": {
           "lib/netstandard2.0/WatsonWebserver.dll": {
-            "assemblyVersion": "3.0.9.0",
-            "fileVersion": "3.0.9.0"
+            "assemblyVersion": "3.0.10.0",
+            "fileVersion": "3.0.10.0"
           }
         }
       }
     }
   },
   "libraries": {
-    "Kvpbase.StorageServer/4.1.2": {
+    "Kvpbase.StorageServer/4.1.3": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -1699,12 +1699,12 @@
       "path": "bouncycastle.netcore/1.8.3",
       "hashPath": "bouncycastle.netcore.1.8.3.nupkg.sha512"
     },
-    "DatabaseWrapper/2.0.2": {
+    "DatabaseWrapper/2.0.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-+xXnWrTMbuc/XmRQWS3dYtnyet51hs1fibAAI4VlofJlqxQydLhen8o33Sel6rwr5by34RBPRvBAe8ZwovzpoQ==",
-      "path": "databasewrapper/2.0.2",
-      "hashPath": "databasewrapper.2.0.2.nupkg.sha512"
+      "sha512": "sha512-dcYXCFEvwluYZV4NIdPwNHwh/K9vyzWZB6A//C6fUGirV+kmuZkvuVzzXBhXo4RWYEWv+7wHMjEde8Ndvql7Pw==",
+      "path": "databasewrapper/2.0.4",
+      "hashPath": "databasewrapper.2.0.4.nupkg.sha512"
     },
     "Google.Protobuf/3.6.1": {
       "type": "package",
@@ -2721,12 +2721,12 @@
       "path": "system.xml.xpath.xmldocument/4.0.1",
       "hashPath": "system.xml.xpath.xmldocument.4.0.1.nupkg.sha512"
     },
-    "Watson/3.0.9": {
+    "Watson/3.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-/3hDZZ+7XD0/hjIJ7DvhY6MWyytDJc39AGuWsRiuLK90CiNMDPVOjf7T7hPafkwNgrZrn9Bu+0ZiXR7AOwcxCg==",
-      "path": "watson/3.0.9",
-      "hashPath": "watson.3.0.9.nupkg.sha512"
+      "sha512": "sha512-dnOniHSkAaRPfbLXVQT9PTd1/lumewRQ7Jihw+S0Ab36KXcUphLU5pFcjrEn+yVUvzC3I3uetthxOPky+fkSDQ==",
+      "path": "watson/3.0.10",
+      "hashPath": "watson.3.0.10.nupkg.sha512"
     }
   }
 }
