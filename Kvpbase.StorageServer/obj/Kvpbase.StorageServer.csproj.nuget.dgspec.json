@@ -5,7 +5,7 @@
   },
   "projects": {
     "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj": {
-      "version": "4.1.1",
+      "version": "4.1.2",
       "restore": {
         "projectUniqueName": "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
         "projectName": "Kvpbase.StorageServer",
@@ -23,7 +23,7 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "netcoreapp2.0"
+          "netcoreapp3.1"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -31,7 +31,7 @@
           "https://nuget.pkg.github.com/jchristn/index.json": {}
         },
         "frameworks": {
-          "netcoreapp2.0": {
+          "netcoreapp3.1": {
             "projectReferences": {}
           }
         },
@@ -42,17 +42,11 @@
         }
       },
       "frameworks": {
-        "netcoreapp2.0": {
+        "netcoreapp3.1": {
           "dependencies": {
             "DatabaseWrapper": {
               "target": "Package",
               "version": "[2.0.2, )"
-            },
-            "Microsoft.NETCore.App": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[2.0.0, )",
-              "autoReferenced": true
             },
             "Newtonsoft.Json": {
               "target": "Package",
@@ -77,6 +71,11 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.200\\RuntimeIdentifierGraph.json"
         }
       }

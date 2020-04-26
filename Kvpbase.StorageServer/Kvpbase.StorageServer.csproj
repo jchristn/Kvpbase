@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Kvpbase.StorageServer</RootNamespace>
     <PackageId>Kvpbase.StorageServer</PackageId>
-    <Version>4.1.1</Version>
+    <Version>4.1.2</Version>
     <Authors>Joel Christner</Authors>
     <Product>Kvpbase Storage Server</Product>
-    <Description>Object storage system with integrated replication and a simple RESTful API.</Description>
-    <Copyright>(c)2019 Joel Christner</Copyright>
+    <Description>Scalable, simple RESTful object storage platform.</Description>
+    <Copyright>(c)2020 Joel Christner</Copyright>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/kvpbase/storage-server</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
@@ -20,7 +20,7 @@
     <StartupObject />
     <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageLicenseFile></PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -34,18 +34,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
     <DocumentationFile>C:\Code\KVPbase\storageserver-4.1\Kvpbase.StorageServer\Kvpbase.StorageServer.xml</DocumentationFile>
   </PropertyGroup>
-
+ 
   <ItemGroup>
     <PackageReference Include="DatabaseWrapper" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SyslogLogging" Version="1.3.2" />
     <PackageReference Include="Watson" Version="3.0.9" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="LICENSE.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
  
 </Project>
