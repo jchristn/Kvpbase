@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Code\\KVPbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj": {}
+    "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj": {}
   },
   "projects": {
-    "C:\\Code\\KVPbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj": {
+    "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj": {
       "version": "4.1.1",
       "restore": {
-        "projectUniqueName": "C:\\Code\\KVPbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
+        "projectUniqueName": "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
         "projectName": "Kvpbase.StorageServer",
-        "projectPath": "C:\\Code\\KVPbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
+        "projectPath": "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
         "packagesPath": "C:\\Users\\joelc\\.nuget\\packages\\",
-        "outputPath": "C:\\Code\\KVPbase\\storageserver-4.1\\Kvpbase.StorageServer\\obj\\",
+        "outputPath": "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",

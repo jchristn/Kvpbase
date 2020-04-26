@@ -41,5 +41,11 @@
     <PackageReference Include="SyslogLogging" Version="1.3.2" />
     <PackageReference Include="Watson" Version="3.0.9" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
  
 </Project>
