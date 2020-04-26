@@ -4,7 +4,7 @@ Getting an ```HttpListener``` application (such as Kvpbase or any application us
 
 ## Before you Begin
 
-As a persistent storage plaf stored within the container, will be lost once the container terminates.  Similarly, any metadata stored in a database would be lost if the database resides within the container.  Likewise, any object data stored within the filesystem of the container would also be lost should the container terminate.
+As a persistent storage platform, data stored within the container, will be lost once the container terminates.  Similarly, any metadata stored in a database would be lost if the database resides within the container.  Likewise, any object data stored within the filesystem of the container would also be lost should the container terminate.
 
 As such, it is important that you properly deploy Kvpbase when using containers.  Use the following best practices.
 
