@@ -203,6 +203,14 @@ namespace Kvpbase.StorageServer
                 RequestReceived);
             _Server.Events.ExceptionEncountered = WebserverException;
             Console.WriteLine("[success]");
+            if (_Settings.Server.Ssl)
+            {
+                Console.WriteLine("| https://" + _Settings.Server.DnsHostname + ":" + _Settings.Server.Port);
+            }
+            else
+            {
+                Console.WriteLine("| http://" + _Settings.Server.DnsHostname + ":" + _Settings.Server.Port);
+            }
 
             _ConsoleMgr = new ConsoleManager(
                 _Settings,

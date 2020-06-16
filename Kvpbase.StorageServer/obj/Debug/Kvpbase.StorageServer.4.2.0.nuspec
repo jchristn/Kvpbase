@@ -23,7 +23,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\Code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\bin\Debug\netcoreapp3.1\Kvpbase.StorageServer.runtimeconfig.json" target="lib\netcoreapp3.1\Kvpbase.StorageServer.runtimeconfig.json" />
-    <file src="C:\Code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\bin\Debug\netcoreapp3.1\Kvpbase.StorageServer.dll" target="lib\netcoreapp3.1\Kvpbase.StorageServer.dll" />
+    <file src="C:\code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\bin\Debug\netcoreapp3.1\Kvpbase.StorageServer.runtimeconfig.json" target="lib\netcoreapp3.1\Kvpbase.StorageServer.runtimeconfig.json" />
+    <file src="C:\code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\bin\Debug\netcoreapp3.1\Kvpbase.StorageServer.dll" target="lib\netcoreapp3.1\Kvpbase.StorageServer.dll" />
   </files>
 </package>
