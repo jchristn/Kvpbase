@@ -1,0 +1,32 @@
+{
+  "EnableConsole": true,
+  "Server": {
+    "HeaderApiKey": "x-api-key",
+    "MaxObjectSize": 2199023255552,
+    "MaxTransferSize": 536870912,
+    "Port": 8000,
+    "DnsHostname": "localhost",
+    "Ssl": false
+  },
+  "Storage": {
+    "Directory": "./Storage/"
+  },
+  "Syslog": {
+    "ServerIp": "127.0.0.1",
+    "ServerPort": 514,
+    "Header": "kvpbase",
+    "MinimumLevel": 1,
+    "ConsoleLogging": true,
+    "FileLogging": true,
+    "LogDirectory": "./Logs/"
+  },
+  "Database": {
+    "Filename": "./Kvpbase.db",
+    "Type": "Sqlite",
+    "Port": 0
+  },
+  "Debug": {
+    "Database": false,
+    "HttpRequest": false
+  }
+}

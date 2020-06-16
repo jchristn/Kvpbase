@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SyslogLogging; 
+using SyslogLogging;
+using Watson.ORM;
+using Watson.ORM.Core;
 using Kvpbase.StorageServer.Classes.Managers; 
 using Kvpbase.StorageServer.Classes;
 
@@ -14,20 +16,20 @@ namespace Kvpbase.StorageServer.Classes.Handlers
     { 
         private Settings _Settings;
         private LoggingModule _Logging;
-        private DatabaseManager _Database;
+        private WatsonORM _ORM;
         private LockManager _Locks;
         private static string _Header = "[Kvpbase.ObjectHandler] ";
 
-        internal ObjectHandler(Settings settings, LoggingModule logging, DatabaseManager database, LockManager locks)
+        internal ObjectHandler(Settings settings, LoggingModule logging, WatsonORM orm, LockManager locks)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
-            if (database == null) throw new ArgumentNullException(nameof(database));
+            if (orm == null) throw new ArgumentNullException(nameof(orm));
             if (locks == null) throw new ArgumentNullException(nameof(locks));
 
             _Settings = settings;
             _Logging = logging;
-            _Database = database;
+            _ORM = orm;
             _Locks = locks;
         }
 
@@ -188,7 +190,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
                 return false;
             }
 
-            if (!client.WriteObject(objectName, md.Http.Request.ContentType, md.Http.Request.ContentLength, md.Http.Request.Data, Common.CsvToStringList(md.Params.Tags), out error))
+            if (!client.WriteObject(objectName, md.Http.Request.ContentType, md.Http.Request.ContentLength, md.Http.Request.Data, md.Params.Tags, out error))
             {
                 _Logging.Warn(header + "unable to write object: " + error.ToString());
                 _Locks.RemoveWriteLock(md);
@@ -230,7 +232,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
                 return false;
             }
 
-            if (!client.WriteObject(objectName, contentType, contentLength, stream, Common.CsvToStringList(md.Params.Tags), out error))
+            if (!client.WriteObject(objectName, contentType, contentLength, stream, md.Params.Tags, out error))
             {
                 _Logging.Warn(header + "unable to write object: " + error.ToString());
                 _Locks.RemoveWriteLock(md);

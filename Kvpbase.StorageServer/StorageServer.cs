@@ -11,11 +11,15 @@ using System.Threading;
 using System.Threading.Tasks; 
 using DatabaseWrapper;
 using SyslogLogging;
+using Watson.ORM;
+using Watson.ORM.Core;
 using WatsonWebserver; 
 using Kvpbase.StorageServer.Classes.DatabaseObjects;
 using Kvpbase.StorageServer.Classes.Handlers;
 using Kvpbase.StorageServer.Classes.Managers; 
 using Kvpbase.StorageServer.Classes;
+
+using Common = Kvpbase.StorageServer.Classes.Common;
 
 namespace Kvpbase.StorageServer
 {
@@ -26,8 +30,7 @@ namespace Kvpbase.StorageServer
     {
         private static Settings _Settings;
         private static LoggingModule _Logging;
-        private static DatabaseClient _Database;
-        private static DatabaseManager _DatabaseMgr;
+        private static WatsonORM _ORM;
         private static AuthManager _AuthMgr;
         private static LockManager _LockMgr;
 
@@ -63,70 +66,10 @@ namespace Kvpbase.StorageServer
 
             _Settings = Settings.FromFile("System.json");
 
-            Welcome();
+            Welcome(initialSetup);
             CreateDirectories();
+            InitializeGlobals();
 
-            _Logging = new LoggingModule(
-                _Settings.Syslog.ServerIp,
-                _Settings.Syslog.ServerPort,
-                _Settings.Syslog.ConsoleLogging,
-                (Severity)_Settings.Syslog.MinimumLevel,
-                false,
-                true,
-                true,
-                false,
-                false,
-                false);
-
-            if (_Settings.Syslog.FileLogging)
-            {
-                _Logging.FileLogging = FileLoggingMode.FileWithDate;
-                _Logging.LogFilename = "Kvpbase.StorageServer.Log";
-            }
-
-            switch (_Settings.Database.Type)
-            {
-                case DbTypes.Sqlite:
-                    _Database = new DatabaseClient(
-                        _Settings.Database.Filename);
-                    break;
-                case DbTypes.MsSql:
-                case DbTypes.MySql:
-                case DbTypes.PgSql:
-                    _Database = new DatabaseClient(
-                        _Settings.Database.Type,
-                        _Settings.Database.Hostname,
-                        _Settings.Database.Port,
-                        _Settings.Database.Username,
-                        _Settings.Database.Password,
-                        _Settings.Database.InstanceName,
-                        _Settings.Database.DatabaseName);
-                    break;
-                default:
-                    throw new ArgumentException("Unknown database type: " + _Settings.Database.Type.ToString());
-            }
-              
-            _DatabaseMgr = new DatabaseManager(_Settings, _Logging, _Database);
-            _AuthMgr = new AuthManager(_Settings, _Logging, _DatabaseMgr);
-            _LockMgr = new LockManager(_Settings, _Logging, _DatabaseMgr);
-            _ConnMgr = new ConnectionManager(); 
-            _ContainerMgr = new ContainerManager(_Settings, _Logging, _DatabaseMgr);  
-            _ObjectHandler = new ObjectHandler(_Settings, _Logging, _DatabaseMgr, _LockMgr);
-              
-            _Server = new Server(
-                _Settings.Server.DnsHostname,
-                _Settings.Server.Port,
-                _Settings.Server.Ssl,
-                RequestReceived);
-
-            _Server.Events.ExceptionEncountered = WebserverException;
-             
-            _ConsoleMgr = new ConsoleManager(
-                _Settings,
-                _Logging, 
-                _ContainerMgr, 
-                _ObjectHandler);
-             
             if (_Settings.EnableConsole)
             {
                 _ConsoleMgr.Worker();
@@ -145,14 +88,14 @@ namespace Kvpbase.StorageServer
             _Logging.Debug(_Header + "exiting"); 
         }
 
-        private static void Welcome()
+        private static void Welcome(bool skipLogo)
         {
             // http://patorjk.com/software/taag/#p=display&f=Small&t=kvpbase
 
             ConsoleColor prior = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
-            Console.WriteLine(Logo()); 
+            if (!skipLogo) Console.WriteLine(Logo()); 
             Console.WriteLine("Kvpbase | Object storage platform | v" + _Version);
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Gray;
@@ -193,6 +136,84 @@ namespace Kvpbase.StorageServer
             if (!Directory.Exists(_Settings.Syslog.LogDirectory)) Directory.CreateDirectory(_Settings.Syslog.LogDirectory); 
         }
 
+        private static void InitializeGlobals()
+        {
+            ConsoleColor previous = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+
+            Console.Write("| Initializing logging                : ");
+            _Logging = new LoggingModule(
+                _Settings.Syslog.ServerIp,
+                _Settings.Syslog.ServerPort,
+                _Settings.Syslog.ConsoleLogging,
+                (Severity)_Settings.Syslog.MinimumLevel,
+                false,
+                true,
+                true,
+                false,
+                false,
+                false);
+            Console.WriteLine("[success]");
+
+            if (_Settings.Syslog.FileLogging)
+            {
+                _Logging.FileLogging = FileLoggingMode.FileWithDate;
+                _Logging.LogFilename = "Kvpbase.StorageServer.Log";
+            }
+
+            Console.Write("| Initializing database               : ");
+            _ORM = new WatsonORM(_Settings.Database);
+            _ORM.InitializeDatabase();
+            _ORM.InitializeTable(typeof(ApiKey));
+            _ORM.InitializeTable(typeof(AuditLogEntry));
+            _ORM.InitializeTable(typeof(Container));
+            _ORM.InitializeTable(typeof(ContainerKeyValuePair));
+            _ORM.InitializeTable(typeof(ObjectKeyValuePair));
+            _ORM.InitializeTable(typeof(ObjectMetadata));
+            _ORM.InitializeTable(typeof(Permission));
+            _ORM.InitializeTable(typeof(UrlLock));
+            _ORM.InitializeTable(typeof(UserMaster));
+            Console.WriteLine("[success]");
+             
+            Console.Write("| Initializing authentication manager : ");
+            _AuthMgr = new AuthManager(_Settings, _Logging, _ORM);
+            Console.WriteLine("[success]");
+
+            Console.Write("| Initializing lock manager           : ");
+            _LockMgr = new LockManager(_Settings, _Logging, _ORM);
+            Console.WriteLine("[success]");
+
+            Console.Write("| Initializing connection manager     : ");
+            _ConnMgr = new ConnectionManager();
+            Console.WriteLine("[success]");
+
+            Console.Write("| Initializing container manager      : ");
+            _ContainerMgr = new ContainerManager(_Settings, _Logging, _ORM);
+            Console.WriteLine("[success]");
+
+            Console.Write("| Initializing object handler         : ");
+            _ObjectHandler = new ObjectHandler(_Settings, _Logging, _ORM, _LockMgr);
+            Console.WriteLine("[success]");
+
+            Console.Write("| Initializing webserver              : ");
+            _Server = new Server(
+                _Settings.Server.DnsHostname,
+                _Settings.Server.Port,
+                _Settings.Server.Ssl,
+                RequestReceived);
+            _Server.Events.ExceptionEncountered = WebserverException;
+            Console.WriteLine("[success]");
+
+            _ConsoleMgr = new ConsoleManager(
+                _Settings,
+                _Logging,
+                _ContainerMgr,
+                _ObjectHandler);
+
+            Console.WriteLine("");
+            Console.ForegroundColor = previous;
+        }
+
         private static async Task RequestReceived(HttpContext ctx)
         { 
             string header = _Header + ctx.Request.SourceIp + ":" + ctx.Request.SourcePort + " ";
@@ -220,14 +241,14 @@ namespace Kvpbase.StorageServer
                  
                 if (ctx.Request.RawUrlEntries != null && ctx.Request.RawUrlEntries.Count > 0)
                 {
-                    if (ctx.Request.RawUrlWithoutQuery.Equals("/favicon.ico"))
+                    if (ctx.Request.RawUrlEntries[0].Equals("favicon.ico"))
                     {
                         ctx.Response.StatusCode = 200;
                         await ctx.Response.Send();
                         return;
                     }
 
-                    if (ctx.Request.RawUrlWithoutQuery.Equals("/robots.txt"))
+                    if (ctx.Request.RawUrlEntries[0].Equals("robots.txt"))
                     {
                         ctx.Response.StatusCode = 200;
                         ctx.Response.ContentType = "text/plain";
@@ -266,12 +287,23 @@ namespace Kvpbase.StorageServer
                  
                 md.User = user;
                 md.Key = apiKey;
-                md.Perm = effectivePermissions;
+                md.Perm = effectivePermissions; 
                 md.Params = RequestMetadata.Parameters.FromHttpRequest(ctx.Request);
                 if (md.User != null) md.Params.UserGuid = md.User.GUID; 
                 _ConnMgr.Update(Thread.CurrentThread.ManagedThreadId, md.User);
                  
-                await UserApiHandler(md);
+                if (ctx.Request.RawUrlEntries != null
+                    && ctx.Request.RawUrlEntries.Count >= 2
+                    && ctx.Request.RawUrlEntries[0].Equals("admin")
+                    && md.Perm.IsAdmin)
+                {
+                    await AdminApiHandler(md);
+                }
+                else
+                {
+                    await UserApiHandler(md);
+                }
+
                 return;
             }
             catch (Exception e)

@@ -218,7 +218,7 @@ namespace Kvpbase.StorageServer.Classes
                 if (req.RawUrlEntries.Count > 1) ret.ContainerName = req.RawUrlEntries[1];
                 if (req.RawUrlEntries.Count > 2)
                 {
-                    string rawUrl = String.Copy(req.RawUrlWithoutQuery);
+                    string rawUrl = req.RawUrlWithoutQuery;
                     while (rawUrl.StartsWith("/")) rawUrl = rawUrl.Substring(1);
                     string[] vals = rawUrl.Split(new[] { '/' }, 3);
                     ret.ObjectKey = vals[2];

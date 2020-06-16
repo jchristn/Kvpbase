@@ -64,11 +64,7 @@ namespace Kvpbase.StorageServer.Classes.Managers
                     case "q":
                     case "quit":
                         _Enabled = false; 
-                        break;
-                           
-                    default:
-                        Console.WriteLine("Unknown command.  '?' for help.");
-                        break;
+                        break; 
                 }
             }
         }

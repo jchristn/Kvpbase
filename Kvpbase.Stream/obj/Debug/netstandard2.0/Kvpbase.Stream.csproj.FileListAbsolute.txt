@@ -41,3 +41,11 @@ D:\Code\storage-server\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.As
 D:\Code\storage-server\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.AssemblyInfo.cs
 D:\Code\storage-server\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.dll
 D:\Code\storage-server\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.pdb
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\bin\Debug\netstandard2.0\Kvpbase.Stream.deps.json
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\bin\Debug\netstandard2.0\Kvpbase.Stream.dll
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\bin\Debug\netstandard2.0\Kvpbase.Stream.pdb
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.csprojAssemblyReference.cache
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.AssemblyInfoInputs.cache
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.AssemblyInfo.cs
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.dll
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Debug\netstandard2.0\Kvpbase.Stream.pdb

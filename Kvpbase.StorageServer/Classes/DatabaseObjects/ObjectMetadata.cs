@@ -1,72 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using DatabaseWrapper;
+using Watson.ORM;
+using Watson.ORM.Core;
 
 namespace Kvpbase.StorageServer.Classes.DatabaseObjects
 {
     /// <summary>
     /// Metadata describing an object.
     /// </summary>
+    [Table("objects")]
     public class ObjectMetadata
-    { 
+    {
         /// <summary>
         /// The ID of the object.
         /// </summary>
+        [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// The GUID of the object, also used as a unique name to store the object.
         /// </summary>
+        [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// The GUID of the container that contains the object. 
         /// </summary>
+        [Column("containerguid", false, DataTypes.Nvarchar, 64, false)]
         public string ContainerGUID { get; set; }
 
         /// <summary>
         /// The object's key.
         /// </summary>
+        [Column("objectkey", false, DataTypes.Nvarchar, 256, false)]
         public string ObjectKey { get; set; }
 
         /// <summary>
         /// The content type of the object.
         /// </summary>
+        [Column("contenttype", false, DataTypes.Nvarchar, 256, true)]
         public string ContentType { get; set; }
 
         /// <summary>
         /// The content length of the object.
         /// </summary>
+        [Column("contentlength", false, DataTypes.Long, false)]
         public long ContentLength { get; set; }
 
         /// <summary>
         /// The MD5 hash of the object's data.
         /// </summary>
+        [Column("md5", false, DataTypes.Nvarchar, 64, true)]
         public string Md5 { get; set; }
 
         /// <summary>
         /// The comma-separated list of tags associated with an object.
         /// </summary>
-        public List<string> Tags { get; set; }
+        [Column("tags", false, DataTypes.Nvarchar, 1024, true)]
+        public string Tags { get; set; }
 
         /// <summary>
         /// The creation timestamp, in UTC.
         /// </summary>
+        [Column("createdutc", false, DataTypes.DateTime, false)]
         public DateTime? CreatedUtc { get; set; }
 
         /// <summary>
         /// The time of last update, in UTC.
         /// </summary>
+        [Column("lastupdateutc", false, DataTypes.DateTime, false)]
         public DateTime? LastUpdateUtc { get; set; }
 
         /// <summary>
         /// The time of last access, in UTC.
         /// </summary>
+        [Column("lastaccessutc", false, DataTypes.DateTime, false)]
         public DateTime? LastAccessUtc { get; set; }
           
         /// <summary>
@@ -85,7 +94,7 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
             LastAccessUtc = null;
         }
          
-        internal ObjectMetadata(string containerGuid, string key, string contentType, byte[] data, List<string> tags)
+        internal ObjectMetadata(string containerGuid, string key, string contentType, byte[] data, string tags)
         {
             if (String.IsNullOrEmpty(containerGuid)) throw new ArgumentNullException(nameof(containerGuid));
             if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
@@ -108,7 +117,7 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
             LastAccessUtc = ts;
         }
          
-        internal ObjectMetadata(string containerGuid, string key, string contentType, long contentLength, List<string> tags)
+        internal ObjectMetadata(string containerGuid, string key, string contentType, long contentLength, string tags)
         {
             if (String.IsNullOrEmpty(containerGuid)) throw new ArgumentNullException(nameof(containerGuid));
             if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
@@ -128,7 +137,7 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
             LastUpdateUtc = ts;
             LastAccessUtc = ts;
         }
-         
+
         internal static ObjectMetadata FromDataRow(DataRow row)
         {
             if (row == null) throw new ArgumentNullException(nameof(row));
@@ -156,8 +165,8 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
             if (row.Table.Columns.Contains("md5") && row["md5"] != null && row["md5"] != DBNull.Value)
                 ret.Md5 = row["md5"].ToString();
 
-            if (row.Table.Columns.Contains("tags") && row["tags"] != null && row["tags"] != DBNull.Value) 
-                ret.Tags = Common.CsvToStringList(row["tags"].ToString());
+            if (row.Table.Columns.Contains("tags") && row["tags"] != null && row["tags"] != DBNull.Value)
+                ret.Tags = row["tags"].ToString();
 
             if (row.Table.Columns.Contains("createdutc") && row["createdutc"] != null && row["createdutc"] != DBNull.Value)
                 ret.CreatedUtc = Convert.ToDateTime(row["createdutc"]);
@@ -170,7 +179,7 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
 
             return ret;
         }
-          
+
         internal static List<ObjectMetadata> FromDataTable(DataTable table)
         {
             if (table == null) return null;
@@ -178,38 +187,5 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
             foreach (DataRow row in table.Rows) ret.Add(FromDataRow(row));
             return ret;
         }
-
-        internal Dictionary<string, object> ToInsertDictionary()
-        {
-            Dictionary<string, object> ret = new Dictionary<string, object>();
-            ret.Add("guid", GUID);
-            ret.Add("containerguid", ContainerGUID);
-            ret.Add("objectkey", ObjectKey);
-            ret.Add("contenttype", ContentType);
-            ret.Add("contentlength", ContentLength);
-            ret.Add("md5", Md5);
-            ret.Add("tags", Common.StringListToCsv(Tags));
-            ret.Add("createdutc", CreatedUtc);
-            ret.Add("lastupdateutc", LastUpdateUtc);
-            ret.Add("lastaccessutc", LastAccessUtc); 
-            return ret;
-        }
-
-        internal static List<Column> GetTableColumns()
-        {
-            List<Column> ret = new List<Column>();
-            ret.Add(new Column("id", true, DataType.Int, 11, null, false));
-            ret.Add(new Column("guid", false, DataType.Nvarchar, 64, null, false));
-            ret.Add(new Column("containerguid", false, DataType.Nvarchar, 64, null, false));
-            ret.Add(new Column("objectkey", false, DataType.Nvarchar, 256, null, false));
-            ret.Add(new Column("contenttype", false, DataType.Nvarchar, 256, null, true));
-            ret.Add(new Column("contentlength", false, DataType.Long, 12, null, false));
-            ret.Add(new Column("md5", false, DataType.Nvarchar, 64, null, true));
-            ret.Add(new Column("tags", false, DataType.Nvarchar, 1024, null, true));
-            ret.Add(new Column("createdutc", false, DataType.DateTime, 32, null, false));
-            ret.Add(new Column("lastupdateutc", false, DataType.DateTime, 32, null, false));
-            ret.Add(new Column("lastaccessutc", false, DataType.DateTime, 32, null, false)); 
-            return ret;
-        } 
     }
 }

@@ -7,8 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DatabaseWrapper;
 using SyslogLogging;
+using Watson.ORM;
+using Watson.ORM.Core;
 
 using Kvpbase.StorageServer.Classes.Managers;
 using Kvpbase.StorageServer.Classes;
@@ -29,7 +30,7 @@ namespace Kvpbase.StorageServer.Classes
         private bool _Disposed = false; 
         private Settings _Settings;
         private LoggingModule _Logging;
-        private DatabaseManager _Database;
+        private WatsonORM _ORM;
         private Container _Container;
         private static string _Header = null;
 
@@ -38,16 +39,16 @@ namespace Kvpbase.StorageServer.Classes
         private readonly object _LockKey;
         private List<string> _LockedKeys;
          
-        internal ContainerClient(Settings settings, LoggingModule logging, DatabaseManager database, Container container)
+        internal ContainerClient(Settings settings, LoggingModule logging, WatsonORM orm, Container container)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
-            if (database == null) throw new ArgumentNullException(nameof(database)); 
+            if (orm == null) throw new ArgumentNullException(nameof(orm)); 
             if (container == null) throw new ArgumentNullException(nameof(container));
 
             _Settings = settings;
             _Logging = logging;
-            _Database = database; 
+            _ORM = orm; 
             _Container = container;
             _Header = "[Kvpbase.Container " + _Container.GUID + "] ";
 
@@ -106,7 +107,7 @@ namespace Kvpbase.StorageServer.Classes
             Dispose();  
         }
 
-        internal bool WriteObject(string key, string contentType, byte[] data, List<string> tags, out ErrorCode error)
+        internal bool WriteObject(string key, string contentType, byte[] data, string tags, out ErrorCode error)
         {
             error = ErrorCode.None;
             long contentLength = 0;
@@ -126,7 +127,7 @@ namespace Kvpbase.StorageServer.Classes
             return WriteObject(key, contentType, contentLength, stream, tags, out error);
         }
 
-        internal bool WriteObject(string key, string contentType, long contentLength, Stream stream, List<string> tags, out ErrorCode error)
+        internal bool WriteObject(string key, string contentType, long contentLength, Stream stream, string tags, out ErrorCode error)
         {
             if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
             if (String.IsNullOrEmpty(contentType)) contentType = "application/octet-stream";
@@ -159,9 +160,9 @@ namespace Kvpbase.StorageServer.Classes
                     error = ErrorCode.AlreadyExists;
                     return false;
                 }
-                 
+
                 md = new ObjectMetadata(_Container.GUID, key, contentType, contentLength, tags);
-                md = _Database.Insert<ObjectMetadata>(md);
+                md = _ORM.Insert<ObjectMetadata>(md);
                  
                 bool success = false;
                 string md5 = null;
@@ -185,7 +186,7 @@ namespace Kvpbase.StorageServer.Classes
                 if (!String.IsNullOrEmpty(md5))
                 {
                     md.Md5 = md5;
-                    _Database.Update<ObjectMetadata>(md);
+                    _ORM.Update<ObjectMetadata>(md);
                 }
 
                 _Logging.Debug(header + "successfully wrote object " + md.GUID);
@@ -195,7 +196,7 @@ namespace Kvpbase.StorageServer.Classes
             {
                 if (cleanupRequired && md != null)
                 {
-                    _Database.DeleteByGUID<ObjectMetadata>(md.GUID);
+                    _ORM.Delete<ObjectMetadata>(md);
                 }
 
                 if (!String.IsNullOrEmpty(key))
@@ -258,7 +259,7 @@ namespace Kvpbase.StorageServer.Classes
                     return false;
                 }
 
-                md = _Database.Insert<ObjectMetadata>(md);
+                md = _ORM.Insert<ObjectMetadata>(md);
                  
                 string md5 = null;
                 bool success = _DiskHandler.Write(Container.ObjectsDirectory + md.GUID, Convert.ToInt64(md.ContentLength), stream, out md5, out error);
@@ -272,7 +273,7 @@ namespace Kvpbase.StorageServer.Classes
                 if (!String.IsNullOrEmpty(md5))
                 {
                     md.Md5 = md5;
-                    _Database.Update<ObjectMetadata>(md);
+                    _ORM.Update<ObjectMetadata>(md);
                 }
  
                 _Logging.Debug(header + "successfully wrote object " + md.GUID);
@@ -282,7 +283,7 @@ namespace Kvpbase.StorageServer.Classes
             {
                 if (cleanupRequired)
                 {
-                    _Database.DeleteByGUID<ObjectMetadata>(md.GUID);
+                    _ORM.Delete<ObjectMetadata>(md);
                 }
 
                 if (!String.IsNullOrEmpty(md.ObjectKey))
@@ -366,7 +367,7 @@ namespace Kvpbase.StorageServer.Classes
                         md.ContentLength = size;
                     }
 
-                    _Database.Update<ObjectMetadata>(md);
+                    _ORM.Update<ObjectMetadata>(md);
                 }
                  
                 _Logging.Debug(header + "successfully updated object " + md.GUID);
@@ -388,7 +389,6 @@ namespace Kvpbase.StorageServer.Classes
         {
             error = ErrorCode.None;
             if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
-            if (String.IsNullOrEmpty(tags)) throw new ArgumentNullException(nameof(tags));
             key = key.ToLower();
             string header = _Header + "WriteObjectTags " + _Container.UserGUID + "/" + _Container.Name + "/" + key + " ";
             string guid = null; 
@@ -416,9 +416,9 @@ namespace Kvpbase.StorageServer.Classes
                 }
 
                 guid = md.GUID;
-                md.Tags = Common.CsvToStringList(tags);
+                md.Tags = tags;
                 md.LastUpdateUtc = DateTime.Now.ToUniversalTime();
-                _Database.Update<ObjectMetadata>(md);
+                _ORM.Update<ObjectMetadata>(md);
                   
                 _Logging.Debug(header + "successfully updated tags");
                 return true;
@@ -440,15 +440,19 @@ namespace Kvpbase.StorageServer.Classes
             string header = _Header + "WriteContainerKeyValuePairs " + _Container.UserGUID + "/" + _Container.Name + " ";
             _Logging.Debug(header + "rewriting metadata");
 
-            Expression e = new Expression("containerguid", Operators.Equals, _Container.GUID);
-            _Database.DeleteByFilter<ContainerKeyValuePair>(e);
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ContainerKeyValuePair>(nameof(ContainerKeyValuePair.ContainerGUID)),
+                DbOperators.Equals,
+                _Container.GUID);
+
+            _ORM.DeleteMany<ContainerKeyValuePair>(e);
 
             if (vals != null && vals.Count > 0)
             {
                 foreach (KeyValuePair<string, string> kvp in vals)
                 {
                     ContainerKeyValuePair curr = new ContainerKeyValuePair(_Container.GUID, kvp.Key, kvp.Value);
-                    _Database.Insert<ContainerKeyValuePair>(curr);
+                    _ORM.Insert<ContainerKeyValuePair>(curr);
                 }
             }
 
@@ -461,17 +465,33 @@ namespace Kvpbase.StorageServer.Classes
             if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
             key = key.ToLower();
 
-            Expression e = new Expression("containerguid", Operators.Equals, _Container.GUID);
-            e.PrependAnd("objectkey", Operators.Equals, key);
-            ObjectMetadata md = _Database.SelectByFilter<ObjectMetadata>(e, "ORDER BY id DESC");
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ObjectMetadata>(nameof(ObjectMetadata.ContainerGUID)),
+                DbOperators.Equals,
+                _Container.GUID);
+
+            e.PrependAnd(new DbExpression(
+                _ORM.GetColumnName<ObjectMetadata>(nameof(ObjectMetadata.ObjectKey)),
+                DbOperators.Equals,
+                key));
+
+            ObjectMetadata md = _ORM.SelectFirst<ObjectMetadata>(e);
             if (md == null) return false;
 
             string guid = md.GUID;
             string header = _Header + "WriteObjectKeyValuePairs " + _Container.UserGUID + "/" + _Container.Name + "/" + key + " ";
+            
+            e = new DbExpression(
+                _ORM.GetColumnName<ObjectKeyValuePair>(nameof(ObjectKeyValuePair.ObjectGUID)),
+                DbOperators.Equals,
+                md.GUID);
 
-            e = new Expression("objectguid", Operators.Equals, md.GUID);
-            e.PrependAnd("containerguid", Operators.Equals, _Container.GUID);
-            _Database.DeleteByFilter<ObjectKeyValuePair>(e);
+            e.PrependAnd(new DbExpression(
+                _ORM.GetColumnName<ObjectMetadata>(nameof(ObjectKeyValuePair.ContainerGUID)),
+                DbOperators.Equals,
+                _Container.GUID));
+
+            _ORM.DeleteMany<ObjectKeyValuePair>(e);
 
             lock (_LockKey)
             {
@@ -492,12 +512,12 @@ namespace Kvpbase.StorageServer.Classes
                     foreach (KeyValuePair<string, string> kvp in vals)
                     {
                         ObjectKeyValuePair curr = new ObjectKeyValuePair(_Container.GUID, md.GUID, kvp.Key, kvp.Value);
-                        _Database.Insert<ObjectKeyValuePair>(curr);
+                        _ORM.Insert<ObjectKeyValuePair>(curr);
                     }
                 }
 
                 md.LastUpdateUtc = DateTime.Now.ToUniversalTime();
-                _Database.Update<ObjectMetadata>(md);
+                _ORM.Update<ObjectMetadata>(md);
                  
                 return true;
             }
@@ -545,7 +565,7 @@ namespace Kvpbase.StorageServer.Classes
                 guid = md.GUID;
                  
                 _Logging.Debug(header + "deleting object");
-                _Database.Delete<ObjectMetadata>(md); 
+                _ORM.Delete<ObjectMetadata>(md); 
 
                 return _DiskHandler.Delete(Container.ObjectsDirectory + md.GUID, out error); 
             }
@@ -565,8 +585,12 @@ namespace Kvpbase.StorageServer.Classes
         {
             Dictionary<string, string> vals = new Dictionary<string, string>();
 
-            Expression e = new Expression("containerguid", Operators.Equals, _Container.GUID);
-            List<ContainerKeyValuePair> kvps = _Database.SelectMany<ContainerKeyValuePair>(null, null, e, "ORDER BY id DESC");
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ContainerKeyValuePair>(nameof(ContainerKeyValuePair.ContainerGUID)),
+                DbOperators.Equals,
+                _Container.GUID);
+
+            List<ContainerKeyValuePair> kvps = _ORM.SelectMany<ContainerKeyValuePair>(e);
             if (kvps != null && kvps.Count > 0)
             {
                 foreach (ContainerKeyValuePair curr in kvps)
@@ -594,10 +618,17 @@ namespace Kvpbase.StorageServer.Classes
                 return false;
             }
 
-            Expression e = new Expression("objectguid", Operators.Equals, md.GUID);
-            e.PrependAnd("containerguid", Operators.Equals, _Container.GUID);
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ObjectKeyValuePair>(nameof(ObjectKeyValuePair.ContainerGUID)),
+                DbOperators.Equals,
+                _Container.GUID);
 
-            List<ObjectKeyValuePair> kvps = _Database.SelectMany<ObjectKeyValuePair>(null, null, e, "ORDER BY id DESC");
+            e.PrependAnd(new DbExpression(
+                _ORM.GetColumnName<ObjectKeyValuePair>(nameof(ObjectKeyValuePair.ObjectGUID)),
+                DbOperators.Equals,
+                md.GUID));
+
+            List<ObjectKeyValuePair> kvps = _ORM.SelectMany<ObjectKeyValuePair>(e);
             if (kvps != null && kvps.Count > 0)
             {
                 foreach (ObjectKeyValuePair curr in kvps)
@@ -613,10 +644,19 @@ namespace Kvpbase.StorageServer.Classes
         {
             if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key)); 
             key = key.ToLower(); 
-            metadata = null; 
-            Expression e = new Expression("objectkey", Operators.Equals, key);
-            e.PrependAnd("containerguid", Operators.Equals, _Container.GUID);
-            metadata = _Database.SelectByFilter<ObjectMetadata>(e, "ORDER BY id DESC"); 
+            metadata = null;
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ObjectMetadata>(nameof(ObjectMetadata.ContainerGUID)),
+                DbOperators.Equals,
+                _Container.GUID);
+
+            e.PrependAnd(new DbExpression(
+                _ORM.GetColumnName<ObjectMetadata>(nameof(ObjectMetadata.ObjectKey)),
+                DbOperators.Equals,
+                key));
+
+            metadata = _ORM.SelectFirst<ObjectMetadata>(e); 
             if (metadata == null) return false;
             return true;
         }
@@ -660,7 +700,7 @@ namespace Kvpbase.StorageServer.Classes
                 if (success)
                 {
                     md.LastAccessUtc = DateTime.Now.ToUniversalTime();
-                    _Database.Update<ObjectMetadata>(md);
+                    _ORM.Update<ObjectMetadata>(md);
                 }
 
                 return success; 
@@ -728,7 +768,7 @@ namespace Kvpbase.StorageServer.Classes
                 if (success)
                 {
                     md.LastAccessUtc = DateTime.Now.ToUniversalTime();
-                    _Database.Update<ObjectMetadata>(md);
+                    _ORM.Update<ObjectMetadata>(md);
                 }
 
                 return success; 
@@ -805,7 +845,7 @@ namespace Kvpbase.StorageServer.Classes
 
                 originalMd.ObjectKey = updatedKey;
                 originalMd.LastAccessUtc = DateTime.Now.ToUniversalTime();
-                _Database.Update<ObjectMetadata>(originalMd);
+                _ORM.Update<ObjectMetadata>(originalMd);
 
                 return true;
             }
@@ -833,20 +873,20 @@ namespace Kvpbase.StorageServer.Classes
             switch (_Settings.Database.Type)
             {
                 case DbTypes.Sqlite:
-                    query = "SELECT COUNT(*) AS `NumObjects` FROM `" + DatabaseManager.OBJECTS_TABLE + "`";
+                    query = "SELECT COUNT(*) AS `NumObjects` FROM `" + _ORM.GetTableName(typeof(ObjectMetadata)) + "`";
                     break;
-                case DbTypes.MsSql:
-                    query = "SELECT COUNT(*) AS [NumObjects] FROM [" + DatabaseManager.OBJECTS_TABLE + "]";
+                case DbTypes.SqlServer:
+                    query = "SELECT COUNT(*) AS [NumObjects] FROM [" + _ORM.GetTableName(typeof(ObjectMetadata)) + "]";
                     break;
-                case DbTypes.MySql:
-                    query = "SELECT COUNT(*) AS `NumObjects` FROM `" + DatabaseManager.OBJECTS_TABLE + "`";
+                case DbTypes.Mysql:
+                    query = "SELECT COUNT(*) AS `NumObjects` FROM `" + _ORM.GetTableName(typeof(ObjectMetadata)) + "`";
                     break;
-                case DbTypes.PgSql:
-                    query = "SELECT COUNT(*) AS \"NumObjects\" FROM \"" + DatabaseManager.OBJECTS_TABLE + "\"";
+                case DbTypes.Postgresql:
+                    query = "SELECT COUNT(*) AS \"NumObjects\" FROM \"" + _ORM.GetTableName(typeof(ObjectMetadata)) + "\"";
                     break;
             }
 
-            DataTable result = _Database.Query(query);
+            DataTable result = _ORM.Query(query);
             if (result != null && result.Rows.Count == 1)
             {
                 if (result.Rows[0]["NumObjects"] != null && result.Rows[0]["NumObjects"] != DBNull.Value)
@@ -863,20 +903,20 @@ namespace Kvpbase.StorageServer.Classes
             switch (_Settings.Database.Type)
             {
                 case DbTypes.Sqlite:
-                    query = "SELECT SUM(`ContentLength`) AS `Bytes` FROM `" + DatabaseManager.OBJECTS_TABLE + "`";
+                    query = "SELECT SUM(`ContentLength`) AS `Bytes` FROM `" + _ORM.GetTableName(typeof(ObjectMetadata)) + "`";
                     break;
-                case DbTypes.MsSql:
-                    query = "SELECT SUM([ContentLength]) AS [Bytes] FROM [" + DatabaseManager.OBJECTS_TABLE + "]";
+                case DbTypes.SqlServer:
+                    query = "SELECT SUM([ContentLength]) AS [Bytes] FROM [" + _ORM.GetTableName(typeof(ObjectMetadata)) + "]";
                     break;
-                case DbTypes.MySql:
-                    query = "SELECT SUM(`ContentLength`) AS `Bytes` FROM `" + DatabaseManager.OBJECTS_TABLE + "`";
+                case DbTypes.Mysql:
+                    query = "SELECT SUM(`ContentLength`) AS `Bytes` FROM `" + _ORM.GetTableName(typeof(ObjectMetadata)) + "`";
                     break;
-                case DbTypes.PgSql:
-                    query = "SELECT SUM(\"ContentLength\") AS \"Bytes\" FROM \"" + DatabaseManager.OBJECTS_TABLE + "\"";
+                case DbTypes.Postgresql:
+                    query = "SELECT SUM(\"ContentLength\") AS \"Bytes\" FROM \"" + _ORM.GetTableName(typeof(ObjectMetadata)) + "\"";
                     break;
             }
              
-            DataTable result = _Database.Query(query);
+            DataTable result = _ORM.Query(query);
             if (result != null && result.Rows.Count == 1)
             {
                 if (result.Rows[0]["Bytes"] != null && result.Rows[0]["Bytes"] != DBNull.Value)
@@ -913,18 +953,18 @@ namespace Kvpbase.StorageServer.Classes
                 case DbTypes.Sqlite:
                     query = EnumerateQuerySqlite(indexStart, maxResults, filter, orderByClause);
                     break;
-                case DbTypes.MsSql:
+                case DbTypes.SqlServer:
                     query = EnumerateQueryMssql(indexStart, maxResults, filter, orderByClause);
                     break;
-                case DbTypes.MySql:
+                case DbTypes.Mysql:
                     query = EnumerateQueryMysql(indexStart, maxResults, filter, orderByClause);
                     break;
-                case DbTypes.PgSql:
+                case DbTypes.Postgresql:
                     query = EnumerateQueryPgsql(indexStart, maxResults, filter, orderByClause);
                     break;
             }
              
-            DataTable result = _Database.Query(query); 
+            DataTable result = _ORM.Query(query); 
             List<ObjectMetadata> objects = ObjectMetadata.FromDataTable(result);
 
             ContainerMetadata meta = new ContainerMetadata();
@@ -952,35 +992,60 @@ namespace Kvpbase.StorageServer.Classes
         {
             if (!force && !Container.EnableAuditLogging) return;
             AuditLogEntry log = new AuditLogEntry(_Container.GUID, objectGuid, action, metadata);
-            _Database.Insert<AuditLogEntry>(log);
+            _ORM.Insert<AuditLogEntry>(log);
         }
 
-        internal List<AuditLogEntry> GetAuditLogEntries(string key, string action, int? maxResults, int? index, DateTime? createdBefore, DateTime? createdAfter)
+        internal List<AuditLogEntry> GetAuditLogEntries(string key, AuditLogEntryType? action, int? maxResults, int? index, DateTime? createdBefore, DateTime? createdAfter)
         {
             if (!String.IsNullOrEmpty(key)) key = key.ToLower();
 
-            Expression e = new Expression("id", Operators.GreaterThan, 0);
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<AuditLogEntry>(nameof(AuditLogEntry.Id)),
+                DbOperators.Equals,
+                0);
             
             ObjectMetadata md = null;
             if (!String.IsNullOrEmpty(key))
             {
                 if (!ReadObjectMetadata(key, out md)) return null;
-                e.PrependAnd("objectguid", Operators.Equals, md.GUID);
+                e.PrependAnd(new DbExpression(
+                    _ORM.GetColumnName<AuditLogEntry>(nameof(AuditLogEntry.ObjectGUID)),
+                    DbOperators.Equals,
+                    md.GUID));
             }
 
-            if (!String.IsNullOrEmpty(action)) e.PrependAnd("action", Operators.Equals, action);
-            if (createdBefore != null) e.PrependAnd("createdutc", Operators.LessThan, Convert.ToDateTime(createdBefore));
-            if (createdAfter != null) e.PrependAnd("createdutc", Operators.GreaterThan, Convert.ToDateTime(createdAfter));
+            if (action != null)
+                e.PrependAnd(new DbExpression(
+                    _ORM.GetColumnName<AuditLogEntry>(nameof(AuditLogEntry.Action)),
+                    DbOperators.Equals,
+                    action));
 
-            return _Database.SelectMany<AuditLogEntry>(null, null, e, "ORDER BY id DESC");
+            if (createdBefore != null)
+                e.PrependAnd(new DbExpression(
+                    _ORM.GetColumnName<AuditLogEntry>(nameof(AuditLogEntry.CreatedUtc)),
+                    DbOperators.LessThan,
+                    Convert.ToDateTime(createdBefore)));
+
+            if (createdAfter != null)
+                e.PrependAnd(new DbExpression(
+                    _ORM.GetColumnName<AuditLogEntry>(nameof(AuditLogEntry.CreatedUtc)),
+                    DbOperators.GreaterThan,
+                    Convert.ToDateTime(createdAfter)));
+
+            return _ORM.SelectMany<AuditLogEntry>(e);
         }
 
         internal void ClearAuditLog()
         {
             string header = _Header + "ClearAuditLog " + _Container.UserGUID + "/" + _Container.Name + " ";
             _Logging.Info(header + "audit log deletion requested");
-            Expression e = new Expression("containerguid", Operators.Equals, _Container.GUID);
-            _Database.DeleteByFilter<AuditLogEntry>(e);
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<AuditLogEntry>(nameof(AuditLogEntry.ContainerGUID)),
+                DbOperators.Equals,
+                _Container.GUID);
+
+            _ORM.DeleteMany<AuditLogEntry>(e);
         }
 
         internal static void HttpStatusFromErrorCode(ErrorCode error, out int statusCode, out int id)
@@ -1045,9 +1110,9 @@ namespace Kvpbase.StorageServer.Classes
             {
                 try
                 {
-                    if (_Database != null)
+                    if (_ORM != null)
                     { 
-                        _Database = null;
+                        _ORM = null;
                     }
                 }
                 catch (Exception)
@@ -1067,9 +1132,19 @@ namespace Kvpbase.StorageServer.Classes
            
         private string GetMd5(string guid)
         {
-            Expression e = new Expression("guid", Operators.Equals, guid);
-            e.PrependAnd("containerguid", Operators.Equals, _Container.GUID);
-            ObjectMetadata md = _Database.SelectByFilter<ObjectMetadata>(e, "ORDER BY id DESC");
+            if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ObjectMetadata>(nameof(ObjectMetadata.GUID)),
+                DbOperators.Equals,
+                guid);
+
+            e.PrependAnd(new DbExpression(
+                _ORM.GetColumnName<ObjectMetadata>(nameof(ObjectMetadata.ContainerGUID)),
+                DbOperators.Equals,
+                _Container.GUID));
+
+            ObjectMetadata md = _ORM.SelectFirst<ObjectMetadata>(e);
             if (md != null) return md.Md5;
             else return null;
         }
@@ -1085,55 +1160,57 @@ namespace Kvpbase.StorageServer.Classes
                 "SELECT ";
 
             query +=
-                "`o`.* FROM `" + DatabaseManager.OBJECTS_TABLE + "` AS `o` ";
+                "`o`.* FROM `" + _ORM.GetTableName(typeof(ObjectMetadata)) + "` AS `o` ";
 
             if (filter != null && filter.KeyValuePairs != null && filter.KeyValuePairs.Count > 0)
             {
-                query += "INNER JOIN `" + DatabaseManager.OBJECTS_KVP_TABLE + "` AS `kv` ON `o`.`GUID` = `kv`.`ObjectGUID` ";
+                query += "INNER JOIN `" + _ORM.GetTableName(typeof(ObjectKeyValuePair)) + "` AS `kv` ON `o`.`GUID` = `kv`.`ObjectGUID` ";
             }
+
+            query +=
+                "WHERE `o`.`Id` > 0 " +
+                "AND `o`.`ContainerGUID` = '" + _ORM.Sanitize(_Container.GUID) + "' ";
 
             if (filter != null)
             {
-                query += "WHERE `o`.`Id` > 0 ";
-
                 if (filter.CreatedAfter != null)
                 {
-                    query += "AND `o`.`CreatedUtc` > '" + _Database.Timestamp(Convert.ToDateTime(filter.CreatedAfter)) + "' ";
+                    query += "AND `o`.`CreatedUtc` > '" + _ORM.Timestamp(Convert.ToDateTime(filter.CreatedAfter)) + "' ";
                 }
 
                 if (filter.CreatedBefore != null)
                 {
-                    query += "AND `o`.`CreatedUtc` < '" + _Database.Timestamp(Convert.ToDateTime(filter.CreatedBefore)) + "' ";
+                    query += "AND `o`.`CreatedUtc` < '" + _ORM.Timestamp(Convert.ToDateTime(filter.CreatedBefore)) + "' ";
                 }
 
                 if (filter.UpdatedAfter != null)
                 {
-                    query += "AND `o`.`LastUpdateUtc` > '" + _Database.Timestamp(Convert.ToDateTime(filter.UpdatedAfter)) + "' ";
+                    query += "AND `o`.`LastUpdateUtc` > '" + _ORM.Timestamp(Convert.ToDateTime(filter.UpdatedAfter)) + "' ";
                 }
 
                 if (filter.UpdatedBefore != null)
                 {
-                    query += "AND `o`.`LastUpdateUtc` < '" + _Database.Timestamp(Convert.ToDateTime(filter.UpdatedBefore)) + "' ";
+                    query += "AND `o`.`LastUpdateUtc` < '" + _ORM.Timestamp(Convert.ToDateTime(filter.UpdatedBefore)) + "' ";
                 }
 
                 if (filter.LastAccessAfter != null)
                 {
-                    query += "AND `o`.`LastAccessUtc` > '" + _Database.Timestamp(Convert.ToDateTime(filter.LastAccessAfter)) + "' ";
+                    query += "AND `o`.`LastAccessUtc` > '" + _ORM.Timestamp(Convert.ToDateTime(filter.LastAccessAfter)) + "' ";
                 }
 
                 if (filter.LastAccessBefore != null)
                 {
-                    query += "AND `o`.`LastAccessUtc` < '" + _Database.Timestamp(Convert.ToDateTime(filter.LastAccessBefore)) + "' ";
+                    query += "AND `o`.`LastAccessUtc` < '" + _ORM.Timestamp(Convert.ToDateTime(filter.LastAccessBefore)) + "' ";
                 }
 
                 if (!String.IsNullOrEmpty(filter.Prefix))
                 {
-                    query += "AND `o`.`ObjectKey` LIKE '" + Sanitize(filter.Prefix) + "%' ";
+                    query += "AND `o`.`ObjectKey` LIKE '" + _ORM.Sanitize(filter.Prefix) + "%' ";
                 }
 
                 if (!String.IsNullOrEmpty(filter.Md5))
                 {
-                    query += "AND `o`.`Md5` = '" + Sanitize(filter.Md5) + "' ";
+                    query += "AND `o`.`Md5` = '" + _ORM.Sanitize(filter.Md5) + "' ";
                 }
 
                 if (filter.SizeMin != null)
@@ -1161,7 +1238,7 @@ namespace Kvpbase.StorageServer.Classes
                         if (String.IsNullOrEmpty(curr.Key)) continue;
 
                         query +=
-                            "AND `kv`.`MetadataKey` = '" + Sanitize(curr.Key) + "' ";
+                            "AND `kv`.`MetadataKey` = '" + _ORM.Sanitize(curr.Key) + "' ";
 
                         if (String.IsNullOrEmpty(curr.Value))
                         {
@@ -1169,7 +1246,7 @@ namespace Kvpbase.StorageServer.Classes
                         }
                         else
                         {
-                            query += "AND `kv`.`MetadataValue` = '" + Sanitize(curr.Value) + "' ";
+                            query += "AND `kv`.`MetadataValue` = '" + _ORM.Sanitize(curr.Value) + "' ";
                         }
                     }
                 }
@@ -1192,7 +1269,7 @@ namespace Kvpbase.StorageServer.Classes
                     query += "LIMIT " + maxResults + " OFFSET " + indexStart;
                 }
             }
-
+             
             return query;
         }
 
@@ -1212,55 +1289,57 @@ namespace Kvpbase.StorageServer.Classes
             }
 
             query +=
-                "[o].* FROM [" + DatabaseManager.OBJECTS_TABLE + "] AS [o] ";
+                "[o].* FROM [" + _ORM.GetTableName(typeof(ObjectMetadata)) + "] AS [o] ";
 
             if (filter != null && filter.KeyValuePairs != null && filter.KeyValuePairs.Count > 0)
             {
-                query += "INNER JOIN [" + DatabaseManager.OBJECTS_KVP_TABLE + "] AS [kv] ON [o].[GUID] = [kv].[ObjectGUID] ";
+                query += "INNER JOIN [" + _ORM.GetTableName(typeof(ObjectKeyValuePair)) + "] AS [kv] ON [o].[GUID] = [kv].[ObjectGUID] ";
             }
+
+            query +=
+                "WHERE [o].[Id] > 0 " +
+                "AND [o].[ContainerGUID] = '" + _ORM.Sanitize(_Container.GUID) + "' ";
 
             if (filter != null)
             {
-                query += "WHERE [o].[Id] > 0 ";
-
                 if (filter.CreatedAfter != null)
                 {
-                    query += "AND [o].[CreatedUtc] > '" + _Database.Timestamp(Convert.ToDateTime(filter.CreatedAfter)) + "' ";
+                    query += "AND [o].[CreatedUtc] > '" + _ORM.Timestamp(Convert.ToDateTime(filter.CreatedAfter)) + "' ";
                 }
 
                 if (filter.CreatedBefore != null)
                 {
-                    query += "AND [o].[CreatedUtc] < '" + _Database.Timestamp(Convert.ToDateTime(filter.CreatedBefore)) + "' ";
+                    query += "AND [o].[CreatedUtc] < '" + _ORM.Timestamp(Convert.ToDateTime(filter.CreatedBefore)) + "' ";
                 }
 
                 if (filter.UpdatedAfter != null)
                 {
-                    query += "AND [o].[LastUpdateUtc] > '" + _Database.Timestamp(Convert.ToDateTime(filter.UpdatedAfter)) + "' ";
+                    query += "AND [o].[LastUpdateUtc] > '" + _ORM.Timestamp(Convert.ToDateTime(filter.UpdatedAfter)) + "' ";
                 }
 
                 if (filter.UpdatedBefore != null)
                 {
-                    query += "AND [o].[LastUpdateUtc] < '" + _Database.Timestamp(Convert.ToDateTime(filter.UpdatedBefore)) + "' ";
+                    query += "AND [o].[LastUpdateUtc] < '" + _ORM.Timestamp(Convert.ToDateTime(filter.UpdatedBefore)) + "' ";
                 }
 
                 if (filter.LastAccessAfter != null)
                 {
-                    query += "AND [o].[LastAccessUtc] > '" + _Database.Timestamp(Convert.ToDateTime(filter.LastAccessAfter)) + "' ";
+                    query += "AND [o].[LastAccessUtc] > '" + _ORM.Timestamp(Convert.ToDateTime(filter.LastAccessAfter)) + "' ";
                 }
 
                 if (filter.LastAccessBefore != null)
                 {
-                    query += "AND [o].[LastAccessUtc] < '" + _Database.Timestamp(Convert.ToDateTime(filter.LastAccessBefore)) + "' ";
+                    query += "AND [o].[LastAccessUtc] < '" + _ORM.Timestamp(Convert.ToDateTime(filter.LastAccessBefore)) + "' ";
                 }
 
                 if (!String.IsNullOrEmpty(filter.Prefix))
                 {
-                    query += "AND [o].[ObjectKey] LIKE '" + Sanitize(filter.Prefix) + "%' ";
+                    query += "AND [o].[ObjectKey] LIKE '" + _ORM.Sanitize(filter.Prefix) + "%' ";
                 }
 
                 if (!String.IsNullOrEmpty(filter.Md5))
                 {
-                    query += "AND [o].[Md5] = '" + Sanitize(filter.Md5) + "' ";
+                    query += "AND [o].[Md5] = '" + _ORM.Sanitize(filter.Md5) + "' ";
                 }
 
                 if (filter.SizeMin != null)
@@ -1288,7 +1367,7 @@ namespace Kvpbase.StorageServer.Classes
                         if (String.IsNullOrEmpty(curr.Key)) continue;
 
                         query +=
-                            "AND [kv].[MetadataKey] = '" + Sanitize(curr.Key) + "' ";
+                            "AND [kv].[MetadataKey] = '" + _ORM.Sanitize(curr.Key) + "' ";
 
                         if (String.IsNullOrEmpty(curr.Value))
                         {
@@ -1296,7 +1375,7 @@ namespace Kvpbase.StorageServer.Classes
                         }
                         else
                         {
-                            query += "AND [kv].[MetadataValue] = '" + Sanitize(curr.Value) + "' ";
+                            query += "AND [kv].[MetadataValue] = '" + _ORM.Sanitize(curr.Value) + "' ";
                         }
                     }
                 }
@@ -1328,55 +1407,57 @@ namespace Kvpbase.StorageServer.Classes
                 "SELECT ";
              
             query +=
-                "`o`.* FROM `" + DatabaseManager.OBJECTS_TABLE + "` AS `o` ";
+                "`o`.* FROM `" + _ORM.GetTableName(typeof(ObjectMetadata)) + "` AS `o` ";
 
             if (filter != null && filter.KeyValuePairs != null && filter.KeyValuePairs.Count > 0)
             {
-                query += "INNER JOIN `" + DatabaseManager.OBJECTS_KVP_TABLE + "` AS `kv` ON `o`.`GUID` = `kv`.`ObjectGUID` ";
+                query += "INNER JOIN `" + _ORM.GetTableName(typeof(ObjectKeyValuePair)) + "` AS `kv` ON `o`.`GUID` = `kv`.`ObjectGUID` ";
             }
+
+            query +=
+                "WHERE `o`.`Id` > 0 " +
+                "AND `o`.`ContainerGUID` = '" + _ORM.Sanitize(_Container.GUID) + "' ";
 
             if (filter != null)
             {
-                query += "WHERE `o`.`Id` > 0 ";
-
                 if (filter.CreatedAfter != null)
                 {
-                    query += "AND `o`.`CreatedUtc` > '" + _Database.Timestamp(Convert.ToDateTime(filter.CreatedAfter)) + "' ";
+                    query += "AND `o`.`CreatedUtc` > '" + _ORM.Timestamp(Convert.ToDateTime(filter.CreatedAfter)) + "' ";
                 }
 
                 if (filter.CreatedBefore != null)
                 {
-                    query += "AND `o`.`CreatedUtc` < '" + _Database.Timestamp(Convert.ToDateTime(filter.CreatedBefore)) + "' ";
+                    query += "AND `o`.`CreatedUtc` < '" + _ORM.Timestamp(Convert.ToDateTime(filter.CreatedBefore)) + "' ";
                 }
 
                 if (filter.UpdatedAfter != null)
                 {
-                    query += "AND `o`.`LastUpdateUtc` > '" + _Database.Timestamp(Convert.ToDateTime(filter.UpdatedAfter)) + "' ";
+                    query += "AND `o`.`LastUpdateUtc` > '" + _ORM.Timestamp(Convert.ToDateTime(filter.UpdatedAfter)) + "' ";
                 }
 
                 if (filter.UpdatedBefore != null)
                 {
-                    query += "AND `o`.`LastUpdateUtc` < '" + _Database.Timestamp(Convert.ToDateTime(filter.UpdatedBefore)) + "' ";
+                    query += "AND `o`.`LastUpdateUtc` < '" + _ORM.Timestamp(Convert.ToDateTime(filter.UpdatedBefore)) + "' ";
                 }
 
                 if (filter.LastAccessAfter != null)
                 {
-                    query += "AND `o`.`LastAccessUtc` > '" + _Database.Timestamp(Convert.ToDateTime(filter.LastAccessAfter)) + "' ";
+                    query += "AND `o`.`LastAccessUtc` > '" + _ORM.Timestamp(Convert.ToDateTime(filter.LastAccessAfter)) + "' ";
                 }
 
                 if (filter.LastAccessBefore != null)
                 {
-                    query += "AND `o`.`LastAccessUtc` < '" + _Database.Timestamp(Convert.ToDateTime(filter.LastAccessBefore)) + "' ";
+                    query += "AND `o`.`LastAccessUtc` < '" + _ORM.Timestamp(Convert.ToDateTime(filter.LastAccessBefore)) + "' ";
                 }
 
                 if (!String.IsNullOrEmpty(filter.Prefix))
                 {
-                    query += "AND `o`.`ObjectKey` LIKE '" + Sanitize(filter.Prefix) + "%' ";
+                    query += "AND `o`.`ObjectKey` LIKE '" + _ORM.Sanitize(filter.Prefix) + "%' ";
                 }
 
                 if (!String.IsNullOrEmpty(filter.Md5))
                 {
-                    query += "AND `o`.`Md5` = '" + Sanitize(filter.Md5) + "' ";
+                    query += "AND `o`.`Md5` = '" + _ORM.Sanitize(filter.Md5) + "' ";
                 }
 
                 if (filter.SizeMin != null)
@@ -1404,7 +1485,7 @@ namespace Kvpbase.StorageServer.Classes
                         if (String.IsNullOrEmpty(curr.Key)) continue;
 
                         query +=
-                            "AND `kv`.`MetadataKey` = '" + Sanitize(curr.Key) + "' ";
+                            "AND `kv`.`MetadataKey` = '" + _ORM.Sanitize(curr.Key) + "' ";
 
                         if (String.IsNullOrEmpty(curr.Value))
                         {
@@ -1412,7 +1493,7 @@ namespace Kvpbase.StorageServer.Classes
                         }
                         else
                         {
-                            query += "AND `kv`.`MetadataValue` = '" + Sanitize(curr.Value) + "' ";
+                            query += "AND `kv`.`MetadataValue` = '" + _ORM.Sanitize(curr.Value) + "' ";
                         }
                     }
                 }
@@ -1450,55 +1531,57 @@ namespace Kvpbase.StorageServer.Classes
                 "SELECT ";
              
             query +=
-                "\"o\".* FROM \"" + DatabaseManager.OBJECTS_TABLE + "\" AS \"o\" ";
+                "\"o\".* FROM \"" + _ORM.GetTableName(typeof(ObjectMetadata)) + "\" AS \"o\" ";
 
             if (filter != null && filter.KeyValuePairs != null && filter.KeyValuePairs.Count > 0)
             {
-                query += "INNER JOIN \"" + DatabaseManager.OBJECTS_KVP_TABLE + "\" AS \"kv\" ON \"o\".\"GUID\" = \"kv\".\"ObjectGUID\" ";
+                query += "INNER JOIN \"" + _ORM.GetTableName(typeof(ObjectKeyValuePair)) + "\" AS \"kv\" ON \"o\".\"GUID\" = \"kv\".\"ObjectGUID\" ";
             }
+
+            query +=
+                "WHERE \"o\".\"Id\" > 0 " +
+                "AND \"o\".\"ContainerGUID\" = '" + _ORM.Sanitize(_Container.GUID) + "' ";
 
             if (filter != null)
             {
-                query += "WHERE \"o\".\"Id\" > 0 ";
-
                 if (filter.CreatedAfter != null)
                 {
-                    query += "AND \"o\".\"CreatedUtc\" > '" + _Database.Timestamp(Convert.ToDateTime(filter.CreatedAfter)) + "' ";
+                    query += "AND \"o\".\"CreatedUtc\" > '" + _ORM.Timestamp(Convert.ToDateTime(filter.CreatedAfter)) + "' ";
                 }
 
                 if (filter.CreatedBefore != null)
                 {
-                    query += "AND \"o\".\"CreatedUtc\" < '" + _Database.Timestamp(Convert.ToDateTime(filter.CreatedBefore)) + "' ";
+                    query += "AND \"o\".\"CreatedUtc\" < '" + _ORM.Timestamp(Convert.ToDateTime(filter.CreatedBefore)) + "' ";
                 }
 
                 if (filter.UpdatedAfter != null)
                 {
-                    query += "AND \"o\".\"LastUpdateUtc\" > '" + _Database.Timestamp(Convert.ToDateTime(filter.UpdatedAfter)) + "' ";
+                    query += "AND \"o\".\"LastUpdateUtc\" > '" + _ORM.Timestamp(Convert.ToDateTime(filter.UpdatedAfter)) + "' ";
                 }
 
                 if (filter.UpdatedBefore != null)
                 {
-                    query += "AND \"o\".\"LastUpdateUtc\" < '" + _Database.Timestamp(Convert.ToDateTime(filter.UpdatedBefore)) + "' ";
+                    query += "AND \"o\".\"LastUpdateUtc\" < '" + _ORM.Timestamp(Convert.ToDateTime(filter.UpdatedBefore)) + "' ";
                 }
 
                 if (filter.LastAccessAfter != null)
                 {
-                    query += "AND \"o\".\"LastAccessUtc\" > '" + _Database.Timestamp(Convert.ToDateTime(filter.LastAccessAfter)) + "' ";
+                    query += "AND \"o\".\"LastAccessUtc\" > '" + _ORM.Timestamp(Convert.ToDateTime(filter.LastAccessAfter)) + "' ";
                 }
 
                 if (filter.LastAccessBefore != null)
                 {
-                    query += "AND \"o\".\"LastAccessUtc\" < '" + _Database.Timestamp(Convert.ToDateTime(filter.LastAccessBefore)) + "' ";
+                    query += "AND \"o\".\"LastAccessUtc\" < '" + _ORM.Timestamp(Convert.ToDateTime(filter.LastAccessBefore)) + "' ";
                 }
 
                 if (!String.IsNullOrEmpty(filter.Prefix))
                 {
-                    query += "AND \"o\".\"ObjectKey\" LIKE '" + Sanitize(filter.Prefix) + "%' ";
+                    query += "AND \"o\".\"ObjectKey\" LIKE '" + _ORM.Sanitize(filter.Prefix) + "%' ";
                 }
 
                 if (!String.IsNullOrEmpty(filter.Md5))
                 {
-                    query += "AND \"o\".\"Md5\" = '" + Sanitize(filter.Md5) + "' ";
+                    query += "AND \"o\".\"Md5\" = '" + _ORM.Sanitize(filter.Md5) + "' ";
                 }
 
                 if (filter.SizeMin != null)
@@ -1526,7 +1609,7 @@ namespace Kvpbase.StorageServer.Classes
                         if (String.IsNullOrEmpty(curr.Key)) continue;
 
                         query +=
-                            "AND \"kv\".\"MetadataKey\" = '" + Sanitize(curr.Key) + "' ";
+                            "AND \"kv\".\"MetadataKey\" = '" + _ORM.Sanitize(curr.Key) + "' ";
 
                         if (String.IsNullOrEmpty(curr.Value))
                         {
@@ -1534,7 +1617,7 @@ namespace Kvpbase.StorageServer.Classes
                         }
                         else
                         {
-                            query += "AND \"kv\".\"MetadataValue\" = '" + Sanitize(curr.Value) + "' ";
+                            query += "AND \"kv\".\"MetadataValue\" = '" + _ORM.Sanitize(curr.Value) + "' ";
                         }
                     }
                 }
@@ -1559,11 +1642,6 @@ namespace Kvpbase.StorageServer.Classes
             } 
 
             return query;
-        }
-
-        private string Sanitize(string str)
-        {
-            return _Database.Sanitize(str);
         } 
     }
 }

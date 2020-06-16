@@ -2,11 +2,17 @@
 
 ## Current Version
 
+v4.2
+
+- Code manageability improvement, migration to ORM
+- Dependency updates
+- More complete Postman collection
+
+## Previous Versions
+
 v4.1.1
 
 - More informative startup (cases where listening only on localhost vs wildcards)
-
-## Previous Versions
 
 v4.1.0
 

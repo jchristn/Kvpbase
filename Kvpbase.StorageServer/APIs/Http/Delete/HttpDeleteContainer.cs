@@ -42,9 +42,9 @@ namespace Kvpbase.StorageServer
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
                 return;
             }
-             
-            ContainerClient client = null;
-            if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
+
+            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName);
+            if (client == null)
             {
                 _Logging.Warn(header + "HttpDeleteContainer container " + md.Params.UserGuid + "/" + md.Params.ContainerName + " does not exist");
                 md.Http.Response.StatusCode = 404;

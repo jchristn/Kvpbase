@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using SyslogLogging;
-
-using DatabaseWrapper;
+using Watson.ORM.Core;
 
 using Kvpbase.StorageServer.Classes; 
 
@@ -37,7 +36,7 @@ namespace Kvpbase.StorageServer.Classes
         /// <summary>
         /// Database settings.
         /// </summary>
-        public SettingsDatabase Database;
+        public DatabaseSettings Database;
 
         /// <summary>
         /// Debug settings.
@@ -67,8 +66,8 @@ namespace Kvpbase.StorageServer.Classes
             /// <summary>
             /// HTTP header to use for the API key.
             /// </summary>
-            public string HeaderApiKey; 
-             
+            public string HeaderApiKey;
+
             /// <summary>
             /// Maximum object size allowed.
             /// </summary>
@@ -131,53 +130,7 @@ namespace Kvpbase.StorageServer.Classes
             /// </summary>
             public string LogDirectory;
         }
-          
-        /// <summary>
-        /// Database settings.
-        /// </summary>
-        public class SettingsDatabase
-        {
-            /// <summary>
-            /// Type of database.
-            /// </summary>
-            public DbTypes Type;
-
-            /// <summary>
-            /// For Sqlite databases, the filename.
-            /// </summary>
-            public string Filename;
-
-            /// <summary>
-            /// Hostname.
-            /// </summary>
-            public string Hostname;
-
-            /// <summary>
-            /// TCP port.
-            /// </summary>
-            public int Port;
-
-            /// <summary>
-            /// Database name.
-            /// </summary>
-            public string DatabaseName;
-
-            /// <summary>
-            /// For MS SQL Express, the instance name.
-            /// </summary>
-            public string InstanceName;
-
-            /// <summary>
-            /// Username.
-            /// </summary>
-            public string Username;
-
-            /// <summary>
-            /// Password.
-            /// </summary>
-            public string Password;
-        }
-
+           
         /// <summary>
         /// Debug settings.
         /// </summary>
@@ -205,11 +158,7 @@ namespace Kvpbase.StorageServer.Classes
         internal static Settings FromFile(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
-            if (!Common.FileExists(filename)) throw new FileNotFoundException(nameof(filename));
-
-            string contents = Common.ReadTextFile(@filename); 
-            Settings ret = Common.DeserializeJson<Settings>(contents);
-            return ret;
+            return Common.DeserializeJson<Settings>(Common.ReadTextFile(@filename));
         }
     }
 }

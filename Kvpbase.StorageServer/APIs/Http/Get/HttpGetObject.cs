@@ -17,9 +17,9 @@ namespace Kvpbase.StorageServer
         internal static async Task HttpGetObject(RequestMetadata md)
         {
             string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
-             
-            ContainerClient client = null;
-            if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
+
+            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName);
+            if (client == null)
             { 
                 _Logging.Warn(header + "HttpGetObject unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
                 md.Http.Response.StatusCode = 404;

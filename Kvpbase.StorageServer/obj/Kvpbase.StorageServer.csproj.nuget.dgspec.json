@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj": {}
+    "C:\\Code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj": {}
   },
   "projects": {
-    "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj": {
-      "version": "4.1.3",
+    "C:\\Code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj": {
+      "version": "4.2.0",
       "restore": {
-        "projectUniqueName": "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
+        "projectUniqueName": "C:\\Code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
         "projectName": "Kvpbase.StorageServer",
-        "projectPath": "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
+        "projectPath": "C:\\Code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
         "packagesPath": "C:\\Users\\joelc\\.nuget\\packages\\",
-        "outputPath": "C:\\code\\kvpbase\\storageserver-4.1\\Kvpbase.StorageServer\\obj\\",
+        "outputPath": "C:\\Code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",
@@ -26,6 +26,7 @@
           "netcoreapp3.1"
         ],
         "sources": {
+          "C:\\NuGet": {},
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {},
           "https://nuget.pkg.github.com/jchristn/index.json": {}
@@ -44,21 +45,21 @@
       "frameworks": {
         "netcoreapp3.1": {
           "dependencies": {
-            "DatabaseWrapper": {
-              "target": "Package",
-              "version": "[2.0.4, )"
-            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[12.0.3, )"
             },
             "SyslogLogging": {
               "target": "Package",
-              "version": "[1.3.2, )"
+              "version": "[1.3.2.2, )"
             },
             "Watson": {
               "target": "Package",
-              "version": "[3.0.10, )"
+              "version": "[3.0.11, )"
+            },
+            "WatsonORM": {
+              "target": "Package",
+              "version": "[1.2.3, )"
             }
           },
           "imports": [

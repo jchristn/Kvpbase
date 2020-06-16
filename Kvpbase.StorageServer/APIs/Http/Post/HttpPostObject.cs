@@ -17,10 +17,10 @@ namespace Kvpbase.StorageServer
         {
             string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
              
-            ContainerClient client = null;
             ErrorCode error;
 
-            if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
+            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName);
+            if (client == null)
             {
                 _Logging.Warn(header + "HttpPostObject unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
                 md.Http.Response.StatusCode = 404;

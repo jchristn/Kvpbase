@@ -6,15 +6,11 @@
 
 Scalable, simple RESTful object storage platform, written in C#
 
-## New in v4.1
+## New in v4.2
 
-- Maintenance release; now .NET Core only
+- Code manageability improvement, migration to ORM
 - Dependency updates
-- Added support for Sqlite (now supporting Sqlite, MS SQL, MySQL, and PostgreSQL)
-- Simplified database integration and usage to reduce cross-platform issues
-- Database tables are now automatically created if they don't exist
-- Logging to the file system in addition to syslog and console
-- Minor code refactor for manageability 
+- More complete Postman collection
 
 ## Help and Feedback
 

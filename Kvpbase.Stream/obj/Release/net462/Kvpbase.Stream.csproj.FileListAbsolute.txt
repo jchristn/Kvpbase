@@ -33,3 +33,14 @@ C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stre
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.csproj.CopyComplete
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.dll
 C:\Code\KVPbase\storageserver-4.1\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.pdb
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\bin\Release\net462\Kvpbase.Stream.dll
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\bin\Release\net462\Kvpbase.Stream.pdb
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\bin\Release\net462\KvpbaseSDK.dll
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\bin\Release\net462\Newtonsoft.Json.dll
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\bin\Release\net462\RestWrapper.dll
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.csprojAssemblyReference.cache
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.AssemblyInfoInputs.cache
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.AssemblyInfo.cs
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.csproj.CopyComplete
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.dll
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\net462\Kvpbase.Stream.pdb

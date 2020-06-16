@@ -43,9 +43,9 @@ namespace Kvpbase.StorageServer
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
                 return;
             }
-             
-            ContainerClient client = null;
-            if (!_ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName, out client))
+
+            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName);
+            if (client == null)
             { 
                 _Logging.Warn(header + "HttpPutContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
                 md.Http.Response.StatusCode = 404;
@@ -58,6 +58,23 @@ namespace Kvpbase.StorageServer
             {
                 #region Audit-Log
 
+                AuditLogEntryType? entryType = null;
+                if (!String.IsNullOrEmpty(md.Params.Action))
+                {
+                    try
+                    {
+                        entryType = (AuditLogEntryType)(Enum.Parse(typeof(AuditLogEntryType), md.Params.Action));
+                    }
+                    catch (Exception)
+                    {
+                        _Logging.Warn(header + "HttpPutContainer invalid action: " + md.Params.Action);
+                        md.Http.Response.StatusCode = 400;
+                        md.Http.Response.ContentType = "application.json";
+                        await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 400, "Invalid value for 'action' in querystring.", null), true));
+                        return;
+                    }
+                }
+                
                 int count = 100;
                 int index = 0;
                 if (md.Params.Count != null) count = Convert.ToInt32(md.Params.Count);
@@ -65,7 +82,7 @@ namespace Kvpbase.StorageServer
 
                 List<AuditLogEntry> entries = client.GetAuditLogEntries(
                     md.Params.AuditKey,
-                    md.Params.Action,
+                    entryType,
                     count,
                     index,
                     md.Params.CreatedBefore,
@@ -209,9 +226,7 @@ namespace Kvpbase.StorageServer
 
                 #region Update
 
-                _DatabaseMgr.Update<Container>(container);
-                _ContainerMgr.Delete(container.UserGUID, container.Name, false); 
-                _ContainerMgr.Add(container);
+                _ContainerMgr.Update(container);
 
                 md.Http.Response.StatusCode = 200;
                 await md.Http.Response.Send();

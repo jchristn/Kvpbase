@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using DatabaseWrapper;
 using SyslogLogging;
+using Watson.ORM;
+using Watson.ORM.Core;
 using Kvpbase.StorageServer.Classes.DatabaseObjects;
 
 namespace Kvpbase.StorageServer.Classes.Managers
@@ -11,18 +13,18 @@ namespace Kvpbase.StorageServer.Classes.Managers
     {
         private Settings _Settings;
         private LoggingModule _Logging;
-        private DatabaseManager _Database;
+        private WatsonORM _ORM;
         // private string _Header = "[Kvpbase.AuthManager] ";
 
-        internal AuthManager(Settings settings, LoggingModule logging, DatabaseManager database)
+        internal AuthManager(Settings settings, LoggingModule logging, WatsonORM orm)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
-            if (database == null) throw new ArgumentNullException(nameof(database));
+            if (orm == null) throw new ArgumentNullException(nameof(orm));
 
             _Settings = settings;
             _Logging = logging;
-            _Database = database;
+            _ORM = orm;
         }
          
         #region API-Key-Methods
@@ -31,46 +33,68 @@ namespace Kvpbase.StorageServer.Classes.Managers
         {
             if (key == null) throw new ArgumentNullException(nameof(key)); 
             if (ApiKeyExists(key.GUID)) return;
-            _Database.Insert<ApiKey>(key);
+            _ORM.Insert<ApiKey>(key);
         }
 
         internal void RemoveApiKey(ApiKey key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
-            _Database.Delete<ApiKey>(key);
+            _ORM.Delete<ApiKey>(key);
 
             List<Permission> perms = GetPermissionsByApiKey(key.GUID);
             if (perms != null && perms.Count > 0)
             {
                 foreach (Permission curr in perms)
-                    _Database.Delete<Permission>(curr);
+                    _ORM.Delete<Permission>(curr);
             }
         }
 
         internal bool ApiKeyExists(string guid)
         {
             if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
-            ApiKey key = _Database.SelectByGUID<ApiKey>(guid);
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ApiKey>(nameof(ApiKey.GUID)),
+                DbOperators.Equals,
+                guid);
+
+            ApiKey key = _ORM.SelectFirst<ApiKey>(e);
             if (key != null) return true;
             return false;
         }
 
         internal List<ApiKey> GetApiKeys()
         {
-            return _Database.SelectMany<ApiKey>(null, null, null, "ORDER BY id DESC");
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ApiKey>(nameof(ApiKey.Id)),
+                DbOperators.GreaterThan,
+                0);
+
+            return _ORM.SelectMany<ApiKey>(e);
         }
 
         internal ApiKey GetApiKeyByGuid(string guid)
         {
             if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
-            return _Database.SelectByGUID<ApiKey>(guid);
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ApiKey>(nameof(ApiKey.GUID)),
+                DbOperators.Equals,
+                guid);
+
+            return _ORM.SelectFirst<ApiKey>(e);
         }
 
         internal List<ApiKey> GetApiKeysByUserGuid(string guid)
         {
             if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
-            Expression e = new Expression("userguid", Operators.Equals, guid);
-            return _Database.SelectMany<ApiKey>(null, null, e, "ORDER BY id DESC");
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ApiKey>(nameof(ApiKey.UserGUID)),
+                DbOperators.Equals,
+                guid);
+
+            return _ORM.SelectMany<ApiKey>(e);
         }
 
         #endregion
@@ -81,70 +105,97 @@ namespace Kvpbase.StorageServer.Classes.Managers
         {
             if (perm == null) throw new ArgumentNullException(nameof(perm));
             if (PermissionsExist(perm.ContainerGUID)) return;
-            _Database.Insert<Permission>(perm);
+            _ORM.Insert<Permission>(perm);
         }
 
         internal void RemovePermission(Permission perm)
         {
             if (perm == null) throw new ArgumentNullException(nameof(perm));
-            _Database.Delete<Permission>(perm);
+            _ORM.Delete<Permission>(perm);
         }
 
         internal bool PermissionsExist(string guid)
         {
             if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
-            Permission perm = _Database.SelectByGUID<Permission>(guid);
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Permission>(nameof(Permission.GUID)),
+                DbOperators.Equals,
+                guid);
+
+            Permission perm = _ORM.SelectFirst<Permission>(e);
             if (perm != null) return true;
             return false;
         }
 
         internal List<Permission> GetPermissions()
         {
-            return _Database.SelectMany<Permission>(null, null, null, "ORDER BY id DESC");
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Permission>(nameof(Permission.Id)),
+                DbOperators.GreaterThan,
+                0);
+
+            return _ORM.SelectMany<Permission>(e);
         }
 
         internal Permission GetPermissionByGuid(string guid)
         {
             if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
-            return _Database.SelectByGUID<Permission>(guid);
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Permission>(nameof(Permission.GUID)),
+                DbOperators.Equals,
+                guid);
+
+            return _ORM.SelectFirst<Permission>(e);
         }
 
         internal List<Permission> GetPermissionsByApiKey(string guid)
         {
-            if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid)); 
-            List<Permission> ret = new List<Permission>(); 
-            ApiKey key = GetApiKeyByGuid(guid);
-            if (key == null) return ret;
-            Expression e = new Expression("apikeyguid", Operators.Equals, guid);
-            return _Database.SelectMany<Permission>(null, null, e, "ORDER BY id DESC");
+            if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));  
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Permission>(nameof(Permission.ApiKeyGUID)),
+                DbOperators.Equals,
+                guid);
+             
+            return _ORM.SelectMany<Permission>(e);
         }
 
         internal List<Permission> GetPermissionsByApiKeyId(int id)
-        { 
-            List<Permission> ret = new List<Permission>();
-            ApiKey key = _Database.SelectById<ApiKey>(id);
-            if (key == null) return ret;
-            Expression e = new Expression("apikeyguid", Operators.Equals, key.GUID);
-            return _Database.SelectMany<Permission>(null, null, e, "ORDER BY id DESC");
+        {
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ApiKey>(nameof(ApiKey.Id)),
+                DbOperators.Equals,
+                id);
+
+            ApiKey key = _ORM.SelectFirst<ApiKey>(e);
+            if (key == null) return new List<Permission>();
+            return GetPermissionsByApiKey(key.GUID);
         }
 
         internal List<Permission> GetPermissionsByUserGuid(string guid)
         {
-            if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid)); 
-            List<Permission> ret = new List<Permission>(); 
-            UserMaster user = GetUserByGuid(guid);
-            if (user == null) return ret; 
-            Expression e = new Expression("userguid", Operators.Equals, user.GUID);
-            return _Database.SelectMany<Permission>(null, null, e, "ORDER BY id DESC");
+            if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Permission>(nameof(Permission.UserGUID)),
+                DbOperators.Equals,
+                guid);
+
+            return _ORM.SelectMany<Permission>(e);
         }
 
         internal List<Permission> GetPermissionsByUserId(int id)
-        { 
-            List<Permission> ret = new List<Permission>();
-            UserMaster user = GetUserById(id);
-            if (user == null) return ret;
-            Expression e = new Expression("userguid", Operators.Equals, user.GUID);
-            return _Database.SelectMany<Permission>(null, null, e, "ORDER BY id DESC");
+        {
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<UserMaster>(nameof(UserMaster.Id)),
+                DbOperators.Equals,
+                id);
+
+            UserMaster user = _ORM.SelectFirst<UserMaster>(e);
+            if (user == null) return new List<Permission>();
+            return GetPermissionsByUserGuid(user.GUID);
         }
 
         #endregion
@@ -156,13 +207,13 @@ namespace Kvpbase.StorageServer.Classes.Managers
             if (user == null) throw new ArgumentNullException(nameof(user)); 
             if (UserExistsByGuid(user.GUID)) return;
             if (UserExistsByEmail(user.Email)) return;
-            _Database.Insert<UserMaster>(user);
+            _ORM.Insert<UserMaster>(user);
         }
 
         internal void RemoveUser(UserMaster user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            _Database.Delete<UserMaster>(user);
+            _ORM.Delete<UserMaster>(user);
 
             List<ApiKey> keys = GetApiKeysByUserGuid(user.GUID);
             if (keys != null && keys.Count > 0)
@@ -175,7 +226,13 @@ namespace Kvpbase.StorageServer.Classes.Managers
         internal bool UserExistsByGuid(string guid)
         {
             if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
-            UserMaster user = _Database.SelectByGUID<UserMaster>(guid);
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<UserMaster>(nameof(UserMaster.GUID)),
+                DbOperators.Equals,
+                guid);
+
+            UserMaster user = _ORM.SelectFirst<UserMaster>(e);
             if (user != null) return true;
             return false;
         }
@@ -183,33 +240,59 @@ namespace Kvpbase.StorageServer.Classes.Managers
         internal bool UserExistsByEmail(string email)
         {
             if (String.IsNullOrEmpty(email)) throw new ArgumentNullException(nameof(email));
-            Expression e = new Expression("email", Operators.Equals, email);
-            UserMaster user = _Database.SelectByFilter<UserMaster>(e, "ORDER BY id DESC");
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<UserMaster>(nameof(UserMaster.Email)),
+                DbOperators.Equals,
+                email);
+
+            UserMaster user = _ORM.SelectFirst<UserMaster>(e);
             if (user != null) return true;
             return false;
         }
 
         internal List<UserMaster> GetUsers()
         {
-            return _Database.SelectMany<UserMaster>(null, null, null, "ORDER BY id DESC");
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<UserMaster>(nameof(UserMaster.Id)),
+                DbOperators.GreaterThan,
+                0);
+
+            return _ORM.SelectMany<UserMaster>(e);
         }
 
         internal UserMaster GetUserById(int id)
         {
-            return _Database.SelectById<UserMaster>(id);
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<UserMaster>(nameof(UserMaster.Id)),
+                DbOperators.Equals,
+                id);
+
+            return _ORM.SelectFirst<UserMaster>(e);
         }
 
         internal UserMaster GetUserByGuid(string guid)
         {
             if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
-            return _Database.SelectByGUID<UserMaster>(guid);
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<UserMaster>(nameof(UserMaster.GUID)),
+                DbOperators.Equals,
+                guid);
+
+            return _ORM.SelectFirst<UserMaster>(e);
         }
 
         internal UserMaster GetUserByEmail(string email)
         {
             if (String.IsNullOrEmpty(email)) throw new ArgumentNullException(nameof(email));
-            Expression e = new Expression("email", Operators.Equals, email);
-            return _Database.SelectByFilter<UserMaster>(e, "ORDER BY id DESC");
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<UserMaster>(nameof(UserMaster.Email)),
+                DbOperators.Equals,
+                email);
+
+            return _ORM.SelectFirst<UserMaster>(e);
         }
 
         #endregion
@@ -249,6 +332,7 @@ namespace Kvpbase.StorageServer.Classes.Managers
                         ret.WriteContainer |= perm.WriteContainer;
                         ret.DeleteObject |= perm.DeleteObject;
                         ret.DeleteContainer |= perm.DeleteContainer;
+                        ret.IsAdmin |= perm.IsAdmin;
                     }
                 }
             } 

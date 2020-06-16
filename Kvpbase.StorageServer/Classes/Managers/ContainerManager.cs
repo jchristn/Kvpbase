@@ -5,9 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Timers;
-using System.Threading.Tasks;
-using DatabaseWrapper;
+using System.Threading.Tasks; 
 using SyslogLogging;
+using Watson.ORM;
+using Watson.ORM.Core;
 using Kvpbase.StorageServer.Classes.DatabaseObjects;
  
 namespace Kvpbase.StorageServer.Classes.Managers
@@ -31,20 +32,20 @@ namespace Kvpbase.StorageServer.Classes.Managers
         private Timer _ContainerRecheck; 
         private Settings _Settings;
         private LoggingModule _Logging;
-        private DatabaseManager _Database;
+        private WatsonORM _ORM;
         // private string _Header = "[Kvpbase.ContainerManager] ";
         private readonly object _ContainersLock;
         private List<ContainerClient> _ContainerClients;
 
-        internal ContainerManager(Settings settings, LoggingModule logging, DatabaseManager databaseMgr)
+        internal ContainerManager(Settings settings, LoggingModule logging, WatsonORM orm)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
-            if (databaseMgr == null) throw new ArgumentNullException(nameof(databaseMgr)); 
+            if (orm == null) throw new ArgumentNullException(nameof(orm)); 
 
             _Settings = settings;
             _Logging = logging;
-            _Database = databaseMgr; 
+            _ORM = orm; 
 
             _ContainersLock = new object();
             _ContainerClients = new List<ContainerClient>();
@@ -61,44 +62,73 @@ namespace Kvpbase.StorageServer.Classes.Managers
         { 
             if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
-            Expression e = new Expression("userguid", Operators.Equals, userGuid);
-            e.PrependAnd("name", Operators.Equals, name);
-            return _Database.SelectByFilter<Container>(e, "ORDER BY id DESC");
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Container>(nameof(Container.UserGUID)),
+                DbOperators.Equals,
+                userGuid);
+
+            e.PrependAnd(new DbExpression(
+                _ORM.GetColumnName<Container>(nameof(Container.Name)),
+                DbOperators.Equals,
+                name));
+
+            return _ORM.SelectFirst<Container>(e);
         }
 
         internal List<Container> GetContainers()
         {
-            return _Database.SelectMany<Container>(null, null, null, "ORDER BY id DESC");
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Container>(nameof(Container.Id)),
+                DbOperators.GreaterThan,
+                0);
+
+            return _ORM.SelectMany<Container>(e);
         }
 
         internal List<Container> GetContainersByUser(string userGuid)
         {
             if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
-            Expression e = new Expression("userguid", Operators.Equals, userGuid);
-            return _Database.SelectMany<Container>(null, null, e, "ORDER BY id DESC");
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Container>(nameof(Container.UserGUID)),
+                DbOperators.Equals,
+                userGuid);
+
+            return _ORM.SelectMany<Container>(e);
         }
 
-        internal bool GetContainerClient(string userGuid, string name, out ContainerClient client)
+        internal ContainerClient GetContainerClient(string userGuid, string name)
         {
             if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
+            ContainerClient client = null;
+
             lock (_ContainersLock)
             {
                 client = _ContainerClients.Where(c => c.Container.UserGUID.Equals(userGuid) && c.Container.Name.Equals(name)).FirstOrDefault();
-                if (client != null && client != default(ContainerClient)) return true;
+                if (client != null && client != default(ContainerClient)) return client;
             }
 
-            Expression e = new Expression("name", Operators.Equals, name);
-            e.PrependAnd("userguid", Operators.Equals, userGuid);
-            Container container = _Database.SelectByFilter<Container>(e, "ORDER BY id DESC");
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Container>(nameof(Container.UserGUID)),
+                DbOperators.Equals,
+                userGuid);
+
+            e.PrependAnd(new DbExpression(
+                _ORM.GetColumnName<Container>(nameof(Container.Name)),
+                DbOperators.Equals,
+                name));
+
+            Container container = _ORM.SelectFirst<Container>(e);
             if (container != null)
             {
                 client = InitializeContainerClient(container);
-                if (client != null) return true;
+                if (client != null) return client;
             }
 
-            return false;
+            return null;
         }
 
         internal bool Add(Container container)
@@ -116,7 +146,7 @@ namespace Kvpbase.StorageServer.Classes.Managers
                     container.GUID + "/";
             }
 
-            container = _Database.Insert<Container>(container);
+            container = _ORM.Insert<Container>(container);
             if (container == null) return false;
             InitializeContainerClient(container);
             return true;
@@ -126,11 +156,27 @@ namespace Kvpbase.StorageServer.Classes.Managers
         {
             if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
-            Expression e = new Expression("userguid", Operators.Equals, userGuid);
-            e.PrependAnd(new Expression("name", Operators.Equals, name));
-            Container container = _Database.SelectByFilter<Container>(e, "ORDER BY id DESC");
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Container>(nameof(Container.UserGUID)),
+                DbOperators.Equals,
+                userGuid);
+
+            e.PrependAnd(new DbExpression(
+                _ORM.GetColumnName<Container>(nameof(Container.Name)),
+                DbOperators.Equals,
+                name));
+ 
+            Container container = _ORM.SelectFirst<Container>(e);
             if (container != null) return true;
             return false;
+        }
+
+        internal void Update(Container container)
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));  
+            Delete(container.UserGUID, container.Name, false); 
+            Add(container);
         }
 
         internal void Delete(string userGuid, string name, bool cleanup)
@@ -138,14 +184,21 @@ namespace Kvpbase.StorageServer.Classes.Managers
             if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
-            ContainerClient client = null;
-            if (GetContainerClient(userGuid, name, out client))
+            ContainerClient client = GetContainerClient(userGuid, name);
+            if (client != null)
             {
-                Expression e = new Expression("userguid", Operators.Equals, userGuid);
-                e.PrependAnd("name", Operators.Equals, name);
+                DbExpression e = new DbExpression(
+                    _ORM.GetColumnName<Container>(nameof(Container.UserGUID)),
+                    DbOperators.Equals,
+                    userGuid);
 
-                Container container = _Database.SelectByFilter<Container>(e, "ORDER BY id DESC");
-                if (container != null) _Database.Delete<Container>(container);
+                e.PrependAnd(new DbExpression(
+                    _ORM.GetColumnName<Container>(nameof(Container.Name)),
+                    DbOperators.Equals,
+                    name));
+                 
+                Container container = _ORM.SelectFirst<Container>(e);
+                if (container != null) _ORM.Delete<Container>(container);
 
                 if (cleanup) client.Destroy();
                 else client.Dispose();
@@ -162,7 +215,10 @@ namespace Kvpbase.StorageServer.Classes.Managers
             List<Container> containers = GetContainers(); 
             if (containers != null && containers.Count > 0)
             {
-                foreach (Container curr in containers) InitializeContainerClient(curr);
+                foreach (Container curr in containers)
+                {
+                    InitializeContainerClient(curr);
+                }
             }
         }
 
@@ -178,7 +234,7 @@ namespace Kvpbase.StorageServer.Classes.Managers
                     _ContainerClients.Remove(remove);
                 }
 
-                ContainerClient client = new ContainerClient(_Settings, _Logging, _Database, container);
+                ContainerClient client = new ContainerClient(_Settings, _Logging, _ORM, container);
                 _ContainerClients.Add(client);
                 return client;
             } 
@@ -196,7 +252,7 @@ namespace Kvpbase.StorageServer.Classes.Managers
                     if (!_ContainerClients.Exists(c => c.Container.GUID.Equals(curr.GUID)))
                     {
                         // new container found in the database
-                        ContainerClient client = new ContainerClient(_Settings, _Logging, _Database, curr);
+                        ContainerClient client = new ContainerClient(_Settings, _Logging, _ORM, curr);
                         _ContainerClients.Add(client);
                     }
                 }

@@ -6,9 +6,44 @@
 	},
 	"item": [
 		{
-			"name": "Retrieve audit log",
+			"name": "Create a container",
 			"request": {
-				"method": "PUT",
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					},
+					{
+						"key": "content-type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a container",
+			"request": {
+				"method": "DELETE",
 				"header": [
 					{
 						"key": "x-api-key",
@@ -17,7 +52,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8000/default/default?auditlog",
+					"raw": "http://localhost:8000/default/default",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -26,21 +61,15 @@
 					"path": [
 						"default",
 						"default"
-					],
-					"query": [
-						{
-							"key": "auditlog",
-							"value": null
-						}
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Create an object",
+			"name": "List containers",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [
 					{
 						"key": "x-api-key",
@@ -49,7 +78,32 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8000/default/default/test.txt",
+					"raw": "http://localhost:8000/default",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check if a container exists",
+			"request": {
+				"method": "HEAD",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -57,8 +111,7 @@
 					"port": "8000",
 					"path": [
 						"default",
-						"default",
-						"test.txt"
+						"default"
 					]
 				}
 			},
@@ -72,6 +125,11 @@
 					{
 						"key": "x-api-key",
 						"value": "default",
+						"type": "text"
+					},
+					{
+						"key": "content-type",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
@@ -104,47 +162,7 @@
 			"response": []
 		},
 		{
-			"name": "Write object key-value pairs",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "x-api-key",
-						"value": "default",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"foo\": \"bar\"\n}",
-					"options": {
-						"raw": {}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8000/default/default/hello.txt?keys",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8000",
-					"path": [
-						"default",
-						"default",
-						"hello.txt"
-					],
-					"query": [
-						{
-							"key": "keys",
-							"value": null
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Retrieve object key-value pairs",
+			"name": "Enumerate container",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -159,13 +177,13 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"foo\": \"bar\"\n}",
+					"raw": "",
 					"options": {
 						"raw": {}
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/default/default/hello.txt?keys",
+					"raw": "http://localhost:8000/default/default",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -173,14 +191,7 @@
 					"port": "8000",
 					"path": [
 						"default",
-						"default",
-						"hello.txt"
-					],
-					"query": [
-						{
-							"key": "keys",
-							"value": null
-						}
+						"default"
 					]
 				}
 			},
@@ -223,6 +234,252 @@
 							"key": "prefix",
 							"value": "he"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Write container key-value pairs",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					},
+					{
+						"key": "content-type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"foo\": \"bar\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default?keys",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					],
+					"query": [
+						{
+							"key": "keys",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve container key-value pairs",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default?keys",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					],
+					"query": [
+						{
+							"key": "keys",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete container key-value pairs",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default?keys",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					],
+					"query": [
+						{
+							"key": "keys",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve audit log",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default?auditlog",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					],
+					"query": [
+						{
+							"key": "auditlog",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete audit log",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default?auditlog",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default"
+					],
+					"query": [
+						{
+							"key": "auditlog",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create an object",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					},
+					{
+						"key": "content-type",
+						"value": "text/plain",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "This is a test!",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default/test.txt",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"test.txt"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check if an object exists",
+			"request": {
+				"method": "HEAD",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.txt",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.txt"
 					]
 				}
 			},
@@ -283,9 +540,9 @@
 			"response": []
 		},
 		{
-			"name": "Delete a container",
+			"name": "Write object key-value pairs",
 			"request": {
-				"method": "DELETE",
+				"method": "PUT",
 				"header": [
 					{
 						"key": "x-api-key",
@@ -293,34 +550,12 @@
 						"type": "text"
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"foo\": \"bar\"\n}"
+				},
 				"url": {
-					"raw": "http://localhost:8000/default/default",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8000",
-					"path": [
-						"default",
-						"default"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Check if an object exists",
-			"request": {
-				"method": "HEAD",
-				"header": [
-					{
-						"key": "x-api-key",
-						"value": "default",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:8000/default/default/hello.txt",
+					"raw": "http://localhost:8000/default/default/hello.txt?keys",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -330,39 +565,19 @@
 						"default",
 						"default",
 						"hello.txt"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Check if a container exists",
-			"request": {
-				"method": "HEAD",
-				"header": [
-					{
-						"key": "x-api-key",
-						"value": "default",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:8000/default/default",
-					"protocol": "http",
-					"host": [
-						"localhost"
 					],
-					"port": "8000",
-					"path": [
-						"default",
-						"default"
+					"query": [
+						{
+							"key": "keys",
+							"value": null
+						}
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Enumerate container",
+			"name": "Retrieve object key-value pairs",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -377,13 +592,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {}
-					}
+					"raw": "{\n  \"foo\": \"bar\"\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8000/default/default",
+					"raw": "http://localhost:8000/default/default/hello.txt?keys",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -391,12 +603,107 @@
 					"port": "8000",
 					"path": [
 						"default",
-						"default"
+						"default",
+						"hello.txt"
+					],
+					"query": [
+						{
+							"key": "keys",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete object key-value pairs",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"foo\": \"bar\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default/test.txt?keys",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"test.txt"
+					],
+					"query": [
+						{
+							"key": "keys",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "** Admin ** Retrieve system config",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/admin/config",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"admin",
+						"config"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "** Admin ** Retrieve system disks",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/admin/disk",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"admin",
+						"disk"
 					]
 				}
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
