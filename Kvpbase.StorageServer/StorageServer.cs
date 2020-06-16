@@ -70,7 +70,7 @@ namespace Kvpbase.StorageServer
             CreateDirectories();
             InitializeGlobals();
 
-            if (_Settings.EnableConsole)
+            if (_Settings.EnableConsole && Environment.UserInteractive)
             {
                 _ConsoleMgr.Worker();
             }
