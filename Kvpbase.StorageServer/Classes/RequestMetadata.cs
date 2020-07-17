@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using System.Text; 
 using WatsonWebserver;
 using Kvpbase.StorageServer.Classes.DatabaseObjects;
@@ -213,15 +215,15 @@ namespace Kvpbase.StorageServer.Classes
                 long testLong = 0;
 
                 ret.UserGuid = "null";
-                if (req.RawUrlEntries.Count >= 1) ret.UserGuid = req.RawUrlEntries[0];
+                if (req.RawUrlEntries.Count >= 1) ret.UserGuid = WebUtility.UrlDecode(req.RawUrlEntries[0]);
 
-                if (req.RawUrlEntries.Count > 1) ret.ContainerName = req.RawUrlEntries[1];
+                if (req.RawUrlEntries.Count > 1) ret.ContainerName = WebUtility.UrlDecode(req.RawUrlEntries[1]);
                 if (req.RawUrlEntries.Count > 2)
                 {
                     string rawUrl = req.RawUrlWithoutQuery;
                     while (rawUrl.StartsWith("/")) rawUrl = rawUrl.Substring(1);
                     string[] vals = rawUrl.Split(new[] { '/' }, 3);
-                    ret.ObjectKey = vals[2];
+                    ret.ObjectKey = WebUtility.UrlDecode(vals[2]);
                 }
 
                 if (req.QuerystringEntries.ContainsKey("auditlog")) ret.AuditLog = true; 

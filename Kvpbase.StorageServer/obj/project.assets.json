@@ -6886,13 +6886,13 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "4.2.0",
+    "version": "4.2.1",
     "restore": {
-      "projectUniqueName": "C:\\code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
+      "projectUniqueName": "C:\\Code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
       "projectName": "Kvpbase.StorageServer",
-      "projectPath": "C:\\code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
+      "projectPath": "C:\\Code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
       "packagesPath": "C:\\Users\\joelc\\.nuget\\packages\\",
-      "outputPath": "C:\\code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\obj\\",
+      "outputPath": "C:\\Code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Microsoft\\Xamarin\\NuGet\\",

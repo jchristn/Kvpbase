@@ -5,7 +5,7 @@
   },
   "projects": {
     "C:\\Code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj": {
-      "version": "4.2.0",
+      "version": "4.2.1",
       "restore": {
         "projectUniqueName": "C:\\Code\\KVPbase\\storageserver-4.2\\Kvpbase.StorageServer\\Kvpbase.StorageServer.csproj",
         "projectName": "Kvpbase.StorageServer",

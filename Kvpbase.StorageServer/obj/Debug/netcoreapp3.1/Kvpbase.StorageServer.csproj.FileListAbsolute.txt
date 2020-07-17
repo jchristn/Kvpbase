@@ -177,3 +177,4 @@ C:\code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\obj\Debug\netcoreapp3.1\
 C:\code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\obj\Debug\netcoreapp3.1\Kvpbase.StorageServer.dll
 C:\code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\obj\Debug\netcoreapp3.1\Kvpbase.StorageServer.pdb
 C:\code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\obj\Debug\netcoreapp3.1\Kvpbase.StorageServer.genruntimeconfig.cache
+C:\Code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\obj\Debug\netcoreapp3.1\Kvpbase.StorageServer.csproj.CoreCompileInputs.cache
