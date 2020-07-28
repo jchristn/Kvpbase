@@ -27,7 +27,7 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// The lock type.
         /// </summary>
-        [Column("locktype", false, DataTypes.Enum, 8, false)]
+        [Column("locktype", false, DataTypes.Nvarchar, 8, false)]
         public LockType LockType { get; set; }
 
         /// <summary>
