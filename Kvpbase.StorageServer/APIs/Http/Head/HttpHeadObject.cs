@@ -16,10 +16,10 @@ namespace Kvpbase.StorageServer
         {
             string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
 
-            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName);
+            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGUID, md.Params.ContainerName);
             if (client == null)
             { 
-                _Logging.Warn(header + "HttpHeadObject unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                _Logging.Warn(header + "HttpHeadObject unable to find container " + md.Params.UserGUID + "/" + md.Params.ContainerName);
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
@@ -28,9 +28,9 @@ namespace Kvpbase.StorageServer
              
             if (!client.Container.IsPublicRead)
             {
-                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
+                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGUID.ToLower())))
                 {
-                    _Logging.Warn(header + "HttpHeadObject unauthorized unauthenticated access attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    _Logging.Warn(header + "HttpHeadObject unauthorized unauthenticated access attempt to object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
                     md.Http.Response.StatusCode = 401;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
@@ -42,7 +42,7 @@ namespace Kvpbase.StorageServer
             {
                 if (!md.Perm.ReadObject)
                 {
-                    _Logging.Warn(header + "HttpHeadObject unauthorized access attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    _Logging.Warn(header + "HttpHeadObject unauthorized access attempt to object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
                     md.Http.Response.StatusCode = 401;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
@@ -50,9 +50,9 @@ namespace Kvpbase.StorageServer
                 }
             }
              
-            if (!_ObjectHandler.Exists(md, client, md.Params.ObjectKey))
+            if (!_ObjectHandler.Exists(md, client))
             {
-                _Logging.Debug(header + "HttpHeadObject unable to find object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                _Logging.Debug(header + "HttpHeadObject unable to find object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
                 md.Http.Response.StatusCode = 404;
                 await md.Http.Response.Send();
                 return;                

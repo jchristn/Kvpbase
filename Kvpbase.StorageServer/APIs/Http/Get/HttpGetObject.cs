@@ -18,10 +18,10 @@ namespace Kvpbase.StorageServer
         {
             string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
 
-            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName);
+            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGUID, md.Params.ContainerName);
             if (client == null)
             { 
-                _Logging.Warn(header + "HttpGetObject unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                _Logging.Warn(header + "HttpGetObject unable to find container " + md.Params.UserGUID + "/" + md.Params.ContainerName);
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
@@ -30,9 +30,9 @@ namespace Kvpbase.StorageServer
               
             if (!client.Container.IsPublicRead)
             {
-                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
+                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGUID.ToLower())))
                 {
-                    _Logging.Warn(header + "HttpGetObject unauthorized unauthenticated access attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    _Logging.Warn(header + "HttpGetObject unauthorized unauthenticated access attempt to object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
                     md.Http.Response.StatusCode = 401;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
@@ -44,7 +44,7 @@ namespace Kvpbase.StorageServer
             {
                 if (!md.Perm.ReadObject)
                 {
-                    _Logging.Warn(header + "HttpGetObject unauthorized access attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    _Logging.Warn(header + "HttpGetObject unauthorized access attempt to object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
                     md.Http.Response.StatusCode = 401;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
@@ -56,7 +56,7 @@ namespace Kvpbase.StorageServer
             ObjectMetadata metadata = null;
             if (!client.ReadObjectMetadata(md.Params.ObjectKey, out metadata))
             {
-                _Logging.Warn(header + "HttpGetObject unable to retrieve metadata for " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                _Logging.Warn(header + "HttpGetObject unable to retrieve metadata for " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
 
                 int statusCode = 0;
                 int id = 0;
@@ -78,13 +78,13 @@ namespace Kvpbase.StorageServer
             else if (md.Params.Keys)
             {
                 Dictionary<string, string> vals = new Dictionary<string, string>();
-                if (!_ObjectHandler.ReadKeyValues(md, client, md.Params.ObjectKey, out vals, out error))
+                if (!_ObjectHandler.ReadKeyValues(md, client, out vals, out error))
                 {
                     int statusCode = 0;
                     int id = 0;
                     ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
 
-                    _Logging.Warn(header + "HttpGetObject unable to read key-values for " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    _Logging.Warn(header + "HttpGetObject unable to read key-values for " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
 
                     md.Http.Response.StatusCode = statusCode;
                     md.Http.Response.ContentType = "application/json";
@@ -97,6 +97,10 @@ namespace Kvpbase.StorageServer
                 await md.Http.Response.Send(Common.SerializeJson(vals, true));
                 return;
             } 
+            else if (md.Params.WriteLock)
+            {
+                
+            }
              
             if (md.Params.Index != null && md.Params.Count != null)
             {
@@ -131,27 +135,62 @@ namespace Kvpbase.StorageServer
             string contentType = null;
             long contentLength = 0;
             Stream stream = null;
-             
-            if (!_ObjectHandler.Read(md, client, md.Params.ObjectKey, index, count, out contentType, out contentLength, out stream, out error))
+
+            if (md.Params.ReadLock || md.Params.WriteLock)
             {
-                int statusCode = 0;
-                int id = 0;
-                ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
+                #region Get-Locks
 
-                _Logging.Warn(header + "HttpGetObject unable to read object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                List<UrlLock> locks = new List<UrlLock>();
+                if (!_ObjectHandler.GetLocks(md, client, out locks, out error))
+                {
+                    int statusCode = 0;
+                    int id = 0;
+                    ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
 
-                md.Http.Response.StatusCode = statusCode;
-                md.Http.Response.ContentType = "application/json";
-                await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, null, error), true));
-                return;
+                    _Logging.Warn(header + "HttpGetObject unable to read object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+
+                    md.Http.Response.StatusCode = statusCode;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, null, error), true));
+                    return;
+                }
+                else
+                {
+                    md.Http.Response.StatusCode = 200;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(locks, true));
+                    return;
+                }
+
+                #endregion
             }
             else
             {
-                md.Http.Response.StatusCode = 200;
-                md.Http.Response.ContentType = contentType;
-                await md.Http.Response.Send(contentLength, stream);
-                return;
-            } 
+                #region Get-Object
+
+                if (!_ObjectHandler.Read(md, client, out contentType, out contentLength, out stream, out error))
+                {
+                    int statusCode = 0;
+                    int id = 0;
+                    ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
+
+                    _Logging.Warn(header + "HttpGetObject unable to read object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+
+                    md.Http.Response.StatusCode = statusCode;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, null, error), true));
+                    return;
+                }
+                else
+                {
+                    md.Http.Response.StatusCode = 200;
+                    md.Http.Response.ContentType = contentType;
+                    await md.Http.Response.Send(contentLength, stream);
+                    return;
+                }
+
+                #endregion
+            }
         }
     }
 }

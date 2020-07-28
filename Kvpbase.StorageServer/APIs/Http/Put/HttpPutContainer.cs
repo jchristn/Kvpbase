@@ -35,19 +35,19 @@ namespace Kvpbase.StorageServer
                 return;
             }
              
-            if (!md.Params.UserGuid.ToLower().Equals(md.User.GUID.ToLower()))
+            if (!md.Params.UserGUID.ToLower().Equals(md.User.GUID.ToLower()))
             {
-                _Logging.Warn(header + "HttpPutContainer user " + md.User.GUID + " attempting to PUT container in user " + md.Params.UserGuid);
+                _Logging.Warn(header + "HttpPutContainer user " + md.User.GUID + " attempting to PUT container in user " + md.Params.UserGUID);
                 md.Http.Response.StatusCode = 401;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
                 return;
             }
 
-            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName);
+            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGUID, md.Params.ContainerName);
             if (client == null)
             { 
-                _Logging.Warn(header + "HttpPutContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                _Logging.Warn(header + "HttpPutContainer unable to find container " + md.Params.UserGUID + "/" + md.Params.ContainerName);
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));

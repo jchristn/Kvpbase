@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Kvpbase.StorageServer</RootNamespace>
     <PackageId>Kvpbase.StorageServer</PackageId>
-    <Version>4.2.1</Version>
+    <Version>4.2.4</Version>
     <Authors>Joel Christner</Authors>
     <Product>Kvpbase Storage Server</Product>
     <Description>Scalable, simple RESTful object storage platform.</Description>
@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
-    <PackageReleaseNotes>Dependency updates, migrate to ORM, minor refactor</PackageReleaseNotes>
+    <PackageReleaseNotes>Bugfixes</PackageReleaseNotes>
     <ApplicationIcon />
     <StartupObject />
     <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>

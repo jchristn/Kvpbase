@@ -39,7 +39,7 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// The GUID of the user that holds the lock.
         /// </summary>
-        [Column("userguid", false, DataTypes.Nvarchar, 64, false)]
+        [Column("userguid", false, DataTypes.Nvarchar, 64, true)]
         public string UserGUID { get; set; }
 
         /// <summary>
@@ -53,7 +53,13 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// </summary>
         [Column("createdutc", false, DataTypes.DateTime, false)]
         public DateTime CreatedUtc { get; set; }
-         
+
+        /// <summary>
+        /// The timestamp for when the lock should expire.
+        /// </summary>
+        [Column("expirationutc", false, DataTypes.DateTime, false)]
+        public DateTime ExpirationUtc { get; set; }
+
         /// <summary>
         /// Instantiate the object.
         /// </summary>
@@ -63,9 +69,10 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
             CreatedUtc = DateTime.Now.ToUniversalTime(); 
         }
          
-        internal UrlLock(LockType lockType, string url, string userGuid)
+        internal UrlLock(LockType lockType, string url, string userGuid, DateTime expirationUtc)
         {
-            if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url)); 
+            if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
+            if (!Common.IsLaterThanNow(expirationUtc)) throw new ArgumentException("Expiration timestamp must be later than the curren time.");
 
             GUID = Guid.NewGuid().ToString();
             LockType = lockType;
@@ -73,6 +80,7 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
             UserGUID = userGuid; 
             Hostname = Dns.GetHostName();
             CreatedUtc = DateTime.Now.ToUniversalTime();
+            ExpirationUtc = expirationUtc.ToUniversalTime();
         } 
     }
 }

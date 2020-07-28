@@ -7,6 +7,7 @@ v4.2
 - Code manageability improvement, migration to ORM
 - Dependency updates
 - More complete Postman collection
+- Lock management APIs
 
 ## Previous Versions
 

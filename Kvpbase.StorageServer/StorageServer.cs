@@ -297,7 +297,7 @@ namespace Kvpbase.StorageServer
                 md.Key = apiKey;
                 md.Perm = effectivePermissions; 
                 md.Params = RequestMetadata.Parameters.FromHttpRequest(ctx.Request);
-                if (md.User != null) md.Params.UserGuid = md.User.GUID; 
+                if (md.User != null) md.Params.UserGUID = md.User.GUID; 
                 _ConnMgr.Update(Thread.CurrentThread.ManagedThreadId, md.User);
                  
                 if (ctx.Request.RawUrlEntries != null

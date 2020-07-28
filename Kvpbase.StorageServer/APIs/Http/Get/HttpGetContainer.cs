@@ -18,10 +18,10 @@ namespace Kvpbase.StorageServer
         {
             string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
 
-            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName);
+            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGUID, md.Params.ContainerName);
             if (client == null)
             { 
-                _Logging.Warn(header + "HttpGetContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                _Logging.Warn(header + "HttpGetContainer unable to find container " + md.Params.UserGUID + "/" + md.Params.ContainerName);
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
@@ -30,9 +30,9 @@ namespace Kvpbase.StorageServer
               
             if (!client.Container.IsPublicRead)
             {
-                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
+                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGUID.ToLower())))
                 {
-                    _Logging.Warn(header + "HttpGetContainer unauthorized unauthenticated access attempt to container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                    _Logging.Warn(header + "HttpGetContainer unauthorized unauthenticated access attempt to container " + md.Params.UserGUID + "/" + md.Params.ContainerName);
                     md.Http.Response.StatusCode = 401;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
@@ -44,7 +44,7 @@ namespace Kvpbase.StorageServer
             {
                 if (!md.Perm.ReadContainer)
                 {
-                    _Logging.Warn(header + "HttpGetContainer unauthorized access attempt to container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                    _Logging.Warn(header + "HttpGetContainer unauthorized access attempt to container " + md.Params.UserGUID + "/" + md.Params.ContainerName);
                     md.Http.Response.StatusCode = 401;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));

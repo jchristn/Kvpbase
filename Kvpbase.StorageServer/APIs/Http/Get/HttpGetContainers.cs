@@ -26,16 +26,16 @@ namespace Kvpbase.StorageServer
                 return;
             }
              
-            if (!md.Params.UserGuid.ToLower().Equals(md.User.GUID.ToLower()))
+            if (!md.Params.UserGUID.ToLower().Equals(md.User.GUID.ToLower()))
             {
-                _Logging.Warn(header + "HttpGetContainers user " + md.User.GUID + " attempting to retrieve container list for user " + md.Params.UserGuid);
+                _Logging.Warn(header + "HttpGetContainers user " + md.User.GUID + " attempting to retrieve container list for user " + md.Params.UserGUID);
                 md.Http.Response.StatusCode = 401;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
                 return;
             }
              
-            List<Container> containers = _ContainerMgr.GetContainersByUser(md.Params.UserGuid);
+            List<Container> containers = _ContainerMgr.GetContainersByUser(md.Params.UserGUID);
             md.Http.Response.StatusCode = 200;
             md.Http.Response.ContentType = "application/json";
             await md.Http.Response.Send(Common.SerializeJson(containers, true));

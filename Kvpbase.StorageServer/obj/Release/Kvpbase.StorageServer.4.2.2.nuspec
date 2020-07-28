@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Kvpbase.StorageServer</id>
+    <version>4.2.2</version>
+    <authors>Joel Christner</authors>
+    <owners>Joel Christner</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/kvpbase/storage-server</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</iconUrl>
+    <description>Scalable, simple RESTful object storage platform.</description>
+    <releaseNotes>Bugfixes</releaseNotes>
+    <copyright>(c)2020 Joel Christner</copyright>
+    <tags>kvpbase object storage s3 blob azure cloud rest</tags>
+    <repository type="Github" url="https://github.com/kvpbase/storage-server" />
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="Newtonsoft.Json" version="12.0.3" exclude="Build,Analyzers" />
+        <dependency id="SyslogLogging" version="1.3.2.2" exclude="Build,Analyzers" />
+        <dependency id="Watson" version="3.0.11" exclude="Build,Analyzers" />
+        <dependency id="WatsonORM" version="1.2.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\bin\Release\netcoreapp3.1\Kvpbase.StorageServer.runtimeconfig.json" target="lib\netcoreapp3.1\Kvpbase.StorageServer.runtimeconfig.json" />
+    <file src="C:\code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\bin\Release\netcoreapp3.1\Kvpbase.StorageServer.dll" target="lib\netcoreapp3.1\Kvpbase.StorageServer.dll" />
+  </files>
+</package>

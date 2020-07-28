@@ -87,7 +87,12 @@ namespace Kvpbase.StorageServer.Classes
             /// <summary>
             /// Base directory for storage.
             /// </summary>
-            public string Directory; 
+            public string Directory;
+
+            /// <summary>
+            /// Number of seconds for which locks should be applied by default.
+            /// </summary>
+            public int LockExpirationSeconds;
         }
             
         /// <summary>

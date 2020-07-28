@@ -66,6 +66,7 @@ namespace Kvpbase.StorageServer.Classes
              
             settings.Storage = new Settings.SettingsStorage(); 
             settings.Storage.Directory = "./Storage/";
+            settings.Storage.LockExpirationSeconds = 300;
             Directory.CreateDirectory(settings.Storage.Directory);
 
             settings.Syslog = new Settings.SettingsSyslog();

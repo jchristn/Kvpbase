@@ -17,10 +17,10 @@ namespace Kvpbase.StorageServer
         {
             string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
              
-            Container currContainer = _ContainerMgr.GetContainer(md.Params.UserGuid, md.Params.ContainerName);
+            Container currContainer = _ContainerMgr.GetContainer(md.Params.UserGUID, md.Params.ContainerName);
             if (currContainer == null)
             { 
-                _Logging.Debug(header + "HttpHeadContainer unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                _Logging.Debug(header + "HttpHeadContainer unable to find container " + md.Params.UserGUID + "/" + md.Params.ContainerName);
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));

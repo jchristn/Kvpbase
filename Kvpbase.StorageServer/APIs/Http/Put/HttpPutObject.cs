@@ -18,10 +18,13 @@ namespace Kvpbase.StorageServer
         {
             string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
 
-            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGuid, md.Params.ContainerName);
+            string lockGuid = null;
+            ErrorCode error = ErrorCode.None;
+
+            ContainerClient client = _ContainerMgr.GetContainerClient(md.Params.UserGUID, md.Params.ContainerName);
             if (client == null)
             { 
-                _Logging.Warn(header + "HttpPutObject unable to find container " + md.Params.UserGuid + "/" + md.Params.ContainerName);
+                _Logging.Warn(header + "HttpPutObject unable to find container " + md.Params.UserGUID + "/" + md.Params.ContainerName);
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
@@ -30,9 +33,9 @@ namespace Kvpbase.StorageServer
               
             if (!client.Container.IsPublicWrite)
             {
-                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGuid.ToLower())))
+                if (md.User == null || !(md.User.GUID.ToLower().Equals(md.Params.UserGUID.ToLower())))
                 {
-                    _Logging.Warn(header + "HttpPutObject unauthorized unauthenticated write attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    _Logging.Warn(header + "HttpPutObject unauthorized unauthenticated write attempt to object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
                     md.Http.Response.StatusCode = 401;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
@@ -44,7 +47,7 @@ namespace Kvpbase.StorageServer
             {
                 if (!md.Perm.WriteObject)
                 {
-                    _Logging.Warn(header + "HttpPutObject unauthorized write attempt to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    _Logging.Warn(header + "HttpPutObject unauthorized write attempt to object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
                     md.Http.Response.StatusCode = 401;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(3, 401, null, null), true));
@@ -54,22 +57,20 @@ namespace Kvpbase.StorageServer
              
             if (!client.Exists(md.Params.ObjectKey))
             {
-                _Logging.Warn(header + "HttpPutObject object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + " does not exists");
+                _Logging.Warn(header + "HttpPutObject object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + " does not exists");
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
                 return;
             }
-             
-            ErrorCode error;  
-
+              
             if (!String.IsNullOrEmpty(md.Params.Rename))
             {
                 #region Rename
                  
-                if (!_ObjectHandler.Rename(md, client, md.Params.ObjectKey, md.Params.Rename, out error))
+                if (!_ObjectHandler.Rename(md, client, out error))
                 {
-                    _Logging.Warn(header + "HttpPutObject unable to rename object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + " to " + md.Params.Rename + ": " + error.ToString());
+                    _Logging.Warn(header + "HttpPutObject unable to rename object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + " to " + md.Params.Rename + ": " + error.ToString());
 
                     int statusCode = 0;
                     int id = 0;
@@ -117,10 +118,7 @@ namespace Kvpbase.StorageServer
 
                 if (!_ObjectHandler.Read(
                     md, 
-                    client, 
-                    md.Params.ObjectKey, 
-                    Convert.ToInt32(md.Params.Index), 
-                    Convert.ToInt32(md.Http.Request.ContentLength), 
+                    client,
                     out originalContentType, 
                     out originalContentLength,
                     out originalDataStream, 
@@ -137,7 +135,7 @@ namespace Kvpbase.StorageServer
                     }
                     else
                     { 
-                        _Logging.Warn(header + "HttpPutObject unable to retrieve original data from object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                        _Logging.Warn(header + "HttpPutObject unable to retrieve original data from object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
                         md.Http.Response.StatusCode = 500;
                         md.Http.Response.ContentType = "application/json";
                         await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(4, 500, "Unable to retrieve original data.", error), true));
@@ -156,9 +154,9 @@ namespace Kvpbase.StorageServer
 
                 #region Perform-Update
                  
-                if (!_ObjectHandler.WriteRange(md, client, md.Params.ObjectKey, Convert.ToInt64(md.Params.Index), md.Http.Request.ContentLength, md.Http.Request.Data, out error))
+                if (!_ObjectHandler.WriteRange(md, client, md.Http.Request.ContentLength, md.Http.Request.Data, out error))
                 {
-                    _Logging.Warn(header + "HttpPutObject unable to write range to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                    _Logging.Warn(header + "HttpPutObject unable to write range to object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
 
                     int statusCode = 0;
                     int id = 0;
@@ -189,7 +187,7 @@ namespace Kvpbase.StorageServer
                 ObjectMetadata originalMetadata = null;
                 if (!client.ReadObjectMetadata(md.Params.ObjectKey, out originalMetadata))
                 {
-                    _Logging.Warn(header + "HttpPutObject unable to read original metadata for tag rewrite for object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
+                    _Logging.Warn(header + "HttpPutObject unable to read original metadata for tag rewrite for object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey);
                     md.Http.Response.StatusCode = 404;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(5, 404, null, null), true));
@@ -202,7 +200,7 @@ namespace Kvpbase.StorageServer
                  
                 if (!client.WriteObjectTags(md.Params.ObjectKey, md.Params.Tags, out error))
                 {
-                    _Logging.Warn(header + "HttpPutObject unable to write tags to object " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                    _Logging.Warn(header + "HttpPutObject unable to write tags to object " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
 
                     int statusCode = 0;
                     int id = 0;
@@ -248,9 +246,9 @@ namespace Kvpbase.StorageServer
                     }
                 }
                  
-                if (!_ObjectHandler.WriteKeyValues(md, client, md.Params.ObjectKey, keys, out error))
+                if (!_ObjectHandler.WriteKeyValues(md, client, keys, out error))
                 {
-                    _Logging.Warn(header + "HttpPutObject unable to write keys to " + md.Params.UserGuid + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                    _Logging.Warn(header + "HttpPutObject unable to write keys to " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
 
                     int statusCode = 0;
                     int id = 0;
@@ -265,6 +263,34 @@ namespace Kvpbase.StorageServer
                 {
                     md.Http.Response.StatusCode = 201;
                     await md.Http.Response.Send();
+                    return;
+                }
+
+                #endregion
+            }
+            else if (md.Params.ReadLock || md.Params.WriteLock)
+            {
+                #region Apply-Lock
+
+                if (!_ObjectHandler.Lock(md, client, out lockGuid, out error))
+                {
+                    _Logging.Warn(header + "HttpPutObject unable to write lock for " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
+
+                    int statusCode = 0;
+                    int id = 0;
+                    ContainerClient.HttpStatusFromErrorCode(error, out statusCode, out id);
+
+                    md.Http.Response.StatusCode = statusCode;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(id, statusCode, "Unable to write lock.", error), true));
+                    return;
+                }
+                else
+                {
+                    Dictionary<string, string> respDict = new Dictionary<string, string>();
+                    respDict.Add("LockGUID", lockGuid);
+                    md.Http.Response.StatusCode = 201;
+                    await md.Http.Response.Send(Common.SerializeJson(respDict, true));
                     return;
                 }
 

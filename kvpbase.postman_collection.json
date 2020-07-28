@@ -654,6 +654,250 @@
 			"response": []
 		},
 		{
+			"name": "Retrieve object write locks",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.html?writelock",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.html"
+					],
+					"query": [
+						{
+							"key": "writelock",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve object read locks",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.html?readlock",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.html"
+					],
+					"query": [
+						{
+							"key": "readlock",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apply an object write lock",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.html?writelock&expire=2021-01-01T00:00:01",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.html"
+					],
+					"query": [
+						{
+							"key": "writelock",
+							"value": null
+						},
+						{
+							"key": "expire",
+							"value": "2021-01-01T00:00:01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apply an object read lock",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.html?readlock&expire=2021-01-01T00:00:01",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.html"
+					],
+					"query": [
+						{
+							"key": "readlock",
+							"value": null
+						},
+						{
+							"key": "expire",
+							"value": "2021-01-01T00:00:01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete an object write lock",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.html?writelock&lockguid=ABCD",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.html"
+					],
+					"query": [
+						{
+							"key": "writelock",
+							"value": null
+						},
+						{
+							"key": "lockguid",
+							"value": "ABCD"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete an object read lock",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "default",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8000/default/default/hello.html?readlock&lockguid=ABCD",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"default",
+						"default",
+						"hello.html"
+					],
+					"query": [
+						{
+							"key": "readlock",
+							"value": null
+						},
+						{
+							"key": "lockguid",
+							"value": "ABCD"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "** Admin ** Retrieve system config",
 			"request": {
 				"method": "GET",

@@ -11,6 +11,7 @@ Scalable, simple RESTful object storage platform, written in C#
 - Code manageability improvement, migration to ORM
 - Dependency updates
 - More complete Postman collection
+- Lock management APIs
 
 ## Help and Feedback
 

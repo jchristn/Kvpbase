@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using Watson.ORM;
 using Watson.ORM.Core;
@@ -13,7 +15,10 @@ namespace Kvpbase.StorageServer.Classes.Managers
         private Settings _Settings;
         private LoggingModule _Logging;
         private WatsonORM _ORM;
-        // private string _Header = "[Kvpbase.LockManager] ";
+        private string _Header = "[Kvpbase.LockManager] ";
+
+        private CancellationTokenSource _TokenSource = new CancellationTokenSource();
+        private CancellationToken _Token;
 
         internal LockManager(Settings settings, LoggingModule logging, WatsonORM orm)
         {
@@ -24,7 +29,40 @@ namespace Kvpbase.StorageServer.Classes.Managers
             _Settings = settings;
             _Logging = logging;
             _ORM = orm;
+            _Token = _TokenSource.Token;
+
+            Task.Run(() => MonitorForExpiredLocks(), _Token);
         }
+
+        #region General-Methods
+
+        internal bool LockExists(string url)
+        {
+            if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.Url)),
+                DbOperators.Equals,
+                url);
+             
+            UrlLock urlLock = _ORM.SelectFirst<UrlLock>(e);
+            if (urlLock != null) return true;
+            return false;
+        }
+
+        internal void RemoveLocks(string url)
+        {
+            if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.Url)),
+                DbOperators.Equals,
+                url);
+
+            _ORM.DeleteMany<UrlLock>(e);
+        }
+
+        #endregion
 
         #region Read-Lock-Methods
 
@@ -33,100 +71,39 @@ namespace Kvpbase.StorageServer.Classes.Managers
          *   
          */
 
-        internal bool AddReadLock(RequestMetadata md)
+        internal string AddReadLock(RequestMetadata md)
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
 
+            if (WriteLockExists(md.Http.Request.RawUrlWithoutQuery)) return null;
+
             UrlLock urlLock = null;
+            DateTime expirationUtc = DateTime.Now.ToUniversalTime().AddSeconds(_Settings.Storage.LockExpirationSeconds);
+            if (md.Params.ExpirationUtc != null) expirationUtc = md.Params.ExpirationUtc.Value.ToUniversalTime();
+
             if (md.User != null && !String.IsNullOrEmpty(md.User.GUID))
             {
-                urlLock = new UrlLock(LockType.Read, md.Http.Request.RawUrlWithoutQuery, md.User.GUID);
+                urlLock = new UrlLock(LockType.Read, md.Http.Request.RawUrlWithoutQuery, md.User.GUID, expirationUtc);
             }
             else
             {
-                urlLock = new UrlLock(LockType.Read, md.Http.Request.RawUrlWithoutQuery, null);
+                urlLock = new UrlLock(LockType.Read, md.Http.Request.RawUrlWithoutQuery, null, expirationUtc);
             }
 
-            return AddReadLock(urlLock);
+            urlLock = _ORM.Insert<UrlLock>(urlLock);
+            return urlLock.GUID;
         }
 
-        internal bool AddReadLock(string url, string userGuid)
+        internal void RemoveReadLock(string guid)
         {
-            if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
-            if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
-
-            UrlLock urlLock = new UrlLock(LockType.Read, url, userGuid);
-            return AddReadLock(urlLock);
-        }
-
-        internal bool AddReadLock(UrlLock urlLock)
-        {
-            if (urlLock == null) throw new ArgumentNullException(nameof(urlLock));
-            if (WriteLockExists(urlLock.Url)) return false;
-            _ORM.Insert<UrlLock>(urlLock);
-            return true;
-        }
-
-        internal void RemoveReadLock(RequestMetadata md)
-        {
-            if (md == null) throw new ArgumentNullException(nameof(md));
-
-            UrlLock urlLock = null;
-            if (md.User != null && !String.IsNullOrEmpty(md.User.GUID))
-            {
-                urlLock = new UrlLock(LockType.Read, md.Http.Request.RawUrlWithoutQuery, md.User.GUID);
-            }
-            else
-            {
-                urlLock = new UrlLock(LockType.Read, md.Http.Request.RawUrlWithoutQuery, null);
-            }
-
-            RemoveReadLock(urlLock);
-        }
-
-        internal void RemoveReadLock(UrlLock urlLock)
-        {
-            if (urlLock == null) throw new ArgumentNullException(nameof(urlLock));
+            if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
 
             DbExpression e = new DbExpression(
-                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.Url)),
+                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.GUID)),
                 DbOperators.Equals,
-                urlLock.Url);
+                guid);
 
-            e.PrependAnd(new DbExpression(
-                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.LockType)),
-                DbOperators.Equals,
-                urlLock.LockType));
-
-            List<UrlLock> locks = _ORM.SelectMany<UrlLock>(e);
-            if (locks != null && locks.Count > 0)
-            {
-                foreach (UrlLock curr in locks)
-                    _ORM.Delete<UrlLock>(curr);
-            }
-        }
-
-        internal void RemoveReadLock(string url, string userGuid)
-        {
-            if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
-            if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid));
-
-            DbExpression e = new DbExpression(
-                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.Url)),
-                DbOperators.Equals,
-                url);
-
-            e.PrependAnd(new DbExpression(
-                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.UserGUID)),
-                DbOperators.Equals,
-                userGuid));
-
-            List<UrlLock> locks = _ORM.SelectMany<UrlLock>(e);
-            if (locks != null && locks.Count > 0)
-            {
-                foreach (UrlLock curr in locks)
-                    _ORM.Delete<UrlLock>(curr);
-            }
+            _ORM.DeleteMany<UrlLock>(e);
         }
 
         internal bool ReadLockExists(string url)
@@ -160,7 +137,7 @@ namespace Kvpbase.StorageServer.Classes.Managers
                 DbOperators.Equals,
                 LockType.Read));
 
-            return _ORM.SelectMany<UrlLock>(e); 
+            return _ORM.SelectMany<UrlLock>(e);
         }
 
         #endregion
@@ -172,115 +149,40 @@ namespace Kvpbase.StorageServer.Classes.Managers
          *  
          */
 
-        internal bool AddWriteLock(RequestMetadata md)
+        internal string AddWriteLock(RequestMetadata md)
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
 
+            if (WriteLockExists(md.Http.Request.RawUrlWithoutQuery)) return null;
+            if (ReadLockExists(md.Http.Request.RawUrlWithoutQuery)) return null;
+
             UrlLock urlLock = null;
+            DateTime expirationUtc = DateTime.Now.ToUniversalTime().AddSeconds(_Settings.Storage.LockExpirationSeconds);
+            if (md.Params.ExpirationUtc != null) expirationUtc = md.Params.ExpirationUtc.Value.ToUniversalTime();
+
             if (md.User != null && !String.IsNullOrEmpty(md.User.GUID))
             {
-                urlLock = new UrlLock(LockType.Write, md.Http.Request.RawUrlWithoutQuery, md.User.GUID);
+                urlLock = new UrlLock(LockType.Write, md.Http.Request.RawUrlWithoutQuery, md.User.GUID, expirationUtc);
             }
             else
             {
-                urlLock = new UrlLock(LockType.Write, md.Http.Request.RawUrlWithoutQuery, null);
+                urlLock = new UrlLock(LockType.Write, md.Http.Request.RawUrlWithoutQuery, null, expirationUtc);
             }
 
-            return AddWriteLock(urlLock);
+            urlLock = _ORM.Insert<UrlLock>(urlLock);
+            return urlLock.GUID;
         }
 
-        internal bool AddWriteLock(string url, string userGuid)
+        internal void RemoveWriteLock(string guid)
         {
-            if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
-            if (String.IsNullOrEmpty(userGuid)) throw new ArgumentNullException(nameof(userGuid)); 
-            UrlLock urlLock = new UrlLock(LockType.Write, url, userGuid);
-            return AddWriteLock(urlLock);
-        }
-
-        internal bool AddWriteLock(UrlLock urlLock)
-        {
-            if (urlLock == null) throw new ArgumentNullException(nameof(urlLock));
-            if (WriteLockExists(urlLock.Url)) return false;
-            if (ReadLockExists(urlLock.Url)) return false;
-            _ORM.Insert<UrlLock>(urlLock);
-            return true;
-        }
-
-        internal void RemoveWriteLock(RequestMetadata md)
-        {
-            if (md == null) throw new ArgumentNullException(nameof(md));
-
-            UrlLock urlLock = null;
-            if (md.User != null && !String.IsNullOrEmpty(md.User.GUID))
-            {
-                urlLock = new UrlLock(LockType.Write, md.Http.Request.RawUrlWithoutQuery, md.User.GUID);
-            }
-            else
-            {
-                urlLock = new UrlLock(LockType.Write, md.Http.Request.RawUrlWithoutQuery, null);
-            }
-
-            RemoveWriteLock(urlLock);
-        }
-
-        internal void RemoveWriteLock(UrlLock urlLock)
-        {
-            if (urlLock == null) throw new ArgumentNullException(nameof(urlLock));
+            if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
 
             DbExpression e = new DbExpression(
-                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.Url)),
+                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.GUID)),
                 DbOperators.Equals,
-                urlLock.Url);
+                guid);
 
-            e.PrependAnd(new DbExpression(
-                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.LockType)),
-                DbOperators.Equals,
-                LockType.Write));
-
-            if (!String.IsNullOrEmpty(urlLock.UserGUID))
-            {
-                e.PrependAnd(new DbExpression(
-                    _ORM.GetColumnName<UrlLock>(nameof(UrlLock.UserGUID)),
-                    DbOperators.Equals,
-                    urlLock.UserGUID)); 
-            }
-
-            List<UrlLock> urlLocks = _ORM.SelectMany<UrlLock>(e);
-            if (urlLocks != null && urlLocks.Count > 0)
-            {
-                foreach (UrlLock curr in urlLocks)
-                    _ORM.Delete<UrlLock>(curr);
-            }
-        }
-
-        internal void RemoveWriteLock(string url, string userGuid)
-        {
-            if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
-
-            DbExpression e = new DbExpression(
-                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.Url)),
-                DbOperators.Equals,
-                url);
-
-            e.PrependAnd(new DbExpression(
-                _ORM.GetColumnName<UrlLock>(nameof(UrlLock.LockType)),
-                DbOperators.Equals,
-                LockType.Write));
-
-            if (!String.IsNullOrEmpty(userGuid))
-            {
-                e.PrependAnd(new DbExpression(
-                    _ORM.GetColumnName<UrlLock>(nameof(UrlLock.UserGUID)),
-                    DbOperators.Equals,
-                    userGuid));
-            }
-             
-            List<UrlLock> urlLocks = _ORM.SelectMany<UrlLock>(e);
-            if (urlLocks != null && urlLocks.Count > 0)
-            {
-                foreach (UrlLock curr in urlLocks)
-                    _ORM.Delete<UrlLock>(curr);
-            }
+            _ORM.DeleteMany<UrlLock>(e);
         }
 
         internal bool WriteLockExists(string url)
@@ -296,7 +198,7 @@ namespace Kvpbase.StorageServer.Classes.Managers
                 _ORM.GetColumnName<UrlLock>(nameof(UrlLock.LockType)),
                 DbOperators.Equals,
                 LockType.Write));
-             
+
             UrlLock urlLock = _ORM.SelectFirst<UrlLock>(e);
             if (urlLock != null) return true;
             return false;
@@ -318,5 +220,32 @@ namespace Kvpbase.StorageServer.Classes.Managers
         }
 
         #endregion 
+
+        #region Private-Methods
+
+        private void MonitorForExpiredLocks()
+        {
+            while (!_TokenSource.IsCancellationRequested)
+            {
+                DbExpression e = new DbExpression(
+                    _ORM.GetColumnName<UrlLock>(nameof(UrlLock.ExpirationUtc)),
+                    DbOperators.LessThan,
+                    DateTime.Now.ToUniversalTime());
+
+                List<UrlLock> expired = _ORM.SelectMany<UrlLock>(e);
+                if (expired != null && expired.Count > 0)
+                {
+                    foreach (UrlLock curr in expired)
+                    {
+                        _Logging.Info(_Header + "lock " + curr.GUID + " expired at " + curr.ExpirationUtc.ToString("s") + ", removing");
+                        _ORM.Delete<UrlLock>(curr);
+                    }
+                }
+
+                Task.Delay(10000).Wait();
+            }
+        }
+
+        #endregion
     }
 }
