@@ -272,6 +272,24 @@ namespace Kvpbase.StorageServer
             {
                 #region Apply-Lock
 
+                if (md.Params.ExpirationUtc == null)
+                {
+                    _Logging.Warn(header + "HttpPutObject no lock expiration specified for " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());
+                    md.Http.Response.StatusCode = 400;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 400, "No valid 'expire' querystring value.  Use a timestamp of the form 'yyyy-MM-ddTHH:mm:ss'.", null), true));
+                    return;
+                }
+
+                if (!Common.IsLaterThanNow(md.Params.ExpirationUtc.Value))
+                {
+                    _Logging.Warn(header + "HttpPutObject specified expiration is in the past");
+                    md.Http.Response.StatusCode = 400;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 400, "Value for 'expire' must be later than the current time.", null), true));
+                    return;
+                }
+
                 if (!_ObjectHandler.Lock(md, client, out lockGuid, out error))
                 {
                     _Logging.Warn(header + "HttpPutObject unable to write lock for " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());

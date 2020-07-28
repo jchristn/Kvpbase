@@ -64,6 +64,15 @@ namespace Kvpbase.StorageServer
             }
             else if (md.Params.ReadLock || md.Params.WriteLock)
             {
+                if (String.IsNullOrEmpty(md.Params.LockGUID))
+                {
+                    _Logging.Warn(header + "HttpDeleteObject lockguid parameter not supplied in query");
+                    md.Http.Response.StatusCode = 400;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 400, "No valid 'lockguid' querystring value.", null), true));
+                    return;
+                }
+
                 if (!_ObjectHandler.Unlock(md, client, out error))
                 {
                     _Logging.Warn(header + "HttpDeleteObject unable to remove lock for " + md.Params.UserGUID + "/" + md.Params.ContainerName + "/" + md.Params.ObjectKey + ": " + error.ToString());

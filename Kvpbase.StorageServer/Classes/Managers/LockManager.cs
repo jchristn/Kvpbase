@@ -232,6 +232,10 @@ namespace Kvpbase.StorageServer.Classes.Managers
                     DbOperators.LessThan,
                     DateTime.Now.ToUniversalTime());
 
+                e.PrependAnd(_ORM.GetColumnName<UrlLock>(nameof(UrlLock.ExpirationUtc)),
+                    DbOperators.IsNotNull,
+                    null);
+
                 List<UrlLock> expired = _ORM.SelectMany<UrlLock>(e);
                 if (expired != null && expired.Count > 0)
                 {
