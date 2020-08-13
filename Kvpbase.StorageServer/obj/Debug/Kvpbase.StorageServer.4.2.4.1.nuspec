@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Kvpbase.StorageServer</id>
-    <version>4.2.4</version>
+    <version>4.2.4.1</version>
     <authors>Joel Christner</authors>
     <owners>Joel Christner</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -23,7 +23,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\bin\Release\netcoreapp3.1\Kvpbase.StorageServer.runtimeconfig.json" target="lib\netcoreapp3.1\Kvpbase.StorageServer.runtimeconfig.json" />
-    <file src="C:\code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\bin\Release\netcoreapp3.1\Kvpbase.StorageServer.dll" target="lib\netcoreapp3.1\Kvpbase.StorageServer.dll" />
+    <file src="C:\Code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\bin\Debug\netcoreapp3.1\Kvpbase.StorageServer.runtimeconfig.json" target="lib\netcoreapp3.1\Kvpbase.StorageServer.runtimeconfig.json" />
+    <file src="C:\Code\KVPbase\storageserver-4.2\Kvpbase.StorageServer\bin\Debug\netcoreapp3.1\Kvpbase.StorageServer.dll" target="lib\netcoreapp3.1\Kvpbase.StorageServer.dll" />
   </files>
 </package>

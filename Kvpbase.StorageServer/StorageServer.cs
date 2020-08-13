@@ -252,7 +252,7 @@ namespace Kvpbase.StorageServer
                     if (ctx.Request.RawUrlEntries[0].Equals("favicon.ico"))
                     {
                         ctx.Response.StatusCode = 200;
-                        await ctx.Response.Send();
+                        await ctx.Response.Send(File.ReadAllBytes("./Assets/favicon.ico"));
                         return;
                     }
 
