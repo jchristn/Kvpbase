@@ -202,6 +202,8 @@ namespace Kvpbase.StorageServer
                 _Settings.Server.Ssl,
                 RequestReceived);
             _Server.Events.ExceptionEncountered = WebserverException;
+            _Server.Start();
+
             Console.WriteLine("[success]");
             if (_Settings.Server.Ssl)
             {

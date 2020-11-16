@@ -919,22 +919,7 @@ namespace Kvpbase.StorageServer.Classes
         internal static T DeserializeJson<T>(string json)
         {
             if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json));
-
-            try
-            {
-                return JsonConvert.DeserializeObject<T>(json);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("");
-                Console.WriteLine("Exception while deserializing:");
-                Console.WriteLine(json);
-                Console.WriteLine("");
-                Console.WriteLine("Exception:");
-                Console.WriteLine(SerializeJson(e, true));
-                Console.WriteLine("");
-                throw e;
-            }
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
         internal static T DeserializeJson<T>(byte[] data)

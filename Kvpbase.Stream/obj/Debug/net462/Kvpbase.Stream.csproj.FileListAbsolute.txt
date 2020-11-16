@@ -67,3 +67,4 @@ C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream
 C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.csproj.CopyComplete
 C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.dll
 C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.pdb
+C:\Code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Debug\net462\Kvpbase.Stream.csproj.CoreCompileInputs.cache
