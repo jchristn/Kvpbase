@@ -16,7 +16,7 @@ namespace Kvpbase.StorageServer
     {
         internal static async Task HttpPutObject(RequestMetadata md)
         {
-            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+            string header = md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " ";
 
             string lockGuid = null;
             ErrorCode error = ErrorCode.None;

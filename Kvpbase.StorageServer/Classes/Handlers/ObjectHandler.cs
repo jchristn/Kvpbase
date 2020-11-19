@@ -59,7 +59,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
             else
             {
                 string logData =
-                    "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                    "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                     "User: " + md.Params.UserGUID;
                  
                 client.AddAuditLogEntry(md.Params.ObjectKey, AuditLogEntryType.Delete, logData, false);
@@ -106,7 +106,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
                 {
                     _Locks.RemoveReadLock(lockGuid);
                     string logData =
-                        "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                        "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                         "User: " + md.Params.UserGUID;
                     logData += " Index: " + md.Params.Index;
                     logData += " Count: " + md.Params.Count;
@@ -131,7 +131,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
                 {
                     _Locks.RemoveReadLock(lockGuid);
                     string logData =
-                        "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                        "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                         "User: " + md.Params.UserGUID;
                     client.AddAuditLogEntry(md.Params.ObjectKey, AuditLogEntryType.Read, logData, false);
                     return true;
@@ -157,7 +157,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
             else
             { 
                 string logData =
-                   "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                   "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                    "User: " + md.Params.UserGUID;
                 client.AddAuditLogEntry(md.Params.ObjectKey, AuditLogEntryType.Exists, logData, false);
                 return true;
@@ -194,7 +194,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
                 int dataLen = 0;
                 if (md.Http.Request.Data != null) dataLen = (int)md.Http.Request.ContentLength;
                 string logData =
-                    "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                    "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                     "User: " + md.Params.UserGUID + " " +
                     "Bytes: " + dataLen;
                 client.AddAuditLogEntry(md.Params.ObjectKey, AuditLogEntryType.Write, logData, false);
@@ -234,7 +234,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
                 int dataLen = 0;
                 if (md.Http.Request.Data != null) dataLen = (int)md.Http.Request.ContentLength;
                 string logData =
-                   "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                   "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                    "User: " + md.Params.UserGUID + " " +
                    "Bytes: " + dataLen;
                 client.AddAuditLogEntry(md.Params.ObjectKey, AuditLogEntryType.Write, logData, false);
@@ -270,7 +270,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
             {
                 _Locks.RemoveWriteLock(lockGuid);
                 string logData =
-                   "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                   "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                    "User: " + md.Params.UserGUID + " " +
                    "RenameTo: " + md.Params.Rename;
                 client.AddAuditLogEntry(md.Params.ObjectKey, AuditLogEntryType.Rename, logData, true);
@@ -309,7 +309,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
                 int dataLen = 0;
                 if (md.Http.Request.Data != null) dataLen = (int)md.Http.Request.ContentLength;
                 string logData =
-                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                  "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                   "User: " + md.Params.UserGUID + " " +
                   "Index: " + Convert.ToInt64(md.Params.Index) + " " +
                   "Bytes: " + dataLen;
@@ -350,7 +350,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
                 int dataLen = 0;
                 if (md.Http.Request.Data != null) dataLen = (int)md.Http.Request.ContentLength;
                 string logData =
-                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                  "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                   "User: " + md.Params.UserGUID + " " +
                   "Index: " + Convert.ToInt64(md.Params.Index) + " " +
                   "Bytes: " + dataLen;
@@ -387,7 +387,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
             {
                 _Locks.RemoveWriteLock(lockGuid); 
                 string logData =
-                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                  "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                   "User: " + md.Params.UserGUID + " " +
                   "Tags: " + md.Params.Tags;
                 client.AddAuditLogEntry(md.Params.ObjectKey, AuditLogEntryType.WriteTags, logData, true);
@@ -423,7 +423,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
             {
                 _Locks.RemoveWriteLock(lockGuid); 
                 string logData =
-                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                  "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                   "User: " + md.Params.UserGUID;
                 client.AddAuditLogEntry(md.Params.ObjectKey, AuditLogEntryType.DeleteTags, logData, true);
                 _Logging.Debug(header + "deleted object tags");
@@ -459,7 +459,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
             {
                 _Locks.RemoveWriteLock(lockGuid); 
                 string logData =
-                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                  "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                   "User: " + md.Params.UserGUID;
                 client.AddAuditLogEntry(md.Params.ObjectKey, AuditLogEntryType.WriteKeyValue, logData, true);
                 _Logging.Debug(header + "wrote key values");
@@ -494,7 +494,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
             {
                 _Locks.RemoveWriteLock(lockGuid); 
                 string logData =
-                  "Source: " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " " +
+                  "Source: " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " " +
                   "User: " + md.Params.UserGUID;
                 client.AddAuditLogEntry(md.Params.ObjectKey, AuditLogEntryType.DeleteKeyValue, logData, true);
                 _Logging.Debug(header + "deleted key values");
@@ -539,7 +539,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
             {
                 if (md.Params.WriteLock)
                 {
-                    if (_Locks.LockExists(md.Http.Request.RawUrlWithoutQuery))
+                    if (_Locks.LockExists(md.Http.Request.Url.RawWithoutQuery))
                     {
                         _Logging.Warn(header + "lock already exists");
                         error = ErrorCode.AlreadyExists;
@@ -550,7 +550,7 @@ namespace Kvpbase.StorageServer.Classes.Handlers
                 }
                 else if (md.Params.ReadLock)
                 {
-                    if (_Locks.LockExists(md.Http.Request.RawUrlWithoutQuery))
+                    if (_Locks.LockExists(md.Http.Request.Url.RawWithoutQuery))
                     {
                         _Logging.Warn(header + "already exists");
                         error = ErrorCode.AlreadyExists;

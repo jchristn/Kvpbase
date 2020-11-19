@@ -75,7 +75,7 @@ namespace Kvpbase.StorageServer.Classes.Managers
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
 
-            if (WriteLockExists(md.Http.Request.RawUrlWithoutQuery)) return null;
+            if (WriteLockExists(md.Http.Request.Url.RawWithoutQuery)) return null;
 
             UrlLock urlLock = null;
             DateTime expirationUtc = DateTime.Now.ToUniversalTime().AddSeconds(_Settings.Storage.LockExpirationSeconds);
@@ -83,11 +83,11 @@ namespace Kvpbase.StorageServer.Classes.Managers
 
             if (md.User != null && !String.IsNullOrEmpty(md.User.GUID))
             {
-                urlLock = new UrlLock(LockType.Read, md.Http.Request.RawUrlWithoutQuery, md.User.GUID, expirationUtc);
+                urlLock = new UrlLock(LockType.Read, md.Http.Request.Url.RawWithoutQuery, md.User.GUID, expirationUtc);
             }
             else
             {
-                urlLock = new UrlLock(LockType.Read, md.Http.Request.RawUrlWithoutQuery, null, expirationUtc);
+                urlLock = new UrlLock(LockType.Read, md.Http.Request.Url.RawWithoutQuery, null, expirationUtc);
             }
 
             urlLock = _ORM.Insert<UrlLock>(urlLock);
@@ -153,8 +153,8 @@ namespace Kvpbase.StorageServer.Classes.Managers
         {
             if (md == null) throw new ArgumentNullException(nameof(md));
 
-            if (WriteLockExists(md.Http.Request.RawUrlWithoutQuery)) return null;
-            if (ReadLockExists(md.Http.Request.RawUrlWithoutQuery)) return null;
+            if (WriteLockExists(md.Http.Request.Url.RawWithoutQuery)) return null;
+            if (ReadLockExists(md.Http.Request.Url.RawWithoutQuery)) return null;
 
             UrlLock urlLock = null;
             DateTime expirationUtc = DateTime.Now.ToUniversalTime().AddSeconds(_Settings.Storage.LockExpirationSeconds);
@@ -162,11 +162,11 @@ namespace Kvpbase.StorageServer.Classes.Managers
 
             if (md.User != null && !String.IsNullOrEmpty(md.User.GUID))
             {
-                urlLock = new UrlLock(LockType.Write, md.Http.Request.RawUrlWithoutQuery, md.User.GUID, expirationUtc);
+                urlLock = new UrlLock(LockType.Write, md.Http.Request.Url.RawWithoutQuery, md.User.GUID, expirationUtc);
             }
             else
             {
-                urlLock = new UrlLock(LockType.Write, md.Http.Request.RawUrlWithoutQuery, null, expirationUtc);
+                urlLock = new UrlLock(LockType.Write, md.Http.Request.Url.RawWithoutQuery, null, expirationUtc);
             }
 
             urlLock = _ORM.Insert<UrlLock>(urlLock);

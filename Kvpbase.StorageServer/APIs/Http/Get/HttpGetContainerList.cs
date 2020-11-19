@@ -15,7 +15,7 @@ namespace Kvpbase.StorageServer
     {
         internal static async Task HttpGetContainerList(RequestMetadata md)
         {
-            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+            string header = _Header + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " ";
              
             if (md.User == null)
             {
@@ -26,7 +26,7 @@ namespace Kvpbase.StorageServer
                 return;
             }
 
-            if (!md.Http.Request.RawUrlEntries[0].Equals(md.User.GUID))
+            if (!md.Http.Request.Url.Elements[0].Equals(md.User.GUID))
             {
                 _Logging.Warn(header + "HttpGetContainerList attempt to list containers for another user");
                 md.Http.Response.StatusCode = 401;
@@ -38,7 +38,7 @@ namespace Kvpbase.StorageServer
             List<Container> containers = _ContainerMgr.GetContainersByUser(md.User.GUID); 
             if (containers == null || containers.Count < 1)
             {
-                _Logging.Warn(header + "HttpGetContainerList no containers found for user " + md.Http.Request.RawUrlEntries[0]);
+                _Logging.Warn(header + "HttpGetContainerList no containers found for user " + md.Http.Request.Url.Elements[0]);
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 404, null, null), true));

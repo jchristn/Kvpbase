@@ -15,7 +15,7 @@ namespace Kvpbase.StorageServer
     {
         internal static async Task HttpPostContainer(RequestMetadata md)
         {
-            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+            string header = _Header + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " ";
              
             if (md.User == null)
             {

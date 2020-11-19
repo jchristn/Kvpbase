@@ -19,13 +19,13 @@ First things first - do you need help or have feedback?  File an issue here!
 
 ## Initial Setup
 
-The binaries for Kvpbase can be created by compiling from source or using the pre-compiled binaries found in ```Kvpbase.StorageServer\bin\release\netcoreapp2.0\``` (I intentionally did not ```.gitignore``` these files).  Executing the binaries will create the requisite configuration files and database tables.
+The binaries for Kvpbase can be created by compiling from source or using the pre-compiled binaries found in ```Kvpbase.StorageServer\bin\release\net5.0\``` (I intentionally did not ```.gitignore``` these files).  Executing the binaries will create the requisite configuration files and database tables.
 
 ```
 $ dotnet Kvpbase.StorageServer.dll
 ```
 
-By default, Kvpbase will listen on ```localhost``` and only handle requests from the local machine.  If you wish to change this, modify ```Server.DnsHostname``` in the ```System.json``` file.  When modifying this value, follow these rules:
+By default, Kvpbase will listen on ```localhost``` and only handle requests from the local machine.  If you wish to change this, modify ```Server.DnsHostname``` in the ```system.json``` file.  When modifying this value, follow these rules:
 
 - If you are using an IP address that listens on any interface such as ```0.0.0.0```, ```*```, or ```+```, Kvpbase must be run using elevated privileges
 - If using any other IP address or DNS name, the HOST header on incoming requests *MUST* match the value for this parameter
@@ -86,16 +86,6 @@ Core use cases for Kvpbase Storage Server:
 - Primary storage for objects - range read, range write, and append support
 - Scalable storage - multi-node scale-out support using shared backend disk storage 
 - Filesystem gateway - RESTful access to existing SAN/DAS (block with filesystem) or NAS (fileshares via CIFS, NFS)
-
-## SDKs and Sample Scripts
-
-Numerous SDKs and sample scripts are already available for Kvpbase Storage Server: https://github.com/kvpbase/.  Need an SDK for a different language?  Let me know!  Currently, SDKs are available in:
-
-- C# - https://github.com/kvpbase/sdk-csharp
-- Javascript - https://github.com/kvpbase/sdk-js
-- Java - https://github.com/kvpbase/sdk-java
-- Python - https://github.com/kvpbase/sdk-python
-- cURL - https://github.com/kvpbase/curl-scripts
 
 ## Version History
 

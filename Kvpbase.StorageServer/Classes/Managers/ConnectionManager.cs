@@ -27,11 +27,11 @@ namespace Kvpbase.StorageServer.Classes.Managers
 
             Connection conn = new Connection();
             conn.ThreadId = threadId;
-            conn.SourceIp = ctx.Request.SourceIp;
-            conn.SourcePort = ctx.Request.SourcePort;
+            conn.SourceIp = ctx.Request.Source.IpAddress;
+            conn.SourcePort = ctx.Request.Source.Port;
             conn.UserGUID = null; 
             conn.Method = ctx.Request.Method;
-            conn.RawUrl = ctx.Request.RawUrlWithoutQuery;
+            conn.RawUrl = ctx.Request.Url.RawWithoutQuery;
             conn.StartTime = DateTime.Now;
             conn.EndTime = DateTime.Now;
 

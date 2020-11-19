@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using Watson.ORM;
 using Watson.ORM.Core;
+using Newtonsoft.Json;
 
 namespace Kvpbase.StorageServer.Classes.DatabaseObjects
 {
@@ -21,24 +22,28 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// GUID.
         /// </summary>
+        [JsonProperty(Order = -4)]
         [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// The lock type.
         /// </summary>
+        [JsonProperty(Order = -3)]
         [Column("locktype", false, DataTypes.Nvarchar, 8, false)]
         public LockType LockType { get; set; }
 
         /// <summary>
         /// The raw URL that is locked.
         /// </summary>
+        [JsonProperty(Order = -2)]
         [Column("url", false, DataTypes.Nvarchar, 512, false)]
         public string Url { get; set; }
 
         /// <summary>
         /// The GUID of the user that holds the lock.
         /// </summary>
+        [JsonProperty(Order = -1)]
         [Column("userguid", false, DataTypes.Nvarchar, 64, true)]
         public string UserGUID { get; set; }
 
@@ -51,12 +56,14 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// The timestamp from when the object was created.
         /// </summary>
+        [JsonProperty(Order = 990)]
         [Column("createdutc", false, DataTypes.DateTime, false)]
         public DateTime CreatedUtc { get; set; }
 
         /// <summary>
         /// The timestamp for when the lock should expire.
         /// </summary>
+        [JsonProperty(Order = 991)]
         [Column("expirationutc", false, DataTypes.DateTime, false)]
         public DateTime ExpirationUtc { get; set; }
 

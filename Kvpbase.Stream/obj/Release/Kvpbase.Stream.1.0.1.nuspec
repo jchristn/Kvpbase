@@ -4,7 +4,6 @@
     <id>Kvpbase.Stream</id>
     <version>1.0.1</version>
     <authors>Joel Christner</authors>
-    <owners>Joel Christner</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="file">LICENSE.md</license>
     <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Watson.ORM;
 using Watson.ORM.Core;
+using Newtonsoft.Json;
 
 namespace Kvpbase.StorageServer.Classes.DatabaseObjects
 {
@@ -14,24 +15,28 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// Row ID in the database.
         /// </summary>
+        [JsonIgnore]
         [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// GUID.
         /// </summary>
+        [JsonProperty(Order = -3)]
         [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// The username of the owner.
         /// </summary>
+        [JsonProperty(Order = -2)]
         [Column("userguid", false, DataTypes.Nvarchar, 64, false)]
         public string UserGUID { get; set; }
 
         /// <summary>
         /// The name of the container.
         /// </summary>
+        [JsonProperty(Order = -1)]
         [Column("name", false, DataTypes.Nvarchar, 64, false)]
         public string Name { get; set; }
 
@@ -62,6 +67,7 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// The timestamp from when the object was created.
         /// </summary>
+        [JsonProperty(Order = 990)]
         [Column("createdutc", false, DataTypes.DateTime, true)]
         public DateTime? CreatedUtc { get; set; }
          

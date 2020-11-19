@@ -5,20 +5,20 @@
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <RootNamespace>Kvpbase.StorageServer</RootNamespace>
     <PackageId>Kvpbase.StorageServer</PackageId>
-    <Version>4.2.4.3</Version>
+    <Version>4.2.5</Version>
     <Authors>Joel Christner</Authors>
     <Product>Kvpbase Storage Server</Product>
     <Description>Scalable, simple RESTful object storage platform.</Description>
     <Copyright>(c)2020 Joel Christner</Copyright>
     <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/kvpbase/storage-server</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/kvpbase/storage-server</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/jchristn/kvpbase</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jchristn/kvpbase</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>kvpbase object storage s3 blob azure cloud rest</PackageTags>
-    <PackageReleaseNotes>Bugfixes</PackageReleaseNotes>
+    <PackageReleaseNotes>Dependency update and maintenance</PackageReleaseNotes>
     <ApplicationIcon />
     <StartupObject />
-    <PackageIconUrl>https://raw.githubusercontent.com/kvpbase/storage-server/master/assets/icon.ico</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/jchristn/kvpbase/master/assets/icon.ico</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseFile></PackageLicenseFile>
   </PropertyGroup>
@@ -38,7 +38,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SyslogLogging" Version="1.3.2.5" />
-    <PackageReference Include="Watson" Version="3.3.0.4" />
+    <PackageReference Include="Watson" Version="4.0.0.2" />
     <PackageReference Include="WatsonORM" Version="1.3.0.19" />
   </ItemGroup>
  

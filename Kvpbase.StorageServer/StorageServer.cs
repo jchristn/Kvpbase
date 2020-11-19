@@ -201,7 +201,7 @@ namespace Kvpbase.StorageServer
                 _Settings.Server.Port,
                 _Settings.Server.Ssl,
                 RequestReceived);
-            _Server.Events.ExceptionEncountered = WebserverException;
+            _Server.Events.ExceptionEncountered += WebserverException;
             _Server.Start();
 
             Console.WriteLine("[success]");
@@ -226,7 +226,7 @@ namespace Kvpbase.StorageServer
 
         private static async Task RequestReceived(HttpContext ctx)
         { 
-            string header = _Header + ctx.Request.SourceIp + ":" + ctx.Request.SourcePort + " ";
+            string header = _Header + ctx.Request.Source.IpAddress + ":" + ctx.Request.Source.Port + " ";
 
             DateTime startTime = DateTime.Now;
             Stopwatch sw = new Stopwatch();
@@ -249,16 +249,16 @@ namespace Kvpbase.StorageServer
                     return;
                 }
                  
-                if (ctx.Request.RawUrlEntries != null && ctx.Request.RawUrlEntries.Count > 0)
+                if (ctx.Request.Url.Elements != null && ctx.Request.Url.Elements.Length > 0)
                 {
-                    if (ctx.Request.RawUrlEntries[0].Equals("favicon.ico"))
+                    if (ctx.Request.Url.Elements[0].Equals("favicon.ico"))
                     {
                         ctx.Response.StatusCode = 200;
                         await ctx.Response.Send(File.ReadAllBytes("./Assets/favicon.ico"));
                         return;
                     }
 
-                    if (ctx.Request.RawUrlEntries[0].Equals("robots.txt"))
+                    if (ctx.Request.Url.Elements[0].Equals("robots.txt"))
                     {
                         ctx.Response.StatusCode = 200;
                         ctx.Response.ContentType = "text/plain";
@@ -267,11 +267,11 @@ namespace Kvpbase.StorageServer
                     }
                 }
 
-                if (ctx.Request.RawUrlEntries == null || ctx.Request.RawUrlEntries.Count == 0)
+                if (ctx.Request.Url.Elements == null || ctx.Request.Url.Elements.Length == 0)
                 {
                     ctx.Response.StatusCode = 200;
                     ctx.Response.ContentType = "text/html";
-                    await ctx.Response.Send(DefaultPage("http://github.com/kvpbase"));
+                    await ctx.Response.Send(DefaultPage("http://github.com/jchristn/kvpbase"));
                     return;
                 }
                  
@@ -302,9 +302,9 @@ namespace Kvpbase.StorageServer
                 if (md.User != null) md.Params.UserGUID = md.User.GUID; 
                 _ConnMgr.Update(Thread.CurrentThread.ManagedThreadId, md.User);
                  
-                if (ctx.Request.RawUrlEntries != null
-                    && ctx.Request.RawUrlEntries.Count >= 2
-                    && ctx.Request.RawUrlEntries[0].Equals("admin")
+                if (ctx.Request.Url.Elements != null
+                    && ctx.Request.Url.Elements.Length >= 2
+                    && ctx.Request.Url.Elements[0].Equals("admin")
                     && md.Perm.IsAdmin)
                 {
                     await AdminApiHandler(md);
@@ -332,7 +332,7 @@ namespace Kvpbase.StorageServer
 
                 string msg =
                     header + 
-                    ctx.Request.Method + " " + ctx.Request.RawUrlWithoutQuery + " " +
+                    ctx.Request.Method + " " + ctx.Request.Url.RawWithoutQuery + " " +
                     ctx.Response.StatusCode + " " +
                     "[" + sw.ElapsedMilliseconds + "ms]";
 
@@ -392,9 +392,9 @@ namespace Kvpbase.StorageServer
             await ctx.Response.Send();
         }
 
-        private static void WebserverException(string ip, int port, Exception e)
+        private static void WebserverException(object sender, ExceptionEventArgs args)
         {
-            _Logging.Exception("StorageServer", "Webserver [" + ip + ":" + port + "]", e); 
+            _Logging.Warn(_Header + "exception for " + args.Ip + ":" + args.Port + ":" + Environment.NewLine + Common.SerializeJson(args.Exception, true));
         }
 
         private static string DefaultPage(string link)

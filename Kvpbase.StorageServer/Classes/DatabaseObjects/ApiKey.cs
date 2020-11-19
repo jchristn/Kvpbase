@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using Watson.ORM;
 using Watson.ORM.Core;
+using Newtonsoft.Json;
 
 namespace Kvpbase.StorageServer.Classes.DatabaseObjects
 {
@@ -16,18 +17,21 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// Row ID in the database.
         /// </summary>
+        [JsonIgnore]
         [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Object GUID.  This value is used as the actual API key.
         /// </summary>
+        [JsonProperty(Order = -2)]
         [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// User GUID.
         /// </summary>
+        [JsonProperty(Order = -1)]
         [Column("userguid", false, DataTypes.Nvarchar, 64, false)]
         public string UserGUID { get; set; }
 

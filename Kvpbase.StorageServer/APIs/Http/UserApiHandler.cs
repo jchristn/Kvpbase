@@ -15,7 +15,7 @@ namespace Kvpbase.StorageServer
     {
         static async Task UserApiHandler(RequestMetadata md)
         {
-            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+            string header = _Header + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " ";
 
             if (md.Params.RequestMetadata)
             {
@@ -28,22 +28,22 @@ namespace Kvpbase.StorageServer
             switch (md.Http.Request.Method)
             {
                 case HttpMethod.GET: 
-                    if (md.Http.Request.RawUrlWithoutQuery.Equals("/containers"))
+                    if (md.Http.Request.Url.RawWithoutQuery.Equals("/containers"))
                     {
                         await HttpGetContainerList(md);
                         return;
                     }
-                    else if (md.Http.Request.RawUrlEntries.Count == 1)
+                    else if (md.Http.Request.Url.Elements.Length == 1)
                     {
                         await HttpGetContainerList(md);
                         return;
                     }
-                    else if (md.Http.Request.RawUrlEntries.Count == 2)
+                    else if (md.Http.Request.Url.Elements.Length == 2)
                     {
                         await HttpGetContainer(md);
                         return;
                     }
-                    else if (md.Http.Request.RawUrlEntries.Count >= 3)
+                    else if (md.Http.Request.Url.Elements.Length >= 3)
                     {
                         await HttpGetObject(md);
                         return;
@@ -51,12 +51,12 @@ namespace Kvpbase.StorageServer
                     break;
 
                 case HttpMethod.PUT:
-                    if (md.Http.Request.RawUrlEntries.Count == 2)
+                    if (md.Http.Request.Url.Elements.Length == 2)
                     {
                         await HttpPutContainer(md);
                         return;
                     }
-                    else if (md.Http.Request.RawUrlEntries.Count >= 3)
+                    else if (md.Http.Request.Url.Elements.Length >= 3)
                     {
                         await HttpPutObject(md);
                         return;
@@ -64,12 +64,12 @@ namespace Kvpbase.StorageServer
                     break;
 
                 case HttpMethod.POST:
-                    if (md.Http.Request.RawUrlEntries.Count == 2)
+                    if (md.Http.Request.Url.Elements.Length == 2)
                     {
                         await HttpPostContainer(md);
                         return;
                     }
-                    else if (md.Http.Request.RawUrlEntries.Count >= 3)
+                    else if (md.Http.Request.Url.Elements.Length >= 3)
                     {
                         await HttpPostObject(md);
                         return;
@@ -77,12 +77,12 @@ namespace Kvpbase.StorageServer
                     break;
 
                 case HttpMethod.DELETE:
-                    if (md.Http.Request.RawUrlEntries.Count == 2)
+                    if (md.Http.Request.Url.Elements.Length == 2)
                     {
                         await HttpDeleteContainer(md);
                         return;
                     }
-                    else if (md.Http.Request.RawUrlEntries.Count >= 3)
+                    else if (md.Http.Request.Url.Elements.Length >= 3)
                     {
                         await HttpDeleteObject(md);
                         return;
@@ -90,12 +90,12 @@ namespace Kvpbase.StorageServer
                     break;
 
                 case HttpMethod.HEAD:
-                    if (md.Http.Request.RawUrlEntries.Count == 2)
+                    if (md.Http.Request.Url.Elements.Length == 2)
                     {
                         await HttpHeadContainer(md);
                         return;
                     }
-                    else if (md.Http.Request.RawUrlEntries.Count >= 3)
+                    else if (md.Http.Request.Url.Elements.Length >= 3)
                     {
                         await HttpHeadObject(md);
                         return;
@@ -103,7 +103,7 @@ namespace Kvpbase.StorageServer
                     break;
             }
              
-            _Logging.Warn(header + "UserApiHandler unknown URL " + md.Http.Request.RawUrlWithoutQuery);
+            _Logging.Warn(header + "UserApiHandler unknown URL " + md.Http.Request.Url.RawWithoutQuery);
             md.Http.Response.StatusCode = 404;
             md.Http.Response.ContentType = "application/json";
             await md.Http.Response.Send(Common.SerializeJson(new ErrorResponse(2, 404, null, null), true));

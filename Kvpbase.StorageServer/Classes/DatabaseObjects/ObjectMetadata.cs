@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Watson.ORM;
 using Watson.ORM.Core;
+using Newtonsoft.Json;
 
 namespace Kvpbase.StorageServer.Classes.DatabaseObjects
 {
@@ -15,30 +16,35 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// The ID of the object.
         /// </summary>
+        [JsonIgnore]
         [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// The GUID of the object, also used as a unique name to store the object.
         /// </summary>
+        [JsonProperty(Order = -3)]
         [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// The GUID of the container that contains the object. 
         /// </summary>
+        [JsonProperty(Order = -3)]
         [Column("containerguid", false, DataTypes.Nvarchar, 64, false)]
         public string ContainerGUID { get; set; }
 
         /// <summary>
         /// The object's key.
         /// </summary>
+        [JsonProperty(Order = -2)]
         [Column("objectkey", false, DataTypes.Nvarchar, 256, false)]
         public string ObjectKey { get; set; }
 
         /// <summary>
         /// The content type of the object.
         /// </summary>
+        [JsonProperty(Order = -1)]
         [Column("contenttype", false, DataTypes.Nvarchar, 256, true)]
         public string ContentType { get; set; }
 
@@ -57,24 +63,28 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// The comma-separated list of tags associated with an object.
         /// </summary>
+        [JsonProperty(Order = 990)]
         [Column("tags", false, DataTypes.Nvarchar, 1024, true)]
         public string Tags { get; set; }
 
         /// <summary>
         /// The creation timestamp, in UTC.
         /// </summary>
+        [JsonProperty(Order = 991)]
         [Column("createdutc", false, DataTypes.DateTime, false)]
         public DateTime? CreatedUtc { get; set; }
 
         /// <summary>
         /// The time of last update, in UTC.
         /// </summary>
+        [JsonProperty(Order = 992)]
         [Column("lastupdateutc", false, DataTypes.DateTime, false)]
         public DateTime? LastUpdateUtc { get; set; }
 
         /// <summary>
         /// The time of last access, in UTC.
         /// </summary>
+        [JsonProperty(Order = 993)]
         [Column("lastaccessutc", false, DataTypes.DateTime, false)]
         public DateTime? LastAccessUtc { get; set; }
           

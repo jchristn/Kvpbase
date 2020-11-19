@@ -15,7 +15,7 @@ namespace Kvpbase.StorageServer
     {
         internal static async Task HttpPutContainer(RequestMetadata md)
         {
-            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+            string header = _Header + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " ";
              
             if (md.User == null)
             {
@@ -26,7 +26,7 @@ namespace Kvpbase.StorageServer
                 return;
             }
              
-            if (md.Http.Request.RawUrlEntries.Count != 2)
+            if (md.Http.Request.Url.Elements.Length != 2)
             {
                 _Logging.Warn(header + "HttpPutContainer request URL does not have two entries");
                 md.Http.Response.StatusCode = 400;

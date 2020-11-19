@@ -235,137 +235,138 @@ namespace Kvpbase.StorageServer.Classes
                 long testLong = 0;
 
                 ret.UserGUID = "null";
-                if (req.RawUrlEntries.Count >= 1) ret.UserGUID = WebUtility.UrlDecode(req.RawUrlEntries[0]);
+                if (req.Url.Elements.Length >= 1) ret.UserGUID = WebUtility.UrlDecode(req.Url.Elements[0]);
 
-                if (req.RawUrlEntries.Count > 1) ret.ContainerName = WebUtility.UrlDecode(req.RawUrlEntries[1]);
-                if (req.RawUrlEntries.Count > 2)
+                if (req.Url.Elements.Length > 1) ret.ContainerName = WebUtility.UrlDecode(req.Url.Elements[1]);
+                if (req.Url.Elements.Length > 2)
                 {
-                    string rawUrl = req.RawUrlWithoutQuery;
+                    string rawUrl = req.Url.RawWithoutQuery;
                     while (rawUrl.StartsWith("/")) rawUrl = rawUrl.Substring(1);
                     string[] vals = rawUrl.Split(new[] { '/' }, 3);
                     ret.ObjectKey = WebUtility.UrlDecode(vals[2]);
                 }
 
-                if (req.QuerystringEntries.ContainsKey("auditlog")) ret.AuditLog = true; 
-                if (req.QuerystringEntries.ContainsKey("metadata")) ret.Metadata = true;
-                if (req.QuerystringEntries.ContainsKey("keys")) ret.Keys = true;
-                if (req.QuerystringEntries.ContainsKey("search")) ret.Search = true;
-                if (req.QuerystringEntries.ContainsKey("reqmetadata")) ret.RequestMetadata = true;
-                if (req.QuerystringEntries.ContainsKey("config")) ret.Config = true;
-                if (req.QuerystringEntries.ContainsKey("html")) ret.Html = true;
-                if (req.QuerystringEntries.ContainsKey("writelock")) ret.WriteLock = true;
-                if (req.QuerystringEntries.ContainsKey("readlock")) ret.ReadLock = true;
+                if (req.Query.Elements.ContainsKey("auditlog")) ret.AuditLog = true; 
+                if (req.Query.Elements.ContainsKey("metadata")) ret.Metadata = true;
+                if (req.Query.Elements.ContainsKey("keys")) ret.Keys = true;
+                if (req.Query.Elements.ContainsKey("search")) ret.Search = true;
+                if (req.Query.Elements.ContainsKey("reqmetadata")) ret.RequestMetadata = true;
+                if (req.Query.Elements.ContainsKey("config")) ret.Config = true;
+                if (req.Query.Elements.ContainsKey("html")) ret.Html = true;
+                if (req.Query.Elements.ContainsKey("writelock")) ret.WriteLock = true;
+                if (req.Query.Elements.ContainsKey("readlock")) ret.ReadLock = true;
 
-                if (req.QuerystringEntries.ContainsKey("auditkey"))
-                    ret.AuditKey = req.QuerystringEntries["auditkey"];
 
-                if (req.QuerystringEntries.ContainsKey("action"))
-                    ret.Action = req.QuerystringEntries["action"];
+                if (req.Query.Elements.ContainsKey("auditkey"))
+                    ret.AuditKey = req.Query.Elements["auditkey"];
 
-                if (req.QuerystringEntries.ContainsKey("index"))
+                if (req.Query.Elements.ContainsKey("action"))
+                    ret.Action = req.Query.Elements["action"];
+
+                if (req.Query.Elements.ContainsKey("index"))
                 {
-                    if (Int32.TryParse(req.QuerystringEntries["index"], out testInt))
+                    if (Int32.TryParse(req.Query.Elements["index"], out testInt))
                     {
                         if (testInt >= 0) ret.Index = testInt;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("count"))
+                if (req.Query.Elements.ContainsKey("count"))
                 {
-                    if (Int32.TryParse(req.QuerystringEntries["count"], out testInt))
+                    if (Int32.TryParse(req.Query.Elements["count"], out testInt))
                     {
                         if (testInt >= 0) ret.Count = testInt;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("rename"))
-                    ret.Rename = req.QuerystringEntries["rename"];
+                if (req.Query.Elements.ContainsKey("rename"))
+                    ret.Rename = req.Query.Elements["rename"];
 
-                if (req.QuerystringEntries.ContainsKey("createdbefore"))
+                if (req.Query.Elements.ContainsKey("createdbefore"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["createdbefore"], out testTimestamp))
+                    if (DateTime.TryParse(req.Query.Elements["createdbefore"], out testTimestamp))
                     {
                         ret.CreatedBefore = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("createdafter"))
+                if (req.Query.Elements.ContainsKey("createdafter"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["createdafter"], out testTimestamp))
+                    if (DateTime.TryParse(req.Query.Elements["createdafter"], out testTimestamp))
                     {
                         ret.CreatedAfter = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("updatedbefore"))
+                if (req.Query.Elements.ContainsKey("updatedbefore"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["updatedbefore"], out testTimestamp))
+                    if (DateTime.TryParse(req.Query.Elements["updatedbefore"], out testTimestamp))
                     {
                         ret.UpdatedBefore = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("updatedafter"))
+                if (req.Query.Elements.ContainsKey("updatedafter"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["updatedafter"], out testTimestamp))
+                    if (DateTime.TryParse(req.Query.Elements["updatedafter"], out testTimestamp))
                     {
                         ret.UpdatedAfter = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("accessedbefore"))
+                if (req.Query.Elements.ContainsKey("accessedbefore"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["accessedbefore"], out testTimestamp))
+                    if (DateTime.TryParse(req.Query.Elements["accessedbefore"], out testTimestamp))
                     {
                         ret.LastAccessBefore = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("accessedafter"))
+                if (req.Query.Elements.ContainsKey("accessedafter"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["accessedafter"], out testTimestamp))
+                    if (DateTime.TryParse(req.Query.Elements["accessedafter"], out testTimestamp))
                     {
                         ret.LastAccessAfter = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("expire"))
+                if (req.Query.Elements.ContainsKey("expire"))
                 {
-                    if (DateTime.TryParse(req.QuerystringEntries["expire"], out testTimestamp))
+                    if (DateTime.TryParse(req.Query.Elements["expire"], out testTimestamp))
                     {
                         ret.ExpirationUtc = testTimestamp;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("prefix"))
-                    ret.Prefix = req.QuerystringEntries["prefix"];
+                if (req.Query.Elements.ContainsKey("prefix"))
+                    ret.Prefix = req.Query.Elements["prefix"];
 
-                if (req.QuerystringEntries.ContainsKey("md5"))
-                    ret.Md5 = req.QuerystringEntries["md5"];
+                if (req.Query.Elements.ContainsKey("md5"))
+                    ret.Md5 = req.Query.Elements["md5"];
 
-                if (req.QuerystringEntries.ContainsKey("orderby"))
-                    ret.OrderBy = req.QuerystringEntries["orderby"];
+                if (req.Query.Elements.ContainsKey("orderby"))
+                    ret.OrderBy = req.Query.Elements["orderby"];
 
-                if (req.QuerystringEntries.ContainsKey("contenttype"))
-                    ret.ContentType = req.QuerystringEntries["contenttype"];
+                if (req.Query.Elements.ContainsKey("contenttype"))
+                    ret.ContentType = req.Query.Elements["contenttype"];
 
-                if (req.QuerystringEntries.ContainsKey("tags"))
-                    ret.Tags = req.QuerystringEntries["tags"];
+                if (req.Query.Elements.ContainsKey("tags"))
+                    ret.Tags = req.Query.Elements["tags"];
 
-                if (req.QuerystringEntries.ContainsKey("lockguid"))
-                    ret.LockGUID = req.QuerystringEntries["lockguid"];
+                if (req.Query.Elements.ContainsKey("lockguid"))
+                    ret.LockGUID = req.Query.Elements["lockguid"];
 
-                if (req.QuerystringEntries.ContainsKey("sizemin"))
+                if (req.Query.Elements.ContainsKey("sizemin"))
                 {
-                    if (Int64.TryParse(req.QuerystringEntries["sizemin"], out testLong))
+                    if (Int64.TryParse(req.Query.Elements["sizemin"], out testLong))
                     {
                         ret.SizeMin = testLong;
                     }
                 }
 
-                if (req.QuerystringEntries.ContainsKey("sizemax"))
+                if (req.Query.Elements.ContainsKey("sizemax"))
                 {
-                    if (Int64.TryParse(req.QuerystringEntries["sizemax"], out testLong))
+                    if (Int64.TryParse(req.Query.Elements["sizemax"], out testLong))
                     {
                         ret.SizeMax = testLong;
                     }

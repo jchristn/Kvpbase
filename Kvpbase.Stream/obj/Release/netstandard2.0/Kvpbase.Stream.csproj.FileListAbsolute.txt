@@ -32,3 +32,4 @@ C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpb
 C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.AssemblyInfo.cs
 C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.dll
 C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.pdb
+C:\code\KVPbase\storageserver-4.2\Kvpbase.Stream\obj\Release\netstandard2.0\Kvpbase.Stream.csproj.CoreCompileInputs.cache

@@ -14,7 +14,7 @@ namespace Kvpbase.StorageServer
     {
         internal static async Task HttpDeleteObject(RequestMetadata md)
         {
-            string header = _Header + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+            string header = _Header + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " ";
              
             ErrorCode error = ErrorCode.None;
 

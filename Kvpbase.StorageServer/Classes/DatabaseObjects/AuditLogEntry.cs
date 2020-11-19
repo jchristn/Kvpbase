@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Watson.ORM;
-using Watson.ORM.Core; 
+using Watson.ORM.Core;
+using Newtonsoft.Json;
 
 namespace Kvpbase.StorageServer.Classes.DatabaseObjects
 {
@@ -24,18 +25,21 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// GUID.
         /// </summary>
+        [JsonProperty(Order = -3)]
         [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// Container GUID.
         /// </summary>
+        [JsonProperty(Order = -2)]
         [Column("containerguid", false, DataTypes.Nvarchar, 64, false)]
         public string ContainerGUID { get; set; }
 
         /// <summary>
         /// Object GUID.
         /// </summary>
+        [JsonProperty(Order = -1)]
         [Column("objectguid", false, DataTypes.Nvarchar, 64, false)]
         public string ObjectGUID { get; set; }
 
@@ -54,6 +58,7 @@ namespace Kvpbase.StorageServer.Classes.DatabaseObjects
         /// <summary>
         /// Timestamp of the action.
         /// </summary>
+        [JsonProperty(Order = 990)]
         [Column("createdutc", false, DataTypes.DateTime, false)]
         public DateTime CreatedUtc { get; set; }
          

@@ -65,7 +65,7 @@ namespace Kvpbase.StorageServer.Classes
             settings.Server.MaxTransferSize = 536870912;        // 512MB transfer size
              
             settings.Storage = new Settings.SettingsStorage(); 
-            settings.Storage.Directory = "./Storage/";
+            settings.Storage.Directory = "./storage/";
             settings.Storage.LockExpirationSeconds = 300;
             Directory.CreateDirectory(settings.Storage.Directory);
 
@@ -76,7 +76,7 @@ namespace Kvpbase.StorageServer.Classes
             settings.Syslog.ServerPort = 514;
             settings.Syslog.MinimumLevel = Severity.Info;
             settings.Syslog.FileLogging = true;
-            settings.Syslog.LogDirectory = "./Logs/";
+            settings.Syslog.LogDirectory = "./logs/";
             
             if (!Directory.Exists(settings.Syslog.LogDirectory)) Directory.CreateDirectory(settings.Syslog.LogDirectory);
 
@@ -106,7 +106,7 @@ namespace Kvpbase.StorageServer.Classes
                 {
                     case "sqlite":
                         settings.Database = new DatabaseSettings(
-                            Common.InputString("Filename:", "./Kvpbase.db", false)
+                            Common.InputString("Filename:", "./kvpbase.db", false)
                             );
 
                         //                          1         2         3         4         5         6         7
@@ -158,11 +158,10 @@ namespace Kvpbase.StorageServer.Classes
             #endregion
 
             #region Write-Files-and-Records
-
-            Console.WriteLine("");
+             
             Console.WriteLine("| Writing system.json");
 
-            Common.WriteFile("System.json", Encoding.UTF8.GetBytes(Common.SerializeJson(settings, true)));
+            Common.WriteFile("./system.json", Encoding.UTF8.GetBytes(Common.SerializeJson(settings, true)));
 
             Console.WriteLine("| Initializing logging");
 
@@ -224,9 +223,9 @@ namespace Kvpbase.StorageServer.Classes
 
             Console.WriteLine("| Creating container [default]");
 
-            string htmlFile = SampleHtmlFile("http://github.com/kvpbase");
-            string textFile = SampleTextFile("http://github.com/kvpbase");
-            string jsonFile = SampleJsonFile("http://github.com/kvpbase");
+            string htmlFile = SampleHtmlFile("http://github.com/jchristn/kvpbase");
+            string textFile = SampleTextFile("http://github.com/jchristn/kvpbase");
+            string jsonFile = SampleJsonFile("http://github.com/jchristn/kvpbase");
 
             ContainerManager containerMgr = new ContainerManager(settings, logging, orm);
 
@@ -268,7 +267,7 @@ namespace Kvpbase.StorageServer.Classes
             Console.WriteLine("permissions before exposing Kvpbase outside of localhost.");
             Console.ForegroundColor = prior;
             Console.WriteLine("");
-            Console.WriteLine("  API Key  : " + apiKey.GUID); 
+            Console.WriteLine("  API key: " + apiKey.GUID); 
             Console.WriteLine("");
             Console.WriteLine("We've also created sample files for you so that you can see your node in");
             Console.WriteLine("action.  Go to the following URLs in your browser and see what happens!");
