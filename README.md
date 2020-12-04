@@ -75,7 +75,7 @@ The response is simply a 200/OK.
 
 ## Documentation
 
-Please visit our documentation [https://github.com/kvpbase/storage-server/wiki] for details on APIs, configuration files, deployment scenarios, and more. 
+Please visit our documentation [https://github.com/jchristn/Kvpbase/wiki] for details on APIs, configuration files, deployment scenarios, and more. 
   
 ## Use Cases
 
