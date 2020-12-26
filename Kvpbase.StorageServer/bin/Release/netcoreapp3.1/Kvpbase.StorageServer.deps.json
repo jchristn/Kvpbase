@@ -6,12 +6,12 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "Kvpbase.StorageServer/4.2.5": {
+      "Kvpbase.StorageServer/4.2.5.1": {
         "dependencies": {
           "Newtonsoft.Json": "12.0.3",
-          "SyslogLogging": "1.3.2.5",
-          "Watson": "4.0.0.2",
-          "WatsonORM": "1.3.0.19"
+          "SyslogLogging": "1.3.2.7",
+          "Watson": "4.0.0.3",
+          "WatsonORM": "1.3.0.21"
         },
         "runtime": {
           "Kvpbase.StorageServer.dll": {}
@@ -43,7 +43,7 @@
           }
         }
       },
-      "DatabaseWrapper.Mysql/3.2.2.10": {
+      "DatabaseWrapper.Mysql/3.2.2.16": {
         "dependencies": {
           "DatabaseWrapper.Core": "3.2.2.10",
           "Microsoft.CSharp": "4.7.0",
@@ -53,12 +53,12 @@
         },
         "runtime": {
           "lib/netcoreapp3.1/DatabaseWrapper.Mysql.dll": {
-            "assemblyVersion": "3.2.2.10",
-            "fileVersion": "3.2.2.10"
+            "assemblyVersion": "3.2.2.16",
+            "fileVersion": "3.2.2.16"
           }
         }
       },
-      "DatabaseWrapper.Postgresql/3.2.2.10": {
+      "DatabaseWrapper.Postgresql/3.2.2.16": {
         "dependencies": {
           "DatabaseWrapper.Core": "3.2.2.10",
           "Microsoft.CSharp": "4.7.0",
@@ -68,12 +68,12 @@
         },
         "runtime": {
           "lib/netcoreapp3.1/DatabaseWrapper.Postgresql.dll": {
-            "assemblyVersion": "3.2.2.10",
-            "fileVersion": "3.2.2.10"
+            "assemblyVersion": "3.2.2.16",
+            "fileVersion": "3.2.2.16"
           }
         }
       },
-      "DatabaseWrapper.Sqlite/3.2.2.10": {
+      "DatabaseWrapper.Sqlite/3.2.2.16": {
         "dependencies": {
           "DatabaseWrapper.Core": "3.2.2.10",
           "Microsoft.CSharp": "4.7.0",
@@ -83,12 +83,12 @@
         },
         "runtime": {
           "lib/netcoreapp3.1/DatabaseWrapper.Sqlite.dll": {
-            "assemblyVersion": "3.2.2.10",
-            "fileVersion": "3.2.2.10"
+            "assemblyVersion": "3.2.2.16",
+            "fileVersion": "3.2.2.16"
           }
         }
       },
-      "DatabaseWrapper.SqlServer/3.2.2.10": {
+      "DatabaseWrapper.SqlServer/3.2.2.16": {
         "dependencies": {
           "DatabaseWrapper.Core": "3.2.2.10",
           "Microsoft.CSharp": "4.7.0",
@@ -98,8 +98,8 @@
         },
         "runtime": {
           "lib/netcoreapp3.1/DatabaseWrapper.SqlServer.dll": {
-            "assemblyVersion": "3.2.2.10",
-            "fileVersion": "3.2.2.10"
+            "assemblyVersion": "3.2.2.16",
+            "fileVersion": "3.2.2.16"
           }
         }
       },
@@ -551,11 +551,11 @@
           }
         }
       },
-      "SyslogLogging/1.3.2.5": {
+      "SyslogLogging/1.3.2.7": {
         "runtime": {
           "lib/netcoreapp3.1/LoggingModule.dll": {
-            "assemblyVersion": "1.3.2.5",
-            "fileVersion": "1.3.2.5"
+            "assemblyVersion": "1.3.2.7",
+            "fileVersion": "1.3.2.7"
           }
         }
       },
@@ -1329,7 +1329,7 @@
           }
         }
       },
-      "Watson/4.0.0.2": {
+      "Watson/4.0.0.3": {
         "dependencies": {
           "IpMatcher": "1.0.4",
           "Newtonsoft.Json": "12.0.3",
@@ -1337,22 +1337,22 @@
         },
         "runtime": {
           "lib/netcoreapp3.1/WatsonWebserver.dll": {
-            "assemblyVersion": "4.0.0.2",
-            "fileVersion": "4.0.0.2"
+            "assemblyVersion": "4.0.0.3",
+            "fileVersion": "4.0.0.3"
           }
         }
       },
-      "WatsonORM/1.3.0.19": {
+      "WatsonORM/1.3.0.21": {
         "dependencies": {
-          "WatsonORM.Mysql": "1.3.0.19",
-          "WatsonORM.Postgresql": "1.3.0.19",
-          "WatsonORM.SqlServer": "1.3.0.19",
-          "WatsonORM.Sqlite": "1.3.0.19"
+          "WatsonORM.Mysql": "1.3.0.21",
+          "WatsonORM.Postgresql": "1.3.0.21",
+          "WatsonORM.SqlServer": "1.3.0.21",
+          "WatsonORM.Sqlite": "1.3.0.21"
         },
         "runtime": {
           "lib/netcoreapp3.1/WatsonORM.dll": {
-            "assemblyVersion": "1.3.0.19",
-            "fileVersion": "1.3.0.19"
+            "assemblyVersion": "1.3.0.21",
+            "fileVersion": "1.3.0.21"
           }
         }
       },
@@ -1367,58 +1367,58 @@
           }
         }
       },
-      "WatsonORM.Mysql/1.3.0.19": {
+      "WatsonORM.Mysql/1.3.0.21": {
         "dependencies": {
-          "DatabaseWrapper.Mysql": "3.2.2.10",
+          "DatabaseWrapper.Mysql": "3.2.2.16",
           "WatsonORM.Core": "1.3.0.19"
         },
         "runtime": {
           "lib/netcoreapp3.1/WatsonORM.Mysql.dll": {
-            "assemblyVersion": "1.3.0.19",
-            "fileVersion": "1.3.0.19"
+            "assemblyVersion": "1.3.0.21",
+            "fileVersion": "1.3.0.21"
           }
         }
       },
-      "WatsonORM.Postgresql/1.3.0.19": {
+      "WatsonORM.Postgresql/1.3.0.21": {
         "dependencies": {
-          "DatabaseWrapper.Postgresql": "3.2.2.10",
+          "DatabaseWrapper.Postgresql": "3.2.2.16",
           "WatsonORM.Core": "1.3.0.19"
         },
         "runtime": {
           "lib/netcoreapp3.1/WatsonORM.Postgresql.dll": {
-            "assemblyVersion": "1.3.0.19",
-            "fileVersion": "1.3.0.19"
+            "assemblyVersion": "1.3.0.21",
+            "fileVersion": "1.3.0.21"
           }
         }
       },
-      "WatsonORM.Sqlite/1.3.0.19": {
+      "WatsonORM.Sqlite/1.3.0.21": {
         "dependencies": {
-          "DatabaseWrapper.Sqlite": "3.2.2.10",
+          "DatabaseWrapper.Sqlite": "3.2.2.16",
           "WatsonORM.Core": "1.3.0.19"
         },
         "runtime": {
           "lib/netcoreapp3.1/WatsonORM.Sqlite.dll": {
-            "assemblyVersion": "1.3.0.19",
-            "fileVersion": "1.3.0.19"
+            "assemblyVersion": "1.3.0.21",
+            "fileVersion": "1.3.0.21"
           }
         }
       },
-      "WatsonORM.SqlServer/1.3.0.19": {
+      "WatsonORM.SqlServer/1.3.0.21": {
         "dependencies": {
-          "DatabaseWrapper.SqlServer": "3.2.2.10",
+          "DatabaseWrapper.SqlServer": "3.2.2.16",
           "WatsonORM.Core": "1.3.0.19"
         },
         "runtime": {
           "lib/netcoreapp3.1/WatsonORM.SqlServer.dll": {
-            "assemblyVersion": "1.3.0.19",
-            "fileVersion": "1.3.0.19"
+            "assemblyVersion": "1.3.0.21",
+            "fileVersion": "1.3.0.21"
           }
         }
       }
     }
   },
   "libraries": {
-    "Kvpbase.StorageServer/4.2.5": {
+    "Kvpbase.StorageServer/4.2.5.1": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -1437,33 +1437,33 @@
       "path": "databasewrapper.core/3.2.2.10",
       "hashPath": "databasewrapper.core.3.2.2.10.nupkg.sha512"
     },
-    "DatabaseWrapper.Mysql/3.2.2.10": {
+    "DatabaseWrapper.Mysql/3.2.2.16": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-HSmnHBSj1KY30HAEznnRN88/7CcwsIXx/RF5pNLTPB74RXJ/o5JcoD9lXhOGmUZ8dihUAM1sBmM3jchznXW21w==",
-      "path": "databasewrapper.mysql/3.2.2.10",
-      "hashPath": "databasewrapper.mysql.3.2.2.10.nupkg.sha512"
+      "sha512": "sha512-h/00lgOTIIfz1t9tdXd4eSSx3jP0nTRdWcsXneyeYC7B1oKUrTFf+nuNcDY7C3n7FhSpX2aUO6raRfygBN8ChQ==",
+      "path": "databasewrapper.mysql/3.2.2.16",
+      "hashPath": "databasewrapper.mysql.3.2.2.16.nupkg.sha512"
     },
-    "DatabaseWrapper.Postgresql/3.2.2.10": {
+    "DatabaseWrapper.Postgresql/3.2.2.16": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-0Mhn7Bcsia/m/qeoGe2884mIeVlH7/f3S+ResrZA/yfDFh8xtKjTUhtTpViL3jHHTH66W+zqsW+F3RLECJLwUg==",
-      "path": "databasewrapper.postgresql/3.2.2.10",
-      "hashPath": "databasewrapper.postgresql.3.2.2.10.nupkg.sha512"
+      "sha512": "sha512-YoJ3OXxBU9TmvWKSOEoj2VboP5QE3AKL+O9OQH7e2r7xLFD8ZZ0mLjsDZE9TcTiRsQaEuYg72RZmwenOTTDH5Q==",
+      "path": "databasewrapper.postgresql/3.2.2.16",
+      "hashPath": "databasewrapper.postgresql.3.2.2.16.nupkg.sha512"
     },
-    "DatabaseWrapper.Sqlite/3.2.2.10": {
+    "DatabaseWrapper.Sqlite/3.2.2.16": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Zx6y5Wxr4PJK4be9f3oEbQvlh04Ih+qmE/CGGvAWeo4Am/8JalRCvUTOl+vBSMIisvKWZ13Ywby3dECdBuHzWg==",
-      "path": "databasewrapper.sqlite/3.2.2.10",
-      "hashPath": "databasewrapper.sqlite.3.2.2.10.nupkg.sha512"
+      "sha512": "sha512-ow0JOI8Ia2zOD/vOsKeJTEygqYCpeSkbotl1LB7PRtO1WNlggz/vSnBhyydZfJBSgWy8W8mQ14ld0Fi3+8oj3Q==",
+      "path": "databasewrapper.sqlite/3.2.2.16",
+      "hashPath": "databasewrapper.sqlite.3.2.2.16.nupkg.sha512"
     },
-    "DatabaseWrapper.SqlServer/3.2.2.10": {
+    "DatabaseWrapper.SqlServer/3.2.2.16": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-XPLWCG49daAi8sUwwFA0s5+Z5fH+a5QflrdUnQYZ0U9KdbTOmzdkZaMOtf46vUImgkU0OmiTvMA30Xc/wH6zsQ==",
-      "path": "databasewrapper.sqlserver/3.2.2.10",
-      "hashPath": "databasewrapper.sqlserver.3.2.2.10.nupkg.sha512"
+      "sha512": "sha512-msSlMBMuP83NZqtd2UeylCqMvVD6ZnWoFzuoR2Xlq5BfUO6EyE+7IXe7gYIemzr7hJrMGKBIQj2p7+rTrVRPHQ==",
+      "path": "databasewrapper.sqlserver/3.2.2.16",
+      "hashPath": "databasewrapper.sqlserver.3.2.2.16.nupkg.sha512"
     },
     "Google.Protobuf/3.11.4": {
       "type": "package",
@@ -1710,12 +1710,12 @@
       "path": "sshnet.security.cryptography/1.2.0",
       "hashPath": "sshnet.security.cryptography.1.2.0.nupkg.sha512"
     },
-    "SyslogLogging/1.3.2.5": {
+    "SyslogLogging/1.3.2.7": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-WO14bYG8/w5xJOeFp5EnQnrrxssrvin27tJ2ivW1S54PycdE6zo52mu9of/srw8dKDrcL0xTDebWfCvbZwfbgQ==",
-      "path": "sysloglogging/1.3.2.5",
-      "hashPath": "sysloglogging.1.3.2.5.nupkg.sha512"
+      "sha512": "sha512-ZOuc9B/x+4rMK3Qb8ZKpEttc/1Vqqj3FlFiULDe7G4rQjv6oItsEoycAGZgKz9kIZUinmO/w0qcbZbLla2hleg==",
+      "path": "sysloglogging/1.3.2.7",
+      "hashPath": "sysloglogging.1.3.2.7.nupkg.sha512"
     },
     "System.AppContext/4.1.0": {
       "type": "package",
@@ -2214,19 +2214,19 @@
       "path": "system.xml.xpath.xmldocument/4.0.1",
       "hashPath": "system.xml.xpath.xmldocument.4.0.1.nupkg.sha512"
     },
-    "Watson/4.0.0.2": {
+    "Watson/4.0.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-5jGzeMUvY8bob1zq3M82sASOYfQNOevpsRzFkoCqxx7EC/lmBM6i0hFGApvtTqEhpnVlZ58ljDm1I1eVgtBHrw==",
-      "path": "watson/4.0.0.2",
-      "hashPath": "watson.4.0.0.2.nupkg.sha512"
+      "sha512": "sha512-Wl/EVUZQFDA2mreXYUMvf2fC1io8Qf+G5YUqacbdCfnSveGCN9xaxw6kXQU9z/4WVEjF8YHhJCPCVD/+qf5xvA==",
+      "path": "watson/4.0.0.3",
+      "hashPath": "watson.4.0.0.3.nupkg.sha512"
     },
-    "WatsonORM/1.3.0.19": {
+    "WatsonORM/1.3.0.21": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-KyI8jy/ze4TVFVafFehUHQt0rR/ypLlZL62Y6J1EvTvnPouNLNcMoS/PwvjDUpA6OT3xXESDe6Z734gfvttyaw==",
-      "path": "watsonorm/1.3.0.19",
-      "hashPath": "watsonorm.1.3.0.19.nupkg.sha512"
+      "sha512": "sha512-7f+OcOaZqLPf1H3xfXRz0OpgzE7dSbjK6xXcd3n+HyK8yzs6PZAU7hugjKj071HnLkvQfne3PWIqkkZxbOAEAA==",
+      "path": "watsonorm/1.3.0.21",
+      "hashPath": "watsonorm.1.3.0.21.nupkg.sha512"
     },
     "WatsonORM.Core/1.3.0.19": {
       "type": "package",
@@ -2235,33 +2235,33 @@
       "path": "watsonorm.core/1.3.0.19",
       "hashPath": "watsonorm.core.1.3.0.19.nupkg.sha512"
     },
-    "WatsonORM.Mysql/1.3.0.19": {
+    "WatsonORM.Mysql/1.3.0.21": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-kLPIhiAElzWcSgoDZhyn9LpJEH+O6aui3pVMU78lQl5kF2Ij6gMuIXN4k+lQflRy6n6AkWtDg66bz30mUnHQ9w==",
-      "path": "watsonorm.mysql/1.3.0.19",
-      "hashPath": "watsonorm.mysql.1.3.0.19.nupkg.sha512"
+      "sha512": "sha512-R1geFOCPwnVI95KRVWXgJKnD6DeOtFSE+dAcmwIoo4HumqsaoIrmSz2etxM5/Ff9o44BTUGM31h1nZTEEYcR3w==",
+      "path": "watsonorm.mysql/1.3.0.21",
+      "hashPath": "watsonorm.mysql.1.3.0.21.nupkg.sha512"
     },
-    "WatsonORM.Postgresql/1.3.0.19": {
+    "WatsonORM.Postgresql/1.3.0.21": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-fy7ng3A6C1dcMJR9MH3Aelw/9YXZDYp07fgKrAmRwpTFfM+u3S8FXJhFOnhl7UHjILaeqcOMq2Ob/dA20QdrQA==",
-      "path": "watsonorm.postgresql/1.3.0.19",
-      "hashPath": "watsonorm.postgresql.1.3.0.19.nupkg.sha512"
+      "sha512": "sha512-K+lDBYfA170uqJe3RBIrkg8sfBkDvvhI6INDjJ/FQWMrm6ki8jWbqM5tRpHsCIdpErxaZdZ+q729d5Eu1fkcBw==",
+      "path": "watsonorm.postgresql/1.3.0.21",
+      "hashPath": "watsonorm.postgresql.1.3.0.21.nupkg.sha512"
     },
-    "WatsonORM.Sqlite/1.3.0.19": {
+    "WatsonORM.Sqlite/1.3.0.21": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-lXpXpKuvMsDH0GHXlq7LBgvm3lNafv/KkOgTSUIWmJ/aDiE3AVLpR65Wt1HjYOJjjOqwZ6Vh4xZ09lkh3c1EGg==",
-      "path": "watsonorm.sqlite/1.3.0.19",
-      "hashPath": "watsonorm.sqlite.1.3.0.19.nupkg.sha512"
+      "sha512": "sha512-ojYcT23MwYPyZ1HNoRyRbmtutYFQI5WcddvELwUbu6SM2S8lhT5qbE4R7VtnL9gCXZfVu06jAGll8qncRYJBIA==",
+      "path": "watsonorm.sqlite/1.3.0.21",
+      "hashPath": "watsonorm.sqlite.1.3.0.21.nupkg.sha512"
     },
-    "WatsonORM.SqlServer/1.3.0.19": {
+    "WatsonORM.SqlServer/1.3.0.21": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-NhDL/2aFzQThaN5L0yRAYdGnmn638Scxi9QZmukmRHonJDEGcbbOEml2xxL6BW5J0JZA2+Plvrk7+O0eVYxSsA==",
-      "path": "watsonorm.sqlserver/1.3.0.19",
-      "hashPath": "watsonorm.sqlserver.1.3.0.19.nupkg.sha512"
+      "sha512": "sha512-Y1w7SGCgbaDD1ePGmUU/pc5QGeTCW9HtkJ8IY9rxpp5mSd1du+nZ72XQcB/eI5C5dDu3LgNxZ7oUbP2rYTEPNw==",
+      "path": "watsonorm.sqlserver/1.3.0.21",
+      "hashPath": "watsonorm.sqlserver.1.3.0.21.nupkg.sha512"
     }
   }
 }
